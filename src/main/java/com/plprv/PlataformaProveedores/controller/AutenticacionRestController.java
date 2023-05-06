@@ -8,14 +8,15 @@ import com.plprv.PlataformaProveedores.entity.Proveedor;
 import com.plprv.PlataformaProveedores.entity.ProveedorEva;
 import com.plprv.PlataformaProveedores.entity.Usuario;
 import com.plprv.PlataformaProveedores.service.*;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
@@ -35,14 +36,20 @@ public class AutenticacionRestController {
     private IProveedorServices proveedorService;
     private final EmailService emailService;
 
+    @Autowired
+    private ObtenerUsuarioAud obtenerUsuarioAud;
     public AutenticacionRestController(EmailService emailService) {
         this.emailService = emailService;
     }
 
     @GetMapping("/autenticacion")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> obtenerAutenticacion(){
-        List<Autenticacion> autenticacionDb = autenticacionService.encontrarAutenticacion("PA");
+//    @PreAuthorize("hasAnyAuthority('superadministrador','administrador')")
+    public ResponseEntity<?> obtenerAutenticacion(HttpServletRequest request){
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = authorizationHeader.substring(7);
+        Integer miIdEmppal = obtenerUsuarioAud.obtnerIdEmppalToken (token);
+        List<Autenticacion> autenticacionDb = autenticacionService.encontrarAutenticacion("PA",miIdEmppal);
         if(autenticacionDb!=null){
             return  new ResponseEntity<>(autenticacionDb , HttpStatus.OK);
         }else {
@@ -50,31 +57,108 @@ public class AutenticacionRestController {
         }
     }
     @PostMapping("/autenticacion")
-    public ResponseEntity<?> opcionesPost(@RequestBody Map<String, Object> requestBody) throws IOException {
+    @PreAuthorize("hasAnyAuthority('superadministrador','administrador')")
+    public ResponseEntity<?> opcionesPost(@RequestBody Map<String, Object> requestBody, HttpServletRequest request) throws IOException {
+        String opcion = (String) requestBody.get("opcion");
+        String checkBoxEstado = (String) requestBody.get("checkBoxEstado");
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = authorizationHeader.substring(7);
+        Integer miIdEmppal = obtenerUsuarioAud.obtnerIdEmppalToken (token);
+
+        switch (opcion) {
+            case "cantidad" -> {
+                Integer cantidad = autenticacionService.cantidadAutenticacion(checkBoxEstado,miIdEmppal);
+                return ResponseEntity.ok(cantidad);
+            }
+            case "informacionTotal" -> {
+                Integer numeroDePagina = (Integer) requestBody.get("numeroDePagina");
+                Integer numeroElementosPorPagina = (Integer) requestBody.get("numeroElementosPorPagina");
+                String texto = (String) requestBody.get("texto");
+                List<Autenticacion> autenticacionTodosDb = autenticacionService.encontrarAutenticacionFiltroPaginas(checkBoxEstado,
+                        texto, numeroDePagina, numeroElementosPorPagina,miIdEmppal);
+                if (autenticacionTodosDb != null) {
+                    return new ResponseEntity<>(autenticacionTodosDb, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(null, HttpStatus.OK);
+                }
+            }
+            case "cantidadDePaginas" -> {
+                String textoC = (String) requestBody.get("texto");
+                Integer autenticacionTodosDbC = autenticacionService.cantidadPaginasAutenticacion(checkBoxEstado, textoC,miIdEmppal);
+                if (autenticacionTodosDbC != null) {
+                    return new ResponseEntity<>(autenticacionTodosDbC, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(null, HttpStatus.OK);
+                }
+            }
+            case "obtenerId" -> {
+                Integer autId = (Integer) requestBody.get("aut_id");
+                Autenticacion autenticacionDbI = autenticacionService.encontrarAutenticacionPorId(autId, null,miIdEmppal);
+                if (autenticacionDbI != null) {
+                    return new ResponseEntity<>(autenticacionDbI, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(null, HttpStatus.OK);
+                }
+            }
+            case "borrar" -> {
+                Integer autIdD = (Integer) requestBody.get("aut_id");
+                Autenticacion autenticacionDbB = autenticacionService.encontrarAutenticacionPorId(autIdD, "PA",miIdEmppal);
+                if (autenticacionDbB != null) {
+                    autenticacionDbB.setAutEstado("I");
+                    autenticacionService.actualizarAutenticacion(autenticacionDbB);
+                    return new ResponseEntity<>(autenticacionDbB, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(null, HttpStatus.OK);
+                }
+            }
+            case "activar" -> {
+                Integer autIdDA = (Integer) requestBody.get("aut_id");
+                Autenticacion autenticacionDbBA = autenticacionService.encontrarAutenticacionPorId(autIdDA, "I",miIdEmppal);
+                if (autenticacionDbBA != null) {
+                    autenticacionDbBA.setAutEstado("PA");
+                    autenticacionService.actualizarAutenticacion(autenticacionDbBA);
+                    return new ResponseEntity<>(autenticacionDbBA, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(null, HttpStatus.OK);
+                }
+            }
+            case "autenticacionSoloNombre" -> {
+                List<Autenticacion> autenticacionDbS = autenticacionService.encontrarAutenticacionNombres("PA",miIdEmppal);
+                if (autenticacionDbS != null && !autenticacionDbS.isEmpty()) {
+                    return new ResponseEntity<>(autenticacionDbS, HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<>(null, HttpStatus.OK);
+                }
+            }
+            default -> {
+                return ResponseEntity.ok("Opcion no encontrada");
+            }
+        }
+    }
+
+    @PostMapping("/autenticacionL")
+    public ResponseEntity<?> opcionesPostL(@RequestBody Map<String, Object> requestBody) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         String datosJson = objectMapper.writeValueAsString(requestBody.get("datos"));
         JsonNode jsonNode = objectMapper.readTree(datosJson);
         String opcion = (String) requestBody.get("opcion");
-        String checkBoxEstado = (String) requestBody.get("checkBoxEstado");
         String caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
         Random random = new Random();
         StringBuilder autCodigoCorreo = new StringBuilder();
 
-        switch (opcion){
-            case "cantidad":
-                Integer cantidad = autenticacionService.cantidadAutenticacion(checkBoxEstado);
-                return ResponseEntity.ok(cantidad);
-            case "crear":
+        switch (opcion) {
+            case "crear" -> {
                 try {
                     String autCorreo = jsonNode.get("aut_correo").asText().trim();
                     String tdcTd = jsonNode.get("tdc_td").asText().trim();
                     String prvNd = jsonNode.get("prv_nd").asText().trim();
-
-                    Usuario miUs = usuarioService.encontrarUsuariosPorNombre(autCorreo);
-                    if (miUs != null) return new ResponseEntity<>("correo_ya_registrado", HttpStatus.OK);
-                    if (proveedorService.encontrarProveedoresPorNdyTdcTd(prvNd,tdcTd) != null) return new ResponseEntity<>("proveedor_ya_existe", HttpStatus.OK);
-
                     Integer idEmppal = jsonNode.get("id_emppal").asInt();
+
+                    Usuario miUs = usuarioService.encontrarUsuariosPorNombre(autCorreo,idEmppal);
+                    if (miUs != null) return new ResponseEntity<>("correo_ya_registrado", HttpStatus.OK);
+                    if (proveedorService.encontrarProveedoresPorNdyTdcTd(prvNd, tdcTd,idEmppal) != null)
+                        return new ResponseEntity<>("proveedor_ya_existe", HttpStatus.OK);
+
                     String autContrasena = jsonNode.get("aut_contrasena").asText().trim();
                     String prvNombre = jsonNode.get("prv_nombre").asText().trim();
                     Integer proId = jsonNode.get("pro_id").asInt();
@@ -89,63 +173,63 @@ public class AutenticacionRestController {
 
                     if (!regexService.isId(idEmppal) || !regexService.isMail(autCorreo) || !regexService.isTextNormal(tdcTd) ||
                             !regexService.isTextNormal(prvNd) || !regexService.isTextNormal(prvNombre) || !regexService.isSelectNumber(proId) || !regexService.isSelectNumber(sprId) ||
-                            !regexService.isTextNormal(prvCelular) ||!regexService.isTextNormal(prvDireccion) ||!regexService.isTextNormal(paiNombre) ||!regexService.isTextNormal(dptNombre) ||
+                            !regexService.isTextNormal(prvCelular) || !regexService.isTextNormal(prvDireccion) || !regexService.isTextNormal(paiNombre) || !regexService.isTextNormal(dptNombre) ||
                             !regexService.isTextNormal(ciuNombre) || !regexService.isPassword(autContrasena)
-                    )   return new ResponseEntity<>("campos incorrectos", HttpStatus.OK);
+                    ) return new ResponseEntity<>("campos incorrectos", HttpStatus.OK);
 
                     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                     String encodedPassword = passwordEncoder.encode(autContrasena);
 
-                    Autenticacion autenticacionDb = autenticacionService.encontrarAutenticacionPorNombre(autCorreo.toLowerCase());
-                    if(autenticacionDb == null) {
-                       Autenticacion miAutenticacion = new Autenticacion();
-                       miAutenticacion.setIdEmppal(idEmppal);
+                    Autenticacion autenticacionDb = autenticacionService.encontrarAutenticacionPorNombre(autCorreo.toLowerCase(),idEmppal);
+                    if (autenticacionDb == null) {
+                        Autenticacion miAutenticacion = new Autenticacion();
+                        miAutenticacion.setIdEmppal(idEmppal);
 
                         for (int i = 0; i < 6; i++) {
                             int indice = random.nextInt(caracteres.length());
                             autCodigoCorreo.append(caracteres.charAt(indice));
                         }
 
-                       miAutenticacion.setAutCorreo(autCorreo.toLowerCase());
-                       miAutenticacion.setTdcTd(tdcTd.toLowerCase());
-                       miAutenticacion.setPrvNd(prvNd.toLowerCase());
-                       miAutenticacion.setPrvNombre(prvNombre.toLowerCase());
-                       miAutenticacion.setProId(proId);
-                       miAutenticacion.setSprId(sprId);
-                       miAutenticacion.setAutCodigoCorreo(String.valueOf(autCodigoCorreo));
-                       miAutenticacion.setPrvCelular(prvCelular.toLowerCase());
-                       miAutenticacion.setPrvDireccion(prvDireccion.toLowerCase());
-                       miAutenticacion.setPaiNombre(paiNombre.toLowerCase());
-                       miAutenticacion.setDptNombre(dptNombre.toLowerCase());
-                       miAutenticacion.setCiuNombre(ciuNombre.toLowerCase());
-                       miAutenticacion.setAutContrasena(encodedPassword);
-                       miAutenticacion.setAutEstado("E");
-                       Date fechaActual = new Date();
-                       Set<Date> conjuntoFechas = new HashSet<>();
-                       conjuntoFechas.add(fechaActual);
-                       miAutenticacion.setAudFecha(fechaActual);
-                       miAutenticacion.setAudUsuario(audUsuario.toLowerCase());
+                        miAutenticacion.setAutCorreo(autCorreo.toLowerCase());
+                        miAutenticacion.setTdcTd(tdcTd.toLowerCase());
+                        miAutenticacion.setPrvNd(prvNd.toLowerCase());
+                        miAutenticacion.setPrvNombre(prvNombre.toLowerCase());
+                        miAutenticacion.setProId(proId);
+                        miAutenticacion.setSprId(sprId);
+                        miAutenticacion.setAutCodigoCorreo(String.valueOf(autCodigoCorreo));
+                        miAutenticacion.setPrvCelular(prvCelular.toLowerCase());
+                        miAutenticacion.setPrvDireccion(prvDireccion.toLowerCase());
+                        miAutenticacion.setPaiNombre(paiNombre.toLowerCase());
+                        miAutenticacion.setDptNombre(dptNombre.toLowerCase());
+                        miAutenticacion.setCiuNombre(ciuNombre.toLowerCase());
+                        miAutenticacion.setAutContrasena(encodedPassword);
+                        miAutenticacion.setAutEstado("E");
+                        Date fechaActual = new Date();
+                        Set<Date> conjuntoFechas = new HashSet<>();
+                        conjuntoFechas.add(fechaActual);
+                        miAutenticacion.setAudFecha(fechaActual);
+                        miAutenticacion.setAudUsuario(audUsuario.toLowerCase());
                         try {
                             autenticacionService.crearAutenticacion(miAutenticacion);
-                            emailService.sendListEmailRegistro(autCorreo.toLowerCase(), prvNombre.toLowerCase(), String.valueOf(autCodigoCorreo) );
+                            emailService.sendListEmailRegistro(autCorreo.toLowerCase(), prvNombre.toLowerCase(), String.valueOf(autCodigoCorreo));
 
                         } catch (DataIntegrityViolationException e) {
-                            if (((SQLException) e.getCause().getCause()).getErrorCode() == 1062 || ((SQLException) e.getCause().getCause()).getErrorCode() == 1 ) {
+                            if (((SQLException) e.getCause().getCause()).getErrorCode() == 1062 || ((SQLException) e.getCause().getCause()).getErrorCode() == 1) {
                                 String data = "dato_existente";
                                 return new ResponseEntity<>(data, HttpStatus.OK);
                             } else {
                                 String data = "error_sql";
-                                return new ResponseEntity<>( data, HttpStatus.OK);
+                                return new ResponseEntity<>(data, HttpStatus.OK);
                             }
                         }
-                       return new ResponseEntity<>("se_crea_solicitud", HttpStatus.OK);
-                    }else{
-                        autCodigoCorreo = new StringBuilder("");
+                        return new ResponseEntity<>("se_crea_solicitud", HttpStatus.OK);
+                    } else {
+                        autCodigoCorreo = new StringBuilder();
                         for (int i = 0; i < 6; i++) {
                             int indice = random.nextInt(caracteres.length());
                             autCodigoCorreo.append(caracteres.charAt(indice));
                         }
-                        emailService.sendListEmailRegistro(autCorreo.toLowerCase(), prvNombre.toLowerCase(), String.valueOf(autCodigoCorreo) );
+                        emailService.sendListEmailRegistro(autCorreo.toLowerCase(), prvNombre.toLowerCase(), String.valueOf(autCodigoCorreo));
                         autenticacionDb.setAutCodigoCorreo(String.valueOf(autCodigoCorreo));
                         autenticacionDb.setAutEstado("E");
                         autenticacionDb.setAutCorreo(autCorreo.toLowerCase());
@@ -163,78 +247,22 @@ public class AutenticacionRestController {
                         autenticacionDb.setAutContrasena(encodedPassword);
 
                         autenticacionService.actualizarAutenticacion(autenticacionDb);
-                        return  new ResponseEntity<>("codigo_correo_actualizado" , HttpStatus.OK);
+                        return new ResponseEntity<>("codigo_correo_actualizado", HttpStatus.OK);
                     }
-                }catch (Exception e){
-                    if (e.getMessage().contains("null")){
-                        System.out.println(e.getMessage());
+                } catch (Exception e) {
+                    if (e.getMessage().contains("null")) {
                         String data = "campos_incompletos";
-                        return new ResponseEntity<>( data, HttpStatus.OK);
-                    }else{
-                        return new ResponseEntity<>( e.getMessage(), HttpStatus.OK);
+                        return new ResponseEntity<>(data, HttpStatus.OK);
+                    } else {
+                        return new ResponseEntity<>(e.getMessage(), HttpStatus.OK);
                     }
                 }
-            case "informacionTotal":
-                Integer numeroDePagina = (Integer) requestBody.get("numeroDePagina");
-                Integer numeroElementosPorPagina = (Integer) requestBody.get("numeroElementosPorPagina");
-                String texto = (String) requestBody.get("texto");
-
-                List<Autenticacion> autenticacionTodosDb = autenticacionService.encontrarAutenticacionFiltroPaginas(checkBoxEstado,texto,numeroDePagina,numeroElementosPorPagina);
-                if(autenticacionTodosDb!=null){
-                    return  new ResponseEntity<>(autenticacionTodosDb , HttpStatus.OK);
-                }else {
-                    return new ResponseEntity<>(null,HttpStatus.OK);
-                }
-            case "cantidadDePaginas":
-                String textoC = (String) requestBody.get("texto");
-                Integer autenticacionTodosDbC = autenticacionService.cantidadPaginasAutenticacion(checkBoxEstado,textoC);
-                if(autenticacionTodosDbC!=null){
-                    return  new ResponseEntity<>(autenticacionTodosDbC , HttpStatus.OK);
-                }else {
-                    return new ResponseEntity<>(null,HttpStatus.OK);
-                }
-            case "obtenerId":
-                Integer autId = (Integer) requestBody.get("aut_id");
-                Autenticacion autenticacionDbI = autenticacionService.encontrarAutenticacionPorId(autId,null);
-                if(autenticacionDbI!=null){
-                    return  new ResponseEntity<>(autenticacionDbI , HttpStatus.OK);
-                }else {
-                    return new ResponseEntity<>(null,HttpStatus.OK);
-                }
-            case "borrar":
-                Integer autIdD = (Integer) requestBody.get("aut_id");
-                Autenticacion autenticacionDbB =   autenticacionService.encontrarAutenticacionPorId(autIdD,"PA");
-
-                if(autenticacionDbB != null) {
-                    autenticacionDbB.setAutEstado("I");
-                    autenticacionService.actualizarAutenticacion(autenticacionDbB);
-                    return  new ResponseEntity<>(autenticacionDbB , HttpStatus.OK);
-                }else {
-                    return new ResponseEntity<>(null,HttpStatus.OK);
-                }
-            case "activar":
-                Integer autIdDA = (Integer) requestBody.get("aut_id");
-                Autenticacion autenticacionDbBA =   autenticacionService.encontrarAutenticacionPorId(autIdDA,"I");
-                if(autenticacionDbBA != null) {
-                    autenticacionDbBA.setAutEstado("PA");
-                    autenticacionService.actualizarAutenticacion(autenticacionDbBA);
-                    return  new ResponseEntity<>(autenticacionDbBA , HttpStatus.OK);
-                }else {
-                    return new ResponseEntity<>(null,HttpStatus.OK);
-                }
-            case "autenticacionSoloNombre":
-                List<Autenticacion> autenticacionDbS = autenticacionService.encontrarAutenticacionNombres("PA");
-                if(autenticacionDbS!=null && !autenticacionDbS.isEmpty()){
-                    return  new ResponseEntity<>(autenticacionDbS , HttpStatus.OK);
-                }else {
-                    return new ResponseEntity<>(null,HttpStatus.OK);
-                }
-            case "verificarCodigo":
+            }
+            case "verificarCodigo" -> {
                 String codigoCorreo = (String) requestBody.get("aut_codigoCorreo");
                 if (!regexService.isTextNormal(codigoCorreo)
-                )   return new ResponseEntity<>("campos incorrectos", HttpStatus.OK);
-
-                if (codigoCorreo.length() <6 )return ResponseEntity.ok("caracteres_no_corresponden");
+                ) return new ResponseEntity<>("campos incorrectos", HttpStatus.OK);
+                if (codigoCorreo.length() < 6) return ResponseEntity.ok("caracteres_no_corresponden");
                 Autenticacion miAutenticacion = autenticacionService.encontrarAutenticacionPorCodigo(codigoCorreo);
                 if (miAutenticacion == null) {
                     return ResponseEntity.ok("codigo_errado");
@@ -245,48 +273,87 @@ public class AutenticacionRestController {
                     emailService.sendListEmailConfirmacion(miAutenticacion.getAutCorreo(), miAutenticacion.getPrvNombre());
                     return ResponseEntity.ok("verificado");
                 }
-
-            case "correoRecuperarContrasena":
+            }
+            case "correoRecuperarContrasena" -> {
                 String correoR = (String) requestBody.get("aut_correo");
+                Integer idEmppal = (Integer) requestBody.get("id_emppal");
+
                 if (!regexService.isMail(correoR)
-                )   return new ResponseEntity<>("campos incorrectos", HttpStatus.OK);
-
-                Usuario miUsuario = usuarioService.encontrarUsuariosPorNombre(correoR);
-                Autenticacion miAut = autenticacionService.encontrarAutenticacionPorNombre(correoR);
-
-                if (miUsuario == null) return ResponseEntity.ok("correo_no_registra");
-                for (int i = 0; i < 6; i++) {
+                ) return new ResponseEntity<>("campos incorrectos", HttpStatus.OK);
+                for (int i = 0; i < 25; i++) {
                     int indice = random.nextInt(caracteres.length());
                     autCodigoCorreo.append(caracteres.charAt(indice));
                 }
-                emailService.sendCorreoRecuperar(correoR, String.valueOf(autCodigoCorreo));
+                Usuario miUsuario = usuarioService.encontrarUsuariosPorNombre(correoR,idEmppal);
+                Autenticacion miAut = autenticacionService.encontrarAutenticacionPorNombre(correoR,idEmppal);
+                if (miUsuario == null) return ResponseEntity.ok("correo_no_registra");
+                if (miAut == null) {
+                    PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+                    String encodedPassword = passwordEncoder.encode("plataforma123");
+                    Autenticacion miAutenticacionD = new Autenticacion();
+                    miAutenticacionD.setIdEmppal(miUsuario.getIdEmppal());
+                    miAutenticacionD.setAutCorreo(correoR);
+                    miAutenticacionD.setTdcTd("creado_empresa");
+                    miAutenticacionD.setPrvNd("creado_empresa");
+                    miAutenticacionD.setPrvNombre(miUsuario.getUsuNombre());
+                    miAutenticacionD.setProId(1);
+                    miAutenticacionD.setSprId(1);
+                    miAutenticacionD.setAutCodigoCorreo(String.valueOf(autCodigoCorreo));
+                    miAutenticacionD.setPrvCelular("creado_empresa");
+                    miAutenticacionD.setPrvDireccion("creado_empresa");
+                    miAutenticacionD.setPaiNombre("creado_empresa");
+                    miAutenticacionD.setDptNombre("creado_empresa");
+                    miAutenticacionD.setCiuNombre("creado_empresa");
+                    miAutenticacionD.setAutContrasena(encodedPassword);
+                    miAutenticacionD.setAutEstado("A");
+                    Date fechaActual = new Date();
+                    Set<Date> conjuntoFechas = new HashSet<>();
+                    conjuntoFechas.add(fechaActual);
+                    miAutenticacionD.setAudFecha(fechaActual);
+                    miAutenticacionD.setAudUsuario(miUsuario.getAudUsuario());
+                    emailService.sendCorreoRecuperar(correoR, String.valueOf(autCodigoCorreo));
+                    autenticacionService.crearAutenticacion(miAutenticacionD);
+                    return ResponseEntity.ok("enviado");
+                }
                 miAut.setAutCodigoCorreo(String.valueOf(autCodigoCorreo));
                 autenticacionService.actualizarAutenticacion(miAut);
+                emailService.sendCorreoRecuperar(correoR, String.valueOf(autCodigoCorreo));
                 return ResponseEntity.ok("enviado");
-
-            case "cambiarContrasena":
+            }
+            case "cambiarContrasena" -> {
                 String usuContrasena = (String) requestBody.get("usu_contrasena");
+                usuContrasena = unwrapPassword(usuContrasena);
                 String codigo = (String) requestBody.get("codigo");
-                if (!regexService.isPassword(usuContrasena)) return new ResponseEntity<>("campos incorrectos", HttpStatus.OK);
+
+                System.out.println(codigo);
+                System.out.println(usuContrasena);
+                if (!regexService.isPassword(usuContrasena))
+                    return new ResponseEntity<>("campos incorrectos", HttpStatus.OK);
                 Autenticacion miAutR = autenticacionService.encontrarAutenticacionPorCodigo(codigo);
                 if (miAutR == null) return ResponseEntity.ok("sin_codigo");
-                Usuario miUsuR = usuarioService.encontrarUsuariosPorNombre(miAutR.getAutCorreo());
+                Usuario miUsuR = usuarioService.encontrarUsuariosPorNombre(miAutR.getAutCorreo(), miAutR.getIdEmppal());
                 PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                 String encodedPassword = passwordEncoder.encode(usuContrasena);
                 miUsuR.setUsuContrasena(encodedPassword);
                 miAutR.setAutCodigoCorreo("");
                 autenticacionService.actualizarAutenticacion(miAutR);
                 return ResponseEntity.ok("correcto");
-            default:
+            }
+            default -> {
                 return ResponseEntity.ok("Opcion no encontrada");
+            }
         }
     }
 
     @PutMapping("/autenticacion")
-    public ResponseEntity<?> actualizarAutenticacion(@RequestBody Map<String, Object> requestBody) throws JsonProcessingException {
+    @PreAuthorize("hasAnyAuthority('superadministrador','administrador')")
+    public ResponseEntity<?> actualizarAutenticacion(@RequestBody Map<String, Object> requestBody, HttpServletRequest request) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         String autenticacion = objectMapper.writeValueAsString(requestBody.get("datos"));
         JsonNode jsonNode = objectMapper.readTree(autenticacion);
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = authorizationHeader.substring(7);
+        Integer miIdEmppal = obtenerUsuarioAud.obtnerIdEmppalToken (token);
         try {
             String autCorreo = jsonNode.get("aut_correo").asText().trim();
             String tdcTd = jsonNode.get("tdc_td").asText().trim();
@@ -299,12 +366,12 @@ public class AutenticacionRestController {
             String paiNombre = jsonNode.get("pai_nombre").asText().trim();
             String dptNombre = jsonNode.get("dpt_nombre").asText().trim();
             String ciuNombre = jsonNode.get("ciu_nombre").asText().trim();
-            Integer perId = jsonNode.get("per_id").asInt();
-            Integer crtId = jsonNode.get("crt_id").asInt();
+            int perId = jsonNode.get("per_id").asInt();
+            int crtId = jsonNode.get("crt_id").asInt();
 
-            Usuario miUs = usuarioService.encontrarUsuariosPorNombre(autCorreo);
+            Usuario miUs = usuarioService.encontrarUsuariosPorNombre(autCorreo,miIdEmppal);
             if (miUs != null) return new ResponseEntity<>("correo_ya_registrado", HttpStatus.OK);
-            if (proveedorService.encontrarProveedoresPorNdyTdcTd(prvNd,tdcTd) != null) return new ResponseEntity<>("proveedor_ya_existe", HttpStatus.OK);
+            if (proveedorService.encontrarProveedoresPorNdyTdcTd(prvNd,tdcTd,miIdEmppal) != null) return new ResponseEntity<>("proveedor_ya_existe", HttpStatus.OK);
 
 
             if (!regexService.isMail(autCorreo) || !regexService.isTextNormal(tdcTd) ||
@@ -313,7 +380,7 @@ public class AutenticacionRestController {
                     !regexService.isTextNormal(ciuNombre)
             )   return new ResponseEntity<>("campos incorrectos", HttpStatus.OK);
 
-            Autenticacion autenticacionDb = autenticacionService.encontrarAutenticacionPorNombre(autCorreo.toLowerCase());
+            Autenticacion autenticacionDb = autenticacionService.encontrarAutenticacionPorNombre(autCorreo.toLowerCase(),miIdEmppal);
 
             if (autenticacionDb != null) {
                 autenticacionDb.setAutCorreo(autCorreo.toLowerCase());
@@ -370,7 +437,7 @@ public class AutenticacionRestController {
                         miProveedor.setAudUsuario(autenticacionDb.getAudUsuario());
                         try {
                             proveedorService.crearProveedor(miProveedor);
-                            ProveedorEva proveedorEvasDb = proveedorEvaService.encontrarProveedorEvaPorPerId(perId, miProveedor.getPrvId());
+                            ProveedorEva proveedorEvasDb = proveedorEvaService.encontrarProveedorEvaPorPerId(perId, miProveedor.getPrvId(),miIdEmppal);
                             if(proveedorEvasDb == null) {
                                 ProveedorEva miProveedorEva = new ProveedorEva();
                                 miProveedorEva.setIdEmppal(miProveedor.getIdEmppal());
@@ -407,7 +474,6 @@ public class AutenticacionRestController {
                         String data = "dato_existente";
                         return new ResponseEntity<>(data, HttpStatus.OK);
                     } else {
-                        String data = "error_sql";
                         return new ResponseEntity<>(((SQLException) e.getCause().getCause()).getErrorCode(), HttpStatus.OK);
                     }
                 }
@@ -424,6 +490,19 @@ public class AutenticacionRestController {
                 return new ResponseEntity<>( e.getMessage(), HttpStatus.OK);
             }
         }
+    }
+
+    public static String unwrapPassword(String wrappedPassword) {
+        String salt = wrappedPassword.substring(wrappedPassword.length() - 10);
+
+        String mixedPassword = "";
+        for (int i = 0; i < wrappedPassword.length() - 10; i++) {
+            int charCode = wrappedPassword.charAt(i);
+            mixedPassword += (char) (charCode - 1000);
+        }
+        int startIndex = "proveedores860090-1".length();
+        int endIndex = mixedPassword.length() - salt.length();
+        return mixedPassword.substring(startIndex, endIndex);
     }
 
 }

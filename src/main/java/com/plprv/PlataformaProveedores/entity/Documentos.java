@@ -1,6 +1,14 @@
 package com.plprv.PlataformaProveedores.entity;
 
+import com.plprv.PlataformaProveedores.dao.IProveedorDocDao;
+import com.plprv.PlataformaProveedores.service.IProveedorDocServices;
+import com.plprv.PlataformaProveedores.service.ProveedorDocServices;
 import org.hibernate.boot.archive.scan.internal.ScanResultImpl;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -53,12 +61,15 @@ public class Documentos {
 
     private String proveedorCorreo;
 
+    private String estado;
+
+
     public Documentos(Integer prdId, String dato, String observacion, String fechaDocumento, String estadoDocumental , String tipoDocumentoProveedor , String numeroDocumentoProveedor, String nombreProveedor, String nombreFormulario, String nombreCampo, String tipoCampo,
                       String nombrePeriodo, String fechasPeriodo, String tipoPeriodo, String nombreProceso, String subProcesoNombre, Date fechaCreacion, String usuarioCreacion , String estadoPeriodo , String criticidad
                     , String vigenciaEstablecida, String proveedorCorreo) {
         this.prdId = prdId;
         this.dato = dato;
-        if(tipoCampo.equals("file") && dato != null && dato != "" ) this.dato = "https://drive.google.com/uc?id="+dato;
+        if(tipoCampo.equals("file") && dato != null && !dato.equals("") ) this.dato = "https://drive.google.com/file/d/"+dato+"/view";
         this.observacion = observacion;
         this.fechaDocumento = fechaDocumento;
         this.estadoDocumental = estadoDocumental;
@@ -68,6 +79,7 @@ public class Documentos {
         this.nombreFormulario = nombreFormulario;
         this.nombreCampo = nombreCampo;
         this.tipoCampo = tipoCampo;
+        this.estado = "A";
         if(tipoCampo.equals("text")) this.tipoCampo = "Texto";
         if(tipoCampo.equals("number")) this.tipoCampo = "Numero";
         if(tipoCampo.equals("file")) this.tipoCampo = "Archivo";
@@ -83,14 +95,32 @@ public class Documentos {
         this.estadoPeriodo = estadoPeriodo;
         this.proveedorCorreo = proveedorCorreo;
         this.criticidad = criticidad;
-        this.vigenciaEstablecida = vigenciaEstablecida;
+            this.vigenciaEstablecida = vigenciaEstablecida;
         this.diasVigencias = 0L;
+        if(this.dato == null) return;
         if(this.dato == null) return;
         if(this.dato.equals("") || this.dato.equals("NA")) return;
         if(this.fechaDocumento == null) return;
         if(this.fechaDocumento.equals("") || this.fechaDocumento.equals("NA")) return;
         this.diasVigencias = calcularDias(this.fechaDocumento , this.vigenciaEstablecida);
+        String miEstado = "";
+        if(this.diasVigencias >=0 && this.diasVigencias<=30 ) miEstado = "A-1";
+        else if(this.diasVigencias >30 && this.diasVigencias<=90 ) miEstado = "A-3";
+        else if(this.diasVigencias >90 ) miEstado = "A";
+        else if(this.diasVigencias <0 ) miEstado = "V";
+        if (!estadoDocumental.equals(miEstado)){
+            this.estadoDocumental = miEstado;
+            this.estado = "D";
+        }
+    }
 
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     public Integer getprdId() {
@@ -313,9 +343,17 @@ public class Documentos {
                 diasVigencia = 1825- ChronoUnit.DAYS.between(fecha, hoy);
                 break;
 
+            case "10":
+                fecha = LocalDate.parse(fechaDocumento, DateTimeFormatter.ISO_DATE.ISO_LOCAL_DATE);
+                hoy = LocalDate.now();
+                diasVigencia = 3650- ChronoUnit.DAYS.between(fecha, hoy);
+                break;
+
             default:
                 diasVigencias = 0L;
         }
         return diasVigencia;
     }
+
+
 }

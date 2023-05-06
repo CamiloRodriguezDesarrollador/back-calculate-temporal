@@ -8,26 +8,28 @@ import java.util.List;
 
 public interface IFormularioDetalleDao extends CrudRepository<FormularioDetalle, Long> {
 
-    public List<FormularioDetalle> findByFodEstadoOrderByFodNombre(String fodEstado);
+    public List<FormularioDetalle> findByFodEstadoAndIdEmppalOrderByFodNombre(String fodEstado, Integer idEmppal);
 
-    public FormularioDetalle findByFodNombreAndForId (String fodNombre, Integer forId);
+    public FormularioDetalle findByFodNombreAndForIdAndIdEmppal(String fodNombre, Integer forId, Integer idEmppal);
 
-    public FormularioDetalle findByFodId(Integer fodId);
+    public FormularioDetalle findByFodIdAndIdEmppal(Integer fodId, Integer idEmppal);
 
 
-    public FormularioDetalle findByFodIdAndFodEstado(Integer fodId, String fodEstado);
+    public FormularioDetalle findByFodIdAndFodEstadoAndIdEmppal(Integer fodId, String fodEstado, Integer idEmppal);
 
-    public List<FormularioDetalle> findByForIdAndFodEstado(Integer forId, String fodEstado);
+    public List<FormularioDetalle> findByForIdAndFodEstadoAndIdEmppal(Integer forId, String fodEstado, Integer idEmppal);
 
-    @Query("SELECT p  FROM FormularioDetalle p WHERE (p.fodEstado = :fodEstado) order by p.fodNombre ASC")
-    List<FormularioDetalle> findByFodEstadoNombre(String fodEstado);
+    @Query("SELECT p  FROM FormularioDetalle p WHERE (p.fodEstado = :fodEstado) AND (p.idEmppal = :idEmppal) order by p.fodNombre ASC")
+    List<FormularioDetalle> findByFodEstadoNombre(String fodEstado, Integer idEmppal);
 
-    @Query("SELECT p FROM FormularioDetalle p WHERE (lower(p.fodNombre) LIKE %:texto% or lower(p.fodAdjunto) LIKE %:texto% or lower(p.fodAdjunto) LIKE %:texto%) AND p.fodEstado = :fodEstado AND (p.forId = :forId OR :forId = 0) ORDER BY p.fodId DESC")
-    List<FormularioDetalle> findByFodEstadoFiltro(String fodEstado, String texto, Integer forId);
+    @Query("SELECT p FROM FormularioDetalle p WHERE (lower(p.fodNombre) LIKE %:texto% or lower(p.fodAdjunto) LIKE %:texto% or lower(p.fodAdjunto)" +
+            " LIKE %:texto%) AND p.fodEstado = :fodEstado AND (p.forId = :forId OR :forId = 0) AND (p.idEmppal = :idEmppal) ORDER BY p.fodId DESC")
+    List<FormularioDetalle> findByFodEstadoFiltro(String fodEstado, String texto, Integer forId, Integer idEmppal);
 
-    @Query("SELECT p FROM FormularioDetalle p WHERE (lower(p.fodNombre) LIKE %:texto% or lower(p.fodAdjunto) LIKE %:texto% or lower(p.fodAdjunto) LIKE %:texto%) AND p.fodEstado = :fodEstado AND (p.forId = :forId OR :forId = 0) ORDER BY p.fodId DESC LIMIT " +
+    @Query("SELECT p FROM FormularioDetalle p WHERE (lower(p.fodNombre) LIKE %:texto% or lower(p.fodAdjunto) LIKE %:texto% or lower(p.fodAdjunto)" +
+            " LIKE %:texto%) AND p.fodEstado = :fodEstado AND (p.forId = :forId OR :forId = 0) AND (p.idEmppal = :idEmppal) ORDER BY p.fodId DESC LIMIT " +
             " :numeroElementosPorPagina OFFSET :limiteInicial")
-    List<FormularioDetalle> findByFodEstadoPaginaFiltro(String fodEstado, String texto, Integer numeroElementosPorPagina, Integer limiteInicial, Integer forId);
+    List<FormularioDetalle> findByFodEstadoPaginaFiltro(String fodEstado, String texto, Integer numeroElementosPorPagina, Integer limiteInicial, Integer forId, Integer idEmppal);
 
 
 

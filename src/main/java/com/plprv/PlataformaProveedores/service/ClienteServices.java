@@ -17,8 +17,8 @@ public class ClienteServices implements IClienteService
 
     @Override
     @Transactional(readOnly = true)
-    public List<Cliente> encontrarClientes(String nitEstado) {
-        return (List<Cliente>) clienteDao.findByNitEstado(nitEstado);
+    public List<Cliente> encontrarClientes(String nitEstado, Integer idEmppal) {
+        return (List<Cliente>) clienteDao.findByNitEstadoAndIdEmppal(nitEstado, idEmppal);
 
     }@Override
     @Transactional(readOnly = true)

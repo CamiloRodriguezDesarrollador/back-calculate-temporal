@@ -59,6 +59,8 @@ public class Cliente implements Serializable {
     @Column(name = "NIT_COLORFONDO" ,length = 30)
     private String nitColorfondo;
 
+    @Column(name = "NIT_CARPETA" ,length = 100)
+    private String nitCarpeta;
     @Column(name = "NIT_ESTADO" ,length = 10)
     private String nitEstado;
 
@@ -72,6 +74,14 @@ public class Cliente implements Serializable {
     @PrePersist
     public void prePersist() {
         audFecha = new Date();
+    }
+
+    public String getNitCarpeta() {
+        return nitCarpeta;
+    }
+
+    public void setNitCarpeta(String nitCarpeta) {
+        this.nitCarpeta = nitCarpeta;
     }
 
     public int getIdEmppal() {

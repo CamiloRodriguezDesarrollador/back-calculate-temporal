@@ -8,25 +8,25 @@ import java.util.List;
 
 public interface IAutenticacionDao extends CrudRepository<Autenticacion, Long> {
 
-    public List<Autenticacion> findByAutEstadoOrderByAutCorreoAsc(String autCorreo);
+    public List<Autenticacion> findByAutEstadoAndIdEmppalOrderByAutCorreoAsc(String autCorreo, Integer idEmppal);
 
-    public Autenticacion findByAutCorreo(String autCorreo);
+    public Autenticacion findByAutCorreoAndIdEmppal(String autCorreo, Integer idEmppal);
 
-    public Autenticacion findByAutId(Integer autId);
+    public Autenticacion findByAutIdAndIdEmppal(Integer autId, Integer idEmppal);
 
     public Autenticacion findByAutCodigoCorreo(String autCodigoCorreo);
 
-    public Autenticacion findByAutIdAndAutEstado(Integer autId, String autEstado);
+    public Autenticacion findByAutIdAndAutEstadoAndIdEmppal(Integer autId, String autEstado, Integer idEmppal);
 
-    @Query("SELECT p FROM Autenticacion p WHERE (lower(p.autEstado) = :autEstado) order by p.autId ASC")
-    List<Autenticacion> findByAutEstadoNombre(String autEstado);
-
-    @Query("SELECT p FROM Autenticacion p WHERE (lower(p.autCorreo) LIKE %:texto% or lower(p.prvNombre) LIKE %:texto% or p.prvNd LIKE %:texto% " +
-            " ) AND p.autEstado = :autEstado ORDER BY p.autId DESC")
-    List<Autenticacion> findByAutEstadoFiltro(String autEstado, String texto);
+    @Query("SELECT p FROM Autenticacion p WHERE (lower(p.autEstado) = :autEstado) AND (p.idEmppal = :idEmppal) order by p.autId ASC")
+    List<Autenticacion> findByAutEstadoNombre(String autEstado, Integer idEmppal);
 
     @Query("SELECT p FROM Autenticacion p WHERE (lower(p.autCorreo) LIKE %:texto% or lower(p.prvNombre) LIKE %:texto% or p.prvNd LIKE %:texto% " +
-            ") AND p.autEstado = :autEstado ORDER BY p.autId DESC LIMIT " +
+            " ) AND p.autEstado = :autEstado AND (p.idEmppal = :idEmppal) ORDER BY p.autId DESC")
+    List<Autenticacion> findByAutEstadoFiltro(String autEstado, String texto, Integer idEmppal);
+
+    @Query("SELECT p FROM Autenticacion p WHERE (lower(p.autCorreo) LIKE %:texto% or lower(p.prvNombre) LIKE %:texto% or p.prvNd LIKE %:texto% " +
+            ") AND p.autEstado = :autEstado AND (p.idEmppal = :idEmppal) ORDER BY p.autId DESC LIMIT " +
             " :numeroElementosPorPagina OFFSET :limiteInicial")
-    List<Autenticacion> findByAutEstadoPaginaFiltro(String autEstado, String texto, Integer numeroElementosPorPagina, Integer limiteInicial);
+    List<Autenticacion> findByAutEstadoPaginaFiltro(String autEstado, String texto, Integer numeroElementosPorPagina, Integer limiteInicial, Integer idEmppal);
 }

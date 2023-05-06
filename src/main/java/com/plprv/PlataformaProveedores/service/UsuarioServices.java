@@ -15,26 +15,26 @@ public class UsuarioServices implements IUsuarioServices {
     private IUsuarioDao usuarioDao;
     @Override
     @Transactional(readOnly = true)
-    public List<Usuario> encontrarUsuarios(String usuEstado) {
-        return (List<Usuario>) usuarioDao.findByUsuEstado(usuEstado);
+    public List<Usuario> encontrarUsuarios(String usuEstado, Integer idEmppal) {
+        return (List<Usuario>) usuarioDao.findByUsuEstadoAndIdEmppal(usuEstado, idEmppal);
     }
     @Override
     @Transactional(readOnly = true)
-    public Usuario encontrarUsuariosPorNombre(String usuCorreo) {
-        return (Usuario) usuarioDao.findByUsuCorreo(usuCorreo);
+    public Usuario encontrarUsuariosPorNombre(String usuCorreo, Integer idEmppal) {
+        return (Usuario) usuarioDao.findByUsuCorreoAndIdEmppal(usuCorreo, idEmppal);
     }
     @Override
     @Transactional(readOnly = true)
-    public Usuario encontrarUsuariosPorId(Integer usuId, String usuEstado) {
+    public Usuario encontrarUsuariosPorId(Integer usuId, String usuEstado, Integer idEmppal) {
         if (usuEstado == null) {
-            return usuarioDao.findByUsuId(usuId);
+            return usuarioDao.findByUsuIdAndIdEmppal(usuId, idEmppal);
         } else {
-            return usuarioDao.findByUsuIdAndUsuEstado(usuId, usuEstado);
+            return usuarioDao.findByUsuIdAndUsuEstadoAndIdEmppal(usuId, usuEstado, idEmppal);
         }
     }
     @Transactional(readOnly = true)
-    public Integer cantidadUsuarios(String usuEstado) {
-        List<Usuario> datos = (List<Usuario>) usuarioDao.findByUsuEstado(usuEstado);
+    public Integer cantidadUsuarios(String usuEstado, Integer idEmppal) {
+        List<Usuario> datos = (List<Usuario>) usuarioDao.findByUsuEstadoAndIdEmppal(usuEstado, idEmppal);
         if(datos==null){
             return 0;
         }
@@ -43,25 +43,25 @@ public class UsuarioServices implements IUsuarioServices {
     }
     @Override
     @Transactional(readOnly = true)
-    public List<Usuario> encontrarUsuariosNombres(String usuEstado) {
-        return (List<Usuario>) usuarioDao.findByUsuEstadoNombre(usuEstado);
+    public List<Usuario> encontrarUsuariosNombres(String usuEstado, Integer idEmppal) {
+        return (List<Usuario>) usuarioDao.findByUsuEstadoNombre(usuEstado, idEmppal);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Usuario> encontrarUsuariosFiltro(String usuEstado, String texto) {
-        return (List<Usuario>) usuarioDao.findByUsuEstadoFiltro(usuEstado,texto.toLowerCase());
+    public List<Usuario> encontrarUsuariosFiltro(String usuEstado, String texto, Integer idEmppal) {
+        return (List<Usuario>) usuarioDao.findByUsuEstadoFiltro(usuEstado,texto.toLowerCase(), idEmppal);
     }
 
     @Override
-    public List<Usuario> encontrarUsuariosFiltroPaginas(String usuEstado, String texto, Integer numeroDePagina, Integer numeroElementosPorPagina) {
+    public List<Usuario> encontrarUsuariosFiltroPaginas(String usuEstado, String texto, Integer numeroDePagina, Integer numeroElementosPorPagina, Integer idEmppal) {
         if(numeroDePagina == null){
             numeroDePagina = 1;
         }else if (numeroDePagina<1){
             numeroDePagina = 1;
         }
         Integer limiteInicial = (numeroDePagina-1)*(numeroElementosPorPagina);
-        return (List<Usuario>) usuarioDao.findByUsuEstadoPaginaFiltro(usuEstado,texto.toLowerCase(),numeroElementosPorPagina,limiteInicial);
+        return (List<Usuario>) usuarioDao.findByUsuEstadoPaginaFiltro(usuEstado,texto.toLowerCase(),numeroElementosPorPagina,limiteInicial, idEmppal);
     }
 
     @Override
@@ -69,8 +69,8 @@ public class UsuarioServices implements IUsuarioServices {
         usuarioDao.save(usuario);
     }
     @Override
-    public Integer cantidadPaginasUsuarios(String usuEstado, String texto) {
-        List<Usuario> datos = (List<Usuario>) usuarioDao.findByUsuEstadoFiltro(usuEstado,texto.toLowerCase());
+    public Integer cantidadPaginasUsuarios(String usuEstado, String texto, Integer idEmppal) {
+        List<Usuario> datos = (List<Usuario>) usuarioDao.findByUsuEstadoFiltro(usuEstado,texto.toLowerCase(), idEmppal);
         int numeroDeElementos = datos.size();
         return numeroDeElementos;
     }

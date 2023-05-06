@@ -15,26 +15,26 @@ public class ProcesoServices implements IProcesoServices {
     private IProcesoDao procesoDao;
     @Override
     @Transactional(readOnly = true)
-    public List<Proceso> encontrarProcesos(String proEstado) {
-        return (List<Proceso>) procesoDao.findByProEstado(proEstado);
+    public List<Proceso> encontrarProcesos(String proEstado, Integer idEmppal) {
+        return (List<Proceso>) procesoDao.findByProEstadoAndIdEmppalOrderByProNombreAsc(proEstado, idEmppal);
     }
     @Override
     @Transactional(readOnly = true)
-    public Proceso encontrarProcesosPorNombre(String proNombre) {
-        return (Proceso) procesoDao.findByProNombre(proNombre);
+    public Proceso encontrarProcesosPorNombre(String proNombre, Integer idEmppal) {
+        return (Proceso) procesoDao.findByProNombreAndIdEmppal(proNombre, idEmppal);
     }
     @Override
     @Transactional(readOnly = true)
-    public Proceso encontrarProcesosPorId(Integer proId, String proEstado) {
+    public Proceso encontrarProcesosPorId(Integer proId, String proEstado, Integer idEmppal) {
         if (proEstado == null) {
-            return procesoDao.findByProId(proId);
+            return procesoDao.findByProIdAndIdEmppal(proId, idEmppal);
         } else {
-            return procesoDao.findByProIdAndProEstado(proId, proEstado);
+            return procesoDao.findByProIdAndProEstadoAndIdEmppal(proId, proEstado, idEmppal);
         }
     }
     @Transactional(readOnly = true)
-    public Integer cantidadProcesos(String proEstado) {
-        List<Proceso> datos = (List<Proceso>) procesoDao.findByProEstado(proEstado);
+    public Integer cantidadProcesos(String proEstado, Integer idEmppal) {
+        List<Proceso> datos = (List<Proceso>) procesoDao.findByProEstadoAndIdEmppalOrderByProNombreAsc(proEstado, idEmppal);
         if(datos==null){
             return 0;
         }
@@ -43,25 +43,25 @@ public class ProcesoServices implements IProcesoServices {
     }
     @Override
     @Transactional(readOnly = true)
-    public List<Proceso> encontrarProcesosNombres(String proEstado) {
-        return (List<Proceso>) procesoDao.findByProEstadoNombre(proEstado);
+    public List<Proceso> encontrarProcesosNombres(String proEstado, Integer idEmppal) {
+        return (List<Proceso>) procesoDao.findByProEstadoNombre(proEstado, idEmppal);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Proceso> encontrarProcesosFiltro(String proEstado, String texto) {
-        return (List<Proceso>) procesoDao.findByProEstadoFiltro(proEstado,texto.toLowerCase());
+    public List<Proceso> encontrarProcesosFiltro(String proEstado, String texto, Integer idEmppal) {
+        return (List<Proceso>) procesoDao.findByProEstadoFiltro(proEstado,texto.toLowerCase(), idEmppal);
     }
 
     @Override
-    public List<Proceso> encontrarProcesosFiltroPaginas(String proEstado, String texto, Integer numeroDePagina, Integer numeroElementosPorPagina) {
+    public List<Proceso> encontrarProcesosFiltroPaginas(String proEstado, String texto, Integer numeroDePagina, Integer numeroElementosPorPagina, Integer idEmppal) {
         if(numeroDePagina == null){
             numeroDePagina = 1;
         }else if (numeroDePagina<1){
             numeroDePagina = 1;
         }
         Integer limiteInicial = (numeroDePagina-1)*(numeroElementosPorPagina);
-        return (List<Proceso>) procesoDao.findByProEstadoPaginaFiltro(proEstado,texto.toLowerCase(),numeroElementosPorPagina,limiteInicial);
+        return (List<Proceso>) procesoDao.findByProEstadoPaginaFiltro(proEstado,texto.toLowerCase(),numeroElementosPorPagina,limiteInicial, idEmppal);
     }
 
     @Override
@@ -69,8 +69,8 @@ public class ProcesoServices implements IProcesoServices {
         procesoDao.save(proceso);
     }
     @Override
-    public Integer cantidadPaginasProcesos(String proEstado, String texto) {
-        List<Proceso> datos = (List<Proceso>) procesoDao.findByProEstadoFiltro(proEstado,texto.toLowerCase());
+    public Integer cantidadPaginasProcesos(String proEstado, String texto, Integer idEmppal) {
+        List<Proceso> datos = (List<Proceso>) procesoDao.findByProEstadoFiltro(proEstado,texto.toLowerCase(), idEmppal);
         int numeroDeElementos = datos.size();
         return numeroDeElementos;
     }

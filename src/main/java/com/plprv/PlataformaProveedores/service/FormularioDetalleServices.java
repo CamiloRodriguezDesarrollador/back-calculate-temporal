@@ -15,33 +15,33 @@ public class FormularioDetalleServices implements IFormularioDetalleServices {
     private IFormularioDetalleDao formularioDetalleDao;
     @Override
     @Transactional(readOnly = true)
-    public List<FormularioDetalle> encontrarFormularioDetalles(String fodEstado) {
-        return (List<FormularioDetalle>) formularioDetalleDao.findByFodEstadoOrderByFodNombre(fodEstado);
+    public List<FormularioDetalle> encontrarFormularioDetalles(String fodEstado, Integer idEmppal) {
+        return (List<FormularioDetalle>) formularioDetalleDao.findByFodEstadoAndIdEmppalOrderByFodNombre(fodEstado, idEmppal);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public FormularioDetalle encontrarFormularioDetallesPorNombre(String fodNombre, Integer forId) {
-        return (FormularioDetalle) formularioDetalleDao.findByFodNombreAndForId(fodNombre,forId);
+    public FormularioDetalle encontrarFormularioDetallesPorNombre(String fodNombre, Integer forId, Integer idEmppal) {
+        return (FormularioDetalle) formularioDetalleDao.findByFodNombreAndForIdAndIdEmppal(fodNombre,forId, idEmppal);
     }
     @Override
     @Transactional(readOnly = true)
-    public FormularioDetalle encontrarFormularioDetallesPorId(Integer fodId, String fodEstado) {
+    public FormularioDetalle encontrarFormularioDetallesPorId(Integer fodId, String fodEstado, Integer idEmppal) {
         if (fodEstado == null) {
-            return formularioDetalleDao.findByFodId(fodId);
+            return formularioDetalleDao.findByFodIdAndIdEmppal(fodId, idEmppal);
         } else {
-            return formularioDetalleDao.findByFodIdAndFodEstado(fodId, fodEstado);
+            return formularioDetalleDao.findByFodIdAndFodEstadoAndIdEmppal(fodId, fodEstado, idEmppal);
         }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<FormularioDetalle> encontrarFormularioDetallesPorFormulario(Integer forId, String fodEstado) {
-        return (List<FormularioDetalle>) formularioDetalleDao.findByForIdAndFodEstado(forId, fodEstado);
+    public List<FormularioDetalle> encontrarFormularioDetallesPorFormulario(Integer forId, String fodEstado,Integer idEmppal) {
+        return (List<FormularioDetalle>) formularioDetalleDao.findByForIdAndFodEstadoAndIdEmppal(forId, fodEstado, idEmppal);
     }
     @Transactional(readOnly = true)
-    public Integer cantidadFormularioDetalles(String fodEstado) {
-        List<FormularioDetalle> datos = (List<FormularioDetalle>) formularioDetalleDao.findByFodEstadoOrderByFodNombre(fodEstado);
+    public Integer cantidadFormularioDetalles(String fodEstado, Integer idEmppal) {
+        List<FormularioDetalle> datos = (List<FormularioDetalle>) formularioDetalleDao.findByFodEstadoAndIdEmppalOrderByFodNombre(fodEstado, idEmppal);
         if(datos==null){
             return 0;
         }
@@ -50,25 +50,27 @@ public class FormularioDetalleServices implements IFormularioDetalleServices {
     }
     @Override
     @Transactional(readOnly = true)
-    public List<FormularioDetalle> encontrarFormularioDetallesNombres(String fodEstado) {
-        return (List<FormularioDetalle>) formularioDetalleDao.findByFodEstadoNombre(fodEstado);
+    public List<FormularioDetalle> encontrarFormularioDetallesNombres(String fodEstado, Integer idEmppal) {
+        return (List<FormularioDetalle>) formularioDetalleDao.findByFodEstadoNombre(fodEstado, idEmppal);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<FormularioDetalle> encontrarFormularioDetallesFiltro(String fodEstado, String texto, Integer forId) {
-        return (List<FormularioDetalle>) formularioDetalleDao.findByFodEstadoFiltro(fodEstado,texto.toLowerCase(),forId);
+    public List<FormularioDetalle> encontrarFormularioDetallesFiltro(String fodEstado, String texto, Integer forId, Integer idEmppal) {
+        return (List<FormularioDetalle>) formularioDetalleDao.findByFodEstadoFiltro(fodEstado,texto.toLowerCase(),forId, idEmppal);
     }
 
     @Override
-    public List<FormularioDetalle> encontrarFormularioDetallesFiltroPaginas(String fodEstado, String texto, Integer numeroDePagina, Integer numeroElementosPorPagina, Integer forId) {
+    public List<FormularioDetalle> encontrarFormularioDetallesFiltroPaginas(String fodEstado, String texto, Integer numeroDePagina,
+                                                                            Integer numeroElementosPorPagina, Integer forId, Integer idEmppal) {
         if(numeroDePagina == null){
             numeroDePagina = 1;
         }else if (numeroDePagina<1){
             numeroDePagina = 1;
         }
         Integer limiteInicial = (numeroDePagina-1)*(numeroElementosPorPagina);
-        return (List<FormularioDetalle>) formularioDetalleDao.findByFodEstadoPaginaFiltro(fodEstado,texto.toLowerCase(),numeroElementosPorPagina,limiteInicial,forId);
+        return (List<FormularioDetalle>) formularioDetalleDao.findByFodEstadoPaginaFiltro(fodEstado,texto.toLowerCase(),numeroElementosPorPagina,
+                limiteInicial,forId, idEmppal);
     }
 
     @Override
@@ -76,8 +78,8 @@ public class FormularioDetalleServices implements IFormularioDetalleServices {
         formularioDetalleDao.save(formularioDetalle);
     }
     @Override
-    public Integer cantidadPaginasFormularioDetalles(String fodEstado, String texto, Integer forId) {
-        List<FormularioDetalle> datos = (List<FormularioDetalle>) formularioDetalleDao.findByFodEstadoFiltro(fodEstado,texto.toLowerCase(), forId);
+    public Integer cantidadPaginasFormularioDetalles(String fodEstado, String texto, Integer forId, Integer idEmppal) {
+        List<FormularioDetalle> datos = (List<FormularioDetalle>) formularioDetalleDao.findByFodEstadoFiltro(fodEstado,texto.toLowerCase(), forId, idEmppal);
         int numeroDeElementos = datos.size();
         return numeroDeElementos;
     }

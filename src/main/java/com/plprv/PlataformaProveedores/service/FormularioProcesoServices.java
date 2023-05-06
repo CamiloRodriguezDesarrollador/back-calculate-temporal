@@ -15,12 +15,13 @@ public class FormularioProcesoServices implements IFormularioProcesoServices {
     private IFormularioProcesoDao formularioProcesoDao;
 
     @Override
-    public List<FormularioProceso> encontrarFormularioProceso() {
-        return (List<FormularioProceso>) formularioProcesoDao.findAll();
+    public List<FormularioProceso> encontrarFormularioProceso(Integer idEmppal) {
+        return (List<FormularioProceso>) formularioProcesoDao.findAllByIdEmppalOrderByFodId(idEmppal);
     }
 
     @Override
-    public FormularioProceso encontrarFormularioPorParametros(Integer forId,Integer fodId,Integer proId,Integer sprId,Integer perId,Integer crtId,String tdcTd,Integer idEmppal) {
+    public FormularioProceso encontrarFormularioPorParametros(Integer forId,Integer fodId,Integer proId,Integer sprId,
+                                                              Integer perId,Integer crtId,String tdcTd,Integer idEmppal) {
         return (FormularioProceso) formularioProcesoDao.findByForIdAndFodIdAndProIdAndSprIdAndPerIdAndCrtIdAndTdcTdAndIdEmppal(forId, fodId, proId, sprId, perId, crtId, tdcTd, idEmppal) ;
     }
 
@@ -36,17 +37,17 @@ public class FormularioProcesoServices implements IFormularioProcesoServices {
     }
 
     @Override
-    public List<FormularioProceso> encontrarFormulariosPorPeriodo(Integer perId) {
-        return (List<FormularioProceso>) formularioProcesoDao.findByPerId(perId);
+    public List<FormularioProceso> encontrarFormulariosPorPeriodo(Integer perId, Integer idEmppal) {
+        return (List<FormularioProceso>) formularioProcesoDao.findByPerIdAndIdEmppal(perId, idEmppal);
     }
 
     @Override
-    public FormularioProceso encontrarFormulariosPorId(Integer fopId) {
-        return (FormularioProceso) formularioProcesoDao.findByFopId(fopId);
+    public FormularioProceso encontrarFormulariosPorId(Integer fopId, Integer idEmppal) {
+        return (FormularioProceso) formularioProcesoDao.findByFopIdAndIdEmppal(fopId,idEmppal);
     }
 
     @Override
-    public List<FormularioProceso> encontrarFormulariosPorDetalle(Integer fodId) {
-        return (List<FormularioProceso>) formularioProcesoDao.findByFodId(fodId);
+    public List<FormularioProceso> encontrarFormulariosPorDetalle(Integer fodId, Integer idEmppal) {
+        return (List<FormularioProceso>) formularioProcesoDao.findByFodIdAndIdEmppal(fodId, idEmppal);
     }
 }

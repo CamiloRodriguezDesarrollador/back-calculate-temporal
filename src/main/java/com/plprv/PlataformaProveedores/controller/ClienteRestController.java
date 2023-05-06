@@ -6,9 +6,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.plprv.PlataformaProveedores.entity.Cliente;
 import com.plprv.PlataformaProveedores.service.IClienteService;
 import com.plprv.PlataformaProveedores.service.IRegexService;
+import com.plprv.PlataformaProveedores.service.ObtenerUsuarioAud;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,10 +26,17 @@ public class ClienteRestController {
     @Autowired
     private IRegexService regexService;
 
+    @Autowired
+    private ObtenerUsuarioAud obtenerUsuarioAud;
+
     @GetMapping("/cliente")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?>  obtenerClientes(){
-        List<Cliente> clientesDb = clienteService.encontrarClientes("A");
+    @PreAuthorize("hasAnyAuthority('superadministrador','administrador','lector','proveedor')")
+    public ResponseEntity<?>  obtenerClientes(HttpServletRequest request){
+        String authorizationHeader = request.getHeader("Authorization");
+        String token = authorizationHeader.substring(7);
+        Integer miIdEmppal = obtenerUsuarioAud.obtnerIdEmppalToken (token);
+        List<Cliente> clientesDb = clienteService.encontrarClientes("A",miIdEmppal);
         if(clientesDb!=null && !clientesDb.isEmpty()){
             return  new ResponseEntity<>(clientesDb , HttpStatus.OK);
         }else {
@@ -34,6 +44,7 @@ public class ClienteRestController {
         }
     }
     @PostMapping("/cliente")
+    @PreAuthorize("hasAnyAuthority('superadministrador')")
     public ResponseEntity<?> opcionesPost(@RequestBody Map<String, Object> requestBody) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         String datosJson = objectMapper.writeValueAsString(requestBody.get("datos"));
@@ -51,6 +62,7 @@ public class ClienteRestController {
         return ResponseEntity.ok("OK");
     }
     @PutMapping("/cliente")
+    @PreAuthorize("hasAnyAuthority('superadministrador')")
     public ResponseEntity<?> actualizarCliente(@RequestBody Map<String, Object> requestBody) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
         String cliente = objectMapper.writeValueAsString(requestBody.get("cliente"));

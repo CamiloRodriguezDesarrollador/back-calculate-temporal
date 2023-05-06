@@ -15,27 +15,27 @@ public class SubProcesoServices implements ISubProcesoServices {
     private ISubProcesoDao subProcesoDao;
     @Override
     @Transactional(readOnly = true)
-    public List<SubProceso> encontrarSubProcesos(String proEstado) {
-        return (List<SubProceso>) subProcesoDao.findBySprEstado(proEstado);
+    public List<SubProceso> encontrarSubProcesos(String proEstado, Integer idEmppal) {
+        return (List<SubProceso>) subProcesoDao.findBySprEstadoAndIdEmppal(proEstado, idEmppal);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public SubProceso encontrarSubProcesosPorNombre(String sprNombre, Integer proId) {
-        return (SubProceso) subProcesoDao.findBySprNombreAndProId(sprNombre, proId);
+    public SubProceso encontrarSubProcesosPorNombre(String sprNombre, Integer proId, Integer idEmppal) {
+        return (SubProceso) subProcesoDao.findBySprNombreAndProIdAndIdEmppal(sprNombre, proId, idEmppal);
     }
     @Override
     @Transactional(readOnly = true)
-    public SubProceso encontrarSubProcesosPorId(Integer proId, String sprEstado) {
+    public SubProceso encontrarSubProcesosPorId(Integer proId, String sprEstado, Integer idEmppal) {
         if (sprEstado == null) {
-            return subProcesoDao.findBySprId(proId);
+            return subProcesoDao.findBySprIdAndIdEmppal(proId, idEmppal);
         } else {
-            return subProcesoDao.findBySprIdAndSprEstado(proId, sprEstado);
+            return subProcesoDao.findBySprIdAndSprEstadoAndIdEmppal(proId, sprEstado, idEmppal);
         }
     }
     @Transactional(readOnly = true)
-    public Integer cantidadSubProcesos(String sprEstado) {
-        List<SubProceso> datos = (List<SubProceso>) subProcesoDao.findBySprEstado(sprEstado);
+    public Integer cantidadSubProcesos(String sprEstado, Integer idEmppal) {
+        List<SubProceso> datos = (List<SubProceso>) subProcesoDao.findBySprEstadoAndIdEmppal(sprEstado, idEmppal);
         if(datos==null){
             return 0;
         }
@@ -44,18 +44,19 @@ public class SubProcesoServices implements ISubProcesoServices {
     }
     @Override
     @Transactional(readOnly = true)
-    public List<SubProceso> encontrarSubProcesosNombres(String sprEstado) {
-        return (List<SubProceso>) subProcesoDao.findBySprEstadoNombre(sprEstado);
+    public List<SubProceso> encontrarSubProcesosNombres(String sprEstado, Integer idEmppal) {
+        return (List<SubProceso>) subProcesoDao.findBySprEstadoNombre(sprEstado, idEmppal);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<SubProceso> encontrarSubProcesosFiltro(String sprEstado, String texto, Integer proId) {
-        return (List<SubProceso>) subProcesoDao.findBySprEstadoFiltro(sprEstado,texto.toLowerCase(), proId);
+    public List<SubProceso> encontrarSubProcesosFiltro(String sprEstado, String texto, Integer proId, Integer idEmppal) {
+        return (List<SubProceso>) subProcesoDao.findBySprEstadoFiltro(sprEstado,texto.toLowerCase(), proId, idEmppal);
     }
 
     @Override
-    public List<SubProceso> encontrarSubProcesosFiltroPaginas(String sprEstado, String texto, Integer numeroDePagina, Integer numeroElementosPorPagina , Integer proId) {
+    public List<SubProceso> encontrarSubProcesosFiltroPaginas(String sprEstado, String texto, Integer numeroDePagina, Integer numeroElementosPorPagina ,
+                                                              Integer proId, Integer idEmppal) {
         if(numeroDePagina == null){
             numeroDePagina = 1;
         }else if (numeroDePagina<1){
@@ -63,7 +64,8 @@ public class SubProcesoServices implements ISubProcesoServices {
         }
         Integer limiteInicial = (numeroDePagina-1)*(numeroElementosPorPagina);
 
-        List<SubProceso> miSubProceso = (List<SubProceso>) subProcesoDao.findBySprEstadoPaginaFiltro(sprEstado,texto.toLowerCase(),numeroElementosPorPagina,limiteInicial , proId);
+        List<SubProceso> miSubProceso = (List<SubProceso>) subProcesoDao.findBySprEstadoPaginaFiltro(sprEstado,texto.toLowerCase(),numeroElementosPorPagina,
+                limiteInicial , proId, idEmppal);
         return miSubProceso;
     }
 
@@ -72,9 +74,9 @@ public class SubProcesoServices implements ISubProcesoServices {
         subProcesoDao.save(subProceso);
     }
     @Override
-    public Integer cantidadPaginasSubProcesos(String sprEstado, String texto , Integer proId) {
+    public Integer cantidadPaginasSubProcesos(String sprEstado, String texto , Integer proId, Integer idEmppal) {
 
-        List<SubProceso> datos = (List<SubProceso>) subProcesoDao.findBySprEstadoFiltro(sprEstado,texto.toLowerCase() , proId);
+        List<SubProceso> datos = (List<SubProceso>) subProcesoDao.findBySprEstadoFiltro(sprEstado,texto.toLowerCase() , proId, idEmppal);
         int numeroDeElementos = datos.size();
         return numeroDeElementos;
     }

@@ -14,49 +14,49 @@ public class IndicadoresServices implements IIndicadoresServices {
 
 
     @Override
-    public Integer cantidadProveedoresTotal() {
-        return (Integer) indicadoresDao.encontrarCantidadProveedores();
+    public Integer cantidadProveedoresTotal(Integer idEmppal) {
+        return (Integer) indicadoresDao.encontrarCantidadProveedores(idEmppal);
     }
 
     @Override
-    public Integer cantidadProcesosTotal() {
-        return (Integer) indicadoresDao.contarProcesos();
-
-    }
-
-    @Override
-    public Integer cantidadPeriodosTotal() {
-        return (Integer) indicadoresDao.contarPeriodos();
+    public Integer cantidadProcesosTotal(Integer idEmppal) {
+        return (Integer) indicadoresDao.contarProcesos(idEmppal);
 
     }
 
     @Override
-    public List<Object>  obtenerTodaInformacionProveedorEva(Integer crtId, Integer perId,Integer proId) {
-        return (List<Object>) indicadoresDao.obtenerInformacionProveedorCriticidadPeriodo(crtId,perId , proId);
+    public Integer cantidadPeriodosTotal(Integer idEmppal) {
+        return (Integer) indicadoresDao.contarPeriodos(idEmppal);
+
     }
 
     @Override
-    public List<Object> obtenerTodaInformacionTabla(Integer crtId, Integer perId,Integer proId) {
-        return (List<Object>) indicadoresDao.contarRegistrosPorCriticidad(crtId,perId, proId);
+    public List<Object>  obtenerTodaInformacionProveedorEva(Integer crtId, Integer perId,Integer proId, Integer idEmppal) {
+        return (List<Object>) indicadoresDao.obtenerInformacionProveedorCriticidadPeriodo(crtId,perId , proId, idEmppal);
     }
 
     @Override
-    public Integer cantidadProveedoreFiltroTabla(Integer crtId, Integer perId,Integer proId) {
-        return (Integer) indicadoresDao.cantidadProveedoresFiltro(crtId,perId, proId);
-    }
-    @Override
-    public List<Object> obtenerProcesosFiltroTabla(Integer crtId, Integer perId,Integer proId) {
-        return (List<Object>) indicadoresDao.contarProcesosPorFiltro(crtId,perId, proId);
+    public List<Object> obtenerTodaInformacionTabla(Integer crtId, Integer perId,Integer proId, Integer idEmppal) {
+        return (List<Object>) indicadoresDao.contarRegistrosPorCriticidad(crtId,perId, proId, idEmppal);
     }
 
     @Override
-    public List<Object> obtenerEstadoDocimentos(Integer crtId, Integer perId,Integer proId) {
-        return (List<Object>) indicadoresDao.contarDocumentosPorFiltro(crtId,perId, proId);
+    public Integer cantidadProveedoreFiltroTabla(Integer crtId, Integer perId,Integer proId, Integer idEmppal) {
+        return (Integer) indicadoresDao.cantidadProveedoresFiltro(crtId,perId, proId, idEmppal);
+    }
+    @Override
+    public List<Object> obtenerProcesosFiltroTabla(Integer crtId, Integer perId,Integer proId, Integer idEmppal) {
+        return (List<Object>) indicadoresDao.contarProcesosPorFiltro(crtId,perId, proId, idEmppal);
     }
 
     @Override
-    public Double porcentajeAvance(Integer crtId, Integer perId,Integer proId) {
-        Double resultado = (indicadoresDao.registrosCompleto(crtId,perId, proId) / indicadoresDao.totalRegistros(crtId,perId, proId))*100;
+    public List<Object> obtenerEstadoDocimentos(Integer crtId, Integer perId,Integer proId, Integer idEmppal) {
+        return (List<Object>) indicadoresDao.contarDocumentosPorFiltro(crtId,perId, proId, idEmppal);
+    }
+
+    @Override
+    public Double porcentajeAvance(Integer crtId, Integer perId,Integer proId, Integer idEmppal) {
+        Double resultado = (indicadoresDao.registrosCompleto(crtId,perId, proId, idEmppal) / indicadoresDao.totalRegistros(crtId,perId, proId, idEmppal))*100;
         return (Double) resultado;
     }
 

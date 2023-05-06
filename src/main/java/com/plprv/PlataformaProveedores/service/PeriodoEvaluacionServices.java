@@ -15,27 +15,27 @@ public class PeriodoEvaluacionServices implements IPeriodoEvaluacionServices {
     private IPeriodoEvaluacionDao periodoEvaluacionDao;
     @Override
     @Transactional(readOnly = true)
-    public List<PeriodoEvaluacion> encontrarPeriodoEvaluacions(String perEstado) {
-        return (List<PeriodoEvaluacion>) periodoEvaluacionDao.findByPerEstado(perEstado);
+    public List<PeriodoEvaluacion> encontrarPeriodoEvaluacions(String perEstado, Integer idEmppal) {
+        return (List<PeriodoEvaluacion>) periodoEvaluacionDao.findByPerEstadoAndIdEmppal(perEstado, idEmppal);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PeriodoEvaluacion encontrarPeriodoEvaluacionsPorNombre(String perNombre) {
-        return (PeriodoEvaluacion) periodoEvaluacionDao.findByPerNombre(perNombre);
+    public PeriodoEvaluacion encontrarPeriodoEvaluacionsPorNombre(String perNombre, Integer idEmppal) {
+        return (PeriodoEvaluacion) periodoEvaluacionDao.findByPerNombreAndIdEmppal(perNombre, idEmppal);
     }
     @Override
     @Transactional(readOnly = true)
-    public PeriodoEvaluacion encontrarPeriodoEvaluacionsPorId(Integer perId, String perEstado) {
+    public PeriodoEvaluacion encontrarPeriodoEvaluacionsPorId(Integer perId, String perEstado, Integer idEmppal) {
         if (perEstado == null) {
-            return periodoEvaluacionDao.findByPerId(perId);
+            return periodoEvaluacionDao.findByPerIdAndIdEmppal(perId, idEmppal);
         } else {
-            return periodoEvaluacionDao.findByPerIdAndPerEstado(perId, perEstado);
+            return periodoEvaluacionDao.findByPerIdAndPerEstadoAndIdEmppal(perId, perEstado, idEmppal);
         }
     }
     @Transactional(readOnly = true)
-    public Integer cantidadPeriodoEvaluacions(String perEstado) {
-        List<PeriodoEvaluacion> datos = (List<PeriodoEvaluacion>) periodoEvaluacionDao.findByPerEstado(perEstado);
+    public Integer cantidadPeriodoEvaluacions(String perEstado, Integer idEmppal) {
+        List<PeriodoEvaluacion> datos = (List<PeriodoEvaluacion>) periodoEvaluacionDao.findByPerEstadoAndIdEmppal(perEstado, idEmppal);
         if(datos==null){
             return 0;
         }
@@ -44,25 +44,26 @@ public class PeriodoEvaluacionServices implements IPeriodoEvaluacionServices {
     }
     @Override
     @Transactional(readOnly = true)
-    public List<PeriodoEvaluacion> encontrarPeriodoEvaluacionsNombres( String perTipo) {
-        return (List<PeriodoEvaluacion>) periodoEvaluacionDao.findByPerEstadoNombre(perTipo);
+    public List<PeriodoEvaluacion> encontrarPeriodoEvaluacionsNombres( String perTipo, Integer idEmppal) {
+        return (List<PeriodoEvaluacion>) periodoEvaluacionDao.findByPerEstadoNombre(perTipo, idEmppal);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<PeriodoEvaluacion> encontrarPeriodoEvaluacionsFiltro(String perEstado, String texto) {
-        return (List<PeriodoEvaluacion>) periodoEvaluacionDao.findByPerEstadoFiltro(perEstado,texto.toLowerCase());
+    public List<PeriodoEvaluacion> encontrarPeriodoEvaluacionsFiltro(String perEstado, String texto, Integer idEmppal) {
+        return (List<PeriodoEvaluacion>) periodoEvaluacionDao.findByPerEstadoFiltro(perEstado,texto.toLowerCase(), idEmppal);
     }
 
     @Override
-    public List<PeriodoEvaluacion> encontrarPeriodoEvaluacionsFiltroPaginas(String perEstado, String texto, Integer numeroDePagina, Integer numeroElementosPorPagina) {
+    public List<PeriodoEvaluacion> encontrarPeriodoEvaluacionsFiltroPaginas(String perEstado, String texto, Integer numeroDePagina,
+                                                                            Integer numeroElementosPorPagina, Integer idEmppal) {
         if(numeroDePagina == null){
             numeroDePagina = 1;
         }else if (numeroDePagina<1){
             numeroDePagina = 1;
         }
         Integer limiteInicial = (numeroDePagina-1)*(numeroElementosPorPagina);
-        return (List<PeriodoEvaluacion>) periodoEvaluacionDao.findByPerEstadoPaginaFiltro(perEstado,texto.toLowerCase(),numeroElementosPorPagina,limiteInicial);
+        return (List<PeriodoEvaluacion>) periodoEvaluacionDao.findByPerEstadoPaginaFiltro(perEstado,texto.toLowerCase(),numeroElementosPorPagina,limiteInicial, idEmppal);
     }
 
     @Override
@@ -70,8 +71,8 @@ public class PeriodoEvaluacionServices implements IPeriodoEvaluacionServices {
         periodoEvaluacionDao.save(periodoEvaluacion);
     }
     @Override
-    public Integer cantidadPaginasPeriodoEvaluacions(String perEstado, String texto) {
-        List<PeriodoEvaluacion> datos = (List<PeriodoEvaluacion>) periodoEvaluacionDao.findByPerEstadoFiltro(perEstado,texto.toLowerCase());
+    public Integer cantidadPaginasPeriodoEvaluacions(String perEstado, String texto, Integer idEmppal) {
+        List<PeriodoEvaluacion> datos = (List<PeriodoEvaluacion>) periodoEvaluacionDao.findByPerEstadoFiltro(perEstado,texto.toLowerCase(), idEmppal);
         int numeroDeElementos = datos.size();
         return numeroDeElementos;
     }

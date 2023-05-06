@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface IClienteService {
 
-    public List<Cliente> encontrarClientes(String nitEstado);
+    public List<Cliente> encontrarClientes(String nitEstado, Integer idEmppal);
 
     public Cliente encontrarClientePorId(Integer idEmppal);
 

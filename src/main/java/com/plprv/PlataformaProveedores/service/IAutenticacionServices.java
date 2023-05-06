@@ -6,25 +6,26 @@ import java.util.List;
 
 public interface IAutenticacionServices {
 
-    public List<Autenticacion> encontrarAutenticacion(String autEstado);
+    public List<Autenticacion> encontrarAutenticacion(String autEstado, Integer idEmppal);
 
-    public Autenticacion encontrarAutenticacionPorId(Integer autId, String autEstado);
+    public Autenticacion encontrarAutenticacionPorId(Integer autId, String autEstado, Integer idEmppal);
 
-    public Autenticacion encontrarAutenticacionPorNombre(String autNombre);
+    public Autenticacion encontrarAutenticacionPorNombre(String autNombre, Integer idEmppal);
 
     public Autenticacion encontrarAutenticacionPorCodigo(String autCodigoCorreo);
 
-    public Integer cantidadAutenticacion(String autEstado);
+    public Integer cantidadAutenticacion(String autEstado, Integer idEmppal);
 
-    public List<Autenticacion> encontrarAutenticacionNombres(String autEstado);
+    public List<Autenticacion> encontrarAutenticacionNombres(String autEstado, Integer idEmppal);
 
-    public List<Autenticacion> encontrarAutenticacionFiltro(String autEstado, String texto);
+    public List<Autenticacion> encontrarAutenticacionFiltro(String autEstado, String texto, Integer idEmppal);
 
     public void crearAutenticacion(Autenticacion criticidad);
 
-    public List<Autenticacion> encontrarAutenticacionFiltroPaginas(String autEstado, String texto, Integer numeroDePagina, Integer numeroElementosPorPagina);
+    public List<Autenticacion> encontrarAutenticacionFiltroPaginas(String autEstado, String texto, Integer numeroDePagina,
+                                                                   Integer numeroElementosPorPagina, Integer idEmppal);
 
-    public Integer cantidadPaginasAutenticacion(String autEstado, String texto);
+    public Integer cantidadPaginasAutenticacion(String autEstado, String texto, Integer idEmppal);
 
     public Autenticacion borrarAutenticacion(Autenticacion criticidad);
 

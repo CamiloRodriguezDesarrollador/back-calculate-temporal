@@ -8,23 +8,25 @@ import java.util.List;
 
 public interface IPeriodoEvaluacionDao extends CrudRepository<PeriodoEvaluacion, Long> {
 
-    public List<PeriodoEvaluacion> findByPerEstado(String perEstado);
+    public List<PeriodoEvaluacion> findByPerEstadoAndIdEmppal(String perEstado, Integer idEmppal);
 
-    public PeriodoEvaluacion findByPerNombre(String perNombre);
+    public PeriodoEvaluacion findByPerNombreAndIdEmppal(String perNombre,Integer idEmppal);
 
-    public PeriodoEvaluacion findByPerId(Integer perId);
+    public PeriodoEvaluacion findByPerIdAndIdEmppal(Integer perId, Integer idEmppal);
 
-    public PeriodoEvaluacion findByPerIdAndPerEstado(Integer perId, String perEstado);
+    public PeriodoEvaluacion findByPerIdAndPerEstadoAndIdEmppal(Integer perId, String perEstado, Integer idEmppal);
 
-    @Query("SELECT p FROM PeriodoEvaluacion p WHERE p.perTipo LIKE COALESCE(:perTipo, '%') ORDER BY p.perId DESC")
-    List<PeriodoEvaluacion> findByPerEstadoNombre(String perTipo);
+    @Query("SELECT p FROM PeriodoEvaluacion p WHERE p.perTipo LIKE COALESCE(:perTipo, '%') AND (p.idEmppal = :idEmppal) ORDER BY p.perId DESC")
+    List<PeriodoEvaluacion> findByPerEstadoNombre(String perTipo, Integer idEmppal);
 
-    @Query("SELECT p FROM PeriodoEvaluacion p WHERE (lower(p.perNombre) LIKE %:texto% or lower(p.perVisibilidad) LIKE %:texto% or lower(p.perTipo) LIKE %:texto% ) AND p.perEstado = :perEstado ORDER BY p.perId DESC")
-    List<PeriodoEvaluacion> findByPerEstadoFiltro(String perEstado, String texto);
+    @Query("SELECT p FROM PeriodoEvaluacion p WHERE (lower(p.perNombre) LIKE %:texto% or lower(p.perVisibilidad) LIKE %:texto% or lower(p.perTipo) " +
+            "LIKE %:texto% ) AND p.perEstado = :perEstado AND (p.idEmppal = :idEmppal) ORDER BY p.perId DESC")
+    List<PeriodoEvaluacion> findByPerEstadoFiltro(String perEstado, String texto, Integer idEmppal);
 
-    @Query("SELECT p FROM PeriodoEvaluacion p WHERE (lower(p.perNombre) LIKE %:texto% or lower(p.perVisibilidad) LIKE %:texto% or lower(p.perTipo) LIKE %:texto% ) AND p.perEstado = :perEstado ORDER BY p.perId DESC LIMIT " +
+    @Query("SELECT p FROM PeriodoEvaluacion p WHERE (lower(p.perNombre) LIKE %:texto% or lower(p.perVisibilidad) LIKE %:texto% or " +
+            "lower(p.perTipo) LIKE %:texto% ) AND p.perEstado = :perEstado AND (p.idEmppal = :idEmppal) ORDER BY p.perId DESC LIMIT " +
             " :numeroElementosPorPagina OFFSET :limiteInicial")
-    List<PeriodoEvaluacion> findByPerEstadoPaginaFiltro(String perEstado, String texto, Integer numeroElementosPorPagina, Integer limiteInicial);
+    List<PeriodoEvaluacion> findByPerEstadoPaginaFiltro(String perEstado, String texto, Integer numeroElementosPorPagina, Integer limiteInicial, Integer idEmppal);
 
 
 }

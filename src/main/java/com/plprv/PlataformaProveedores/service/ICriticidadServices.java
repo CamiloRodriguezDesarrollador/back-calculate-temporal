@@ -6,23 +6,23 @@ import java.util.List;
 
 public interface ICriticidadServices {
 
-    public List<Criticidad> encontrarCriticidads(String crtEstado);
+    public List<Criticidad> encontrarCriticidads(String crtEstado, Integer idEmppal);
 
-    public Criticidad encontrarCriticidadsPorId(Integer crtId, String crtEstado);
+    public Criticidad encontrarCriticidadsPorId(Integer crtId, String crtEstado, Integer idEmppal);
 
-    public Criticidad encontrarCriticidadsPorNombre(String crtNombre);
+    public Criticidad encontrarCriticidadsPorNombre(String crtNombre, Integer idEmppal);
 
-    public Integer cantidadCriticidads(String crtEstado);
+    public Integer cantidadCriticidads(String crtEstado, Integer idEmppal);
 
-    public List<Criticidad> encontrarCriticidadsNombres(String crtEstado);
+    public List<Criticidad> encontrarCriticidadsNombres(String crtEstado, Integer idEmppal);
 
-    public List<Criticidad> encontrarCriticidadsFiltro(String crtEstado, String texto);
+    public List<Criticidad> encontrarCriticidadsFiltro(String crtEstado, String texto, Integer idEmppal);
 
     public void crearCriticidad(Criticidad criticidad);
 
-    public List<Criticidad> encontrarCriticidadsFiltroPaginas(String crtEstado, String texto, Integer numeroDePagina, Integer numeroElementosPorPagina);
+    public List<Criticidad> encontrarCriticidadsFiltroPaginas(String crtEstado, String texto, Integer numeroDePagina, Integer numeroElementosPorPagina, Integer idEmppal);
 
-    public Integer cantidadPaginasCriticidads(String crtEstado, String texto);
+    public Integer cantidadPaginasCriticidads(String crtEstado, String texto, Integer idEmppal);
 
     public Criticidad borrarCriticidad(Criticidad criticidad);
 

@@ -32,6 +32,9 @@ public class Proceso {
     @Column(name = "PRO_CORREO", length = 30)
     private String proCorreo;
 
+    @Column(name = "PRO_CARPETA", length = 100)
+    private String proCarpeta;
+
     @Column(name = "PRO_ESTADO", length = 10)
     private String proEstado;
 
@@ -41,6 +44,14 @@ public class Proceso {
 
     @Column(name = "AUD_USUARIO" ,length = 10)
     private String audUsuario;
+
+    public String getProCarpeta() {
+        return proCarpeta;
+    }
+
+    public void setProCarpeta(String proCarpeta) {
+        this.proCarpeta = proCarpeta;
+    }
 
     public void prePersist() {
         audFecha = new Date();

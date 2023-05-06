@@ -1,6 +1,10 @@
 package com.plprv.PlataformaProveedores.service;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import com.google.api.client.http.FileContent;
+import com.google.api.client.http.InputStreamContent;
+import com.google.api.services.drive.model.User;
+import io.opencensus.metrics.export.Distribution;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -124,9 +128,47 @@ public class ProveedorDocArchivoServices implements IProveedorDocArchivoServices
                 new HttpCredentialsAdapter(googleCredentials)
         ).setApplicationName("plataformaProveedores").build();
         try {
-            service.files().delete(idArchivo).execute();
+            String newFolderId = "174FUdX5ZqKehqISs8ZXSydXn5MJKciJF";
+            File file = service.files().get(idArchivo).setFields("parents").execute();
+            List<String> previousParents = Collections.singletonList(String.join(",", file.getParents()));
+            try{
+                File updatedFile = service.files().update(idArchivo, null)
+                        .setAddParents(newFolderId)
+                        .setFields("id, parents")
+                        .execute();
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+
+
+            //service.files().update(idArchivo, new File().setTrashed(true)).execute();
         }catch (GoogleJsonResponseException e){
         }
+    }
+
+    @Override
+    public void guardarCorreoPeriodo(ByteArrayContent mediaContent, String nombreArchivo, String nombreCarpeta) throws IOException, GeneralSecurityException {
+        Drive service = new Drive.Builder(
+                GoogleNetHttpTransport.newTrustedTransport(),
+                new GsonFactory(),
+                new HttpCredentialsAdapter(googleCredentials)
+        ).setApplicationName("plataformaProveedores").build();
+        try {
+            File fileMetadata = new File();
+            fileMetadata.setName(nombreArchivo + ".eml");
+            fileMetadata.setParents(Collections.singletonList(nombreCarpeta));
+            fileMetadata.setMimeType("message/rfc822");
+
+            File uploadedFile = service.files().create(fileMetadata, mediaContent)
+                    .setFields("id")
+                    .execute();
+            String fileId = uploadedFile.getId();
+
+        }catch (GoogleJsonResponseException e){
+        }
+
+
+
     }
 
     @Override

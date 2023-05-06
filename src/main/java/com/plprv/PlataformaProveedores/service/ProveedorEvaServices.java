@@ -16,20 +16,20 @@ public class ProveedorEvaServices implements IProveedorEvaServices {
     private IProveedorEvaDao proveedorEvaDao;
     @Override
     @Transactional(readOnly = true)
-    public List<ProveedorEva> encontrarProveedorEvaPorId(Integer preId) {
-        return (List<ProveedorEva>) proveedorEvaDao.findByPreId(preId);
+    public List<ProveedorEva> encontrarProveedorEvaPorId(Integer preId, Integer idEmppal) {
+        return (List<ProveedorEva>) proveedorEvaDao.findByPreIdAndIdEmppal(preId, idEmppal);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProveedorEva> encontrarProveedorEvaPorPrvId(Integer prvId) {
-        return (List<ProveedorEva>) proveedorEvaDao.findByPrvId(prvId);
+    public List<ProveedorEva> encontrarProveedorEvaPorPrvId(Integer prvId, Integer idEmppal) {
+        return (List<ProveedorEva>) proveedorEvaDao.findByPrvIdAndIdEmppal(prvId, idEmppal);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ProveedorEva encontrarProveedorEvaPorPerId(Integer perId , Integer prvId) {
-        return (ProveedorEva) proveedorEvaDao.findByPerIdAndPrvId(perId, prvId);
+    public ProveedorEva encontrarProveedorEvaPorPerId(Integer perId , Integer prvId, Integer idEmppal) {
+        return (ProveedorEva) proveedorEvaDao.findByPerIdAndPrvIdAndIdEmppal(perId, prvId, idEmppal);
     }
     @Override
     public void crearProveedorEva(ProveedorEva proveedorEva) {
@@ -45,28 +45,28 @@ public class ProveedorEvaServices implements IProveedorEvaServices {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProveedorEva> encontrarProveedorEva(String preEstado) {
-        return (List<ProveedorEva>) proveedorEvaDao.findByPreEstado(preEstado);
+    public List<ProveedorEva> encontrarProveedorEva(String preEstado, Integer idEmppal) {
+        return (List<ProveedorEva>) proveedorEvaDao.findByPreEstadoAndIdEmppal(preEstado, idEmppal);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public ProveedorEva encontrarProveedorEvaPorId(Integer perId, String preEstado) {
+    public ProveedorEva encontrarProveedorEvaPorId(Integer perId, String preEstado, Integer idEmppal) {
         if (preEstado == null) {
-            return proveedorEvaDao.findByPreId(perId);
+            return proveedorEvaDao.findByPreIdAndIdEmppal(perId, idEmppal);
         } else {
-            return proveedorEvaDao.findByPreIdAndPreEstado(perId, preEstado);
+            return proveedorEvaDao.findByPreIdAndPreEstadoAndIdEmppal(perId, preEstado, idEmppal);
         }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProveedorEva> encontrarProveedorEvaPorFormulario(Integer perId, String preEstado) {
-        return (List<ProveedorEva>) proveedorEvaDao.findByPerIdAndPreEstado(perId, preEstado);
+    public List<ProveedorEva> encontrarProveedorEvaPorFormulario(Integer perId, String preEstado, Integer idEmppal) {
+        return (List<ProveedorEva>) proveedorEvaDao.findByPerIdAndPreEstadoAndIdEmppal(perId, preEstado, idEmppal);
     }
     @Transactional(readOnly = true)
-    public Integer cantidadProveedorEva(String preEstado) {
-        List<ProveedorEva> datos = (List<ProveedorEva>) proveedorEvaDao.findByPreEstado(preEstado);
+    public Integer cantidadProveedorEva(String preEstado, Integer idEmppal) {
+        List<ProveedorEva> datos = (List<ProveedorEva>) proveedorEvaDao.findByPreEstadoAndIdEmppal(preEstado, idEmppal);
         if(datos==null){
             return 0;
         }
@@ -75,35 +75,36 @@ public class ProveedorEvaServices implements IProveedorEvaServices {
     }
 
     @Override
-    public List<DocumentosProveedor> encontrarProveedoresEstados(Integer perId) {
-        return (List<DocumentosProveedor>) proveedorEvaDao.encontrarProveedoresEstadosCalcular(perId);
+    public List<DocumentosProveedor> encontrarProveedoresEstados(Integer perId, Integer idEmppal) {
+        return (List<DocumentosProveedor>) proveedorEvaDao.encontrarProveedoresEstadosCalcular(perId, idEmppal);
     }
 
     @Override
-    public Long encontrarCantidadRequerida(Integer perId, Integer proId, Integer sprId, Integer crtId, String tdcTd) {
-        return (Long) proveedorEvaDao.encontrarCantidadFormulario(perId,proId,sprId,crtId,tdcTd);
+    public Long encontrarCantidadRequerida(Integer perId, Integer proId, Integer sprId, Integer crtId, String tdcTd, Integer idEmppal) {
+        return (Long) proveedorEvaDao.encontrarCantidadFormulario(perId,proId,sprId,crtId,tdcTd, idEmppal);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProveedorEva> encontrarProveedorEvaFiltro(String preEstado, String texto, Integer perId) {
-        return (List<ProveedorEva>) proveedorEvaDao.findByPreEstadoFiltro(preEstado,texto.toLowerCase(),perId);
+    public List<ProveedorEva> encontrarProveedorEvaFiltro(String preEstado, String texto, Integer perId, Integer idEmppal) {
+        return (List<ProveedorEva>) proveedorEvaDao.findByPreEstadoFiltro(preEstado,texto.toLowerCase(),perId, idEmppal);
     }
 
     @Override
-    public List<ProveedorEva> encontrarProveedorEvaFiltroPaginas(String preEstado, String texto, Integer numeroDePagina, Integer numeroElementosPorPagina, Integer perId) {
+    public List<ProveedorEva> encontrarProveedorEvaFiltroPaginas(String preEstado, String texto, Integer numeroDePagina,
+                                                                 Integer numeroElementosPorPagina, Integer perId, Integer idEmppal) {
         if(numeroDePagina == null){
             numeroDePagina = 1;
         }else if (numeroDePagina<1){
             numeroDePagina = 1;
         }
         Integer limiteInicial = (numeroDePagina-1)*(numeroElementosPorPagina);
-        return (List<ProveedorEva>) proveedorEvaDao.findByPreEstadoPaginaFiltro(preEstado,texto.toLowerCase(),numeroElementosPorPagina,limiteInicial,perId);
+        return (List<ProveedorEva>) proveedorEvaDao.findByPreEstadoPaginaFiltro(preEstado,texto.toLowerCase(),numeroElementosPorPagina,limiteInicial,perId, idEmppal);
     }
 
     @Override
-    public Integer cantidadPaginasProveedorEva(String preEstado, String texto, Integer perId) {
-        List<ProveedorEva> datos = (List<ProveedorEva>) proveedorEvaDao.findByPreEstadoFiltro(preEstado,texto.toLowerCase(), perId);
+    public Integer cantidadPaginasProveedorEva(String preEstado, String texto, Integer perId, Integer idEmppal) {
+        List<ProveedorEva> datos = (List<ProveedorEva>) proveedorEvaDao.findByPreEstadoFiltro(preEstado,texto.toLowerCase(), perId, idEmppal);
         int numeroDeElementos = datos.size();
         return numeroDeElementos;
     }

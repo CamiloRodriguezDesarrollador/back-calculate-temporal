@@ -9,7 +9,7 @@ import java.util.Optional;
 
 public interface IClienteDao extends CrudRepository<Cliente, Long> {
 
-    public List<Cliente> findByNitEstado(String nitEstado);
+    public List<Cliente> findByNitEstadoAndIdEmppal(String nitEstado, Integer idEmppal);
 
     public Cliente findByIdEmppal(Integer idEmppal);
 

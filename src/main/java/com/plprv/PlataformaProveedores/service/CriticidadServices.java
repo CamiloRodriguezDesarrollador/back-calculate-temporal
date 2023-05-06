@@ -15,27 +15,27 @@ public class CriticidadServices implements ICriticidadServices {
     private ICriticidadDao criticidadDao;
     @Override
     @Transactional(readOnly = true)
-    public List<Criticidad> encontrarCriticidads(String crtEstado) {
-        return (List<Criticidad>) criticidadDao.findByCrtEstadoOrderByCrtNombreAsc(crtEstado);
+    public List<Criticidad> encontrarCriticidads(String crtEstado, Integer idEmppal) {
+        return (List<Criticidad>) criticidadDao.findByCrtEstadoAndIdEmppalOrderByCrtNombreAsc(crtEstado, idEmppal);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Criticidad encontrarCriticidadsPorNombre(String crtNombre) {
-        return (Criticidad) criticidadDao.findByCrtNombre(crtNombre);
+    public Criticidad encontrarCriticidadsPorNombre(String crtNombre, Integer idEmppal) {
+        return (Criticidad) criticidadDao.findByCrtNombreAndIdEmppal(crtNombre, idEmppal);
     }
     @Override
     @Transactional(readOnly = true)
-    public Criticidad encontrarCriticidadsPorId(Integer crtId, String crtEstado) {
+    public Criticidad encontrarCriticidadsPorId(Integer crtId, String crtEstado, Integer idEmppal) {
         if (crtEstado == null) {
-            return criticidadDao.findByCrtId(crtId);
+            return criticidadDao.findByCrtIdAndIdEmppal(crtId, idEmppal);
         } else {
-            return criticidadDao.findByCrtIdAndCrtEstado(crtId, crtEstado);
+            return criticidadDao.findByCrtIdAndCrtEstadoAndIdEmppal(crtId, crtEstado, idEmppal);
         }
     }
     @Transactional(readOnly = true)
-    public Integer cantidadCriticidads(String crtEstado) {
-        List<Criticidad> datos = (List<Criticidad>) criticidadDao.findByCrtEstadoOrderByCrtNombreAsc(crtEstado);
+    public Integer cantidadCriticidads(String crtEstado, Integer idEmppal) {
+        List<Criticidad> datos = (List<Criticidad>) criticidadDao.findByCrtEstadoAndIdEmppalOrderByCrtNombreAsc(crtEstado, idEmppal);
         if(datos==null){
             return 0;
         }
@@ -44,25 +44,25 @@ public class CriticidadServices implements ICriticidadServices {
     }
     @Override
     @Transactional(readOnly = true)
-    public List<Criticidad> encontrarCriticidadsNombres(String crtEstado) {
-        return (List<Criticidad>) criticidadDao.findByCrtEstadoNombre(crtEstado);
+    public List<Criticidad> encontrarCriticidadsNombres(String crtEstado, Integer idEmppal) {
+        return (List<Criticidad>) criticidadDao.findByCrtEstadoNombre(crtEstado, idEmppal);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Criticidad> encontrarCriticidadsFiltro(String crtEstado, String texto) {
-        return (List<Criticidad>) criticidadDao.findByCrtEstadoFiltro(crtEstado,texto.toLowerCase());
+    public List<Criticidad> encontrarCriticidadsFiltro(String crtEstado, String texto, Integer idEmppal) {
+        return (List<Criticidad>) criticidadDao.findByCrtEstadoFiltro(crtEstado,texto.toLowerCase(), idEmppal);
     }
 
     @Override
-    public List<Criticidad> encontrarCriticidadsFiltroPaginas(String crtEstado, String texto, Integer numeroDePagina, Integer numeroElementosPorPagina) {
+    public List<Criticidad> encontrarCriticidadsFiltroPaginas(String crtEstado, String texto, Integer numeroDePagina, Integer numeroElementosPorPagina, Integer idEmppal) {
         if(numeroDePagina == null){
             numeroDePagina = 1;
         }else if (numeroDePagina<1){
             numeroDePagina = 1;
         }
         Integer limiteInicial = (numeroDePagina-1)*(numeroElementosPorPagina);
-        return (List<Criticidad>) criticidadDao.findByCrtEstadoPaginaFiltro(crtEstado,texto.toLowerCase(),numeroElementosPorPagina,limiteInicial);
+        return (List<Criticidad>) criticidadDao.findByCrtEstadoPaginaFiltro(crtEstado,texto.toLowerCase(),numeroElementosPorPagina,limiteInicial, idEmppal);
     }
 
     @Override
@@ -70,8 +70,8 @@ public class CriticidadServices implements ICriticidadServices {
         criticidadDao.save(criticidad);
     }
     @Override
-    public Integer cantidadPaginasCriticidads(String crtEstado, String texto) {
-        List<Criticidad> datos = (List<Criticidad>) criticidadDao.findByCrtEstadoFiltro(crtEstado,texto.toLowerCase());
+    public Integer cantidadPaginasCriticidads(String crtEstado, String texto, Integer idEmppal) {
+        List<Criticidad> datos = (List<Criticidad>) criticidadDao.findByCrtEstadoFiltro(crtEstado,texto.toLowerCase(), idEmppal);
         int numeroDeElementos = datos.size();
         return numeroDeElementos;
     }
