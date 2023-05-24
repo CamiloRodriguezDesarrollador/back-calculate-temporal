@@ -7,7 +7,7 @@ import com.plprv.PlataformaProveedores.entity.Formulario;
 import com.plprv.PlataformaProveedores.service.IFormularioServices;
 import com.plprv.PlataformaProveedores.service.IRegexService;
 import com.plprv.PlataformaProveedores.service.ObtenerUsuarioAud;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -55,11 +55,11 @@ public class FormularioRestController {
         String checkBoxEstado = (String) requestBody.get("checkBoxEstado");
 
         switch (opcion) {
-            case "cantidad" -> {
+            case "cantidad" : {
                 Integer cantidad = formularioService.cantidadFormularios(checkBoxEstado,miIdEmppal);
                 return ResponseEntity.ok(cantidad);
             }
-            case "crear" -> {
+            case "crear" : {
                 try {
                     int idEmppal = jsonNode.get("id_emppal").asInt();
                     String forNombre = jsonNode.get("for_nombre").asText().trim();
@@ -110,7 +110,7 @@ public class FormularioRestController {
                     }
                 }
             }
-            case "informacionTotal" -> {
+            case "informacionTotal" : {
                 Integer numeroDePagina = (Integer) requestBody.get("numeroDePagina");
                 Integer numeroElementosPorPagina = (Integer) requestBody.get("numeroElementosPorPagina");
                 String texto = (String) requestBody.get("texto");
@@ -122,7 +122,7 @@ public class FormularioRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "cantidadDePaginas" -> {
+            case "cantidadDePaginas" : {
                 String textoC = (String) requestBody.get("texto");
                 Integer formularioTodosDbC = formularioService.cantidadPaginasFormularios(checkBoxEstado, textoC,miIdEmppal);
                 if (formularioTodosDbC != null) {
@@ -131,7 +131,7 @@ public class FormularioRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "obtenerId" -> {
+            case "obtenerId" : {
                 Integer forId = (Integer) requestBody.get("for_id");
                 Formulario formulariosDbI = formularioService.encontrarFormulariosPorId(forId, null,miIdEmppal);
                 if (formulariosDbI != null) {
@@ -140,7 +140,7 @@ public class FormularioRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "borrar" -> {
+            case "borrar" : {
                 Integer forIdD = (Integer) requestBody.get("for_id");
                 Formulario formulariosDbB = formularioService.encontrarFormulariosPorId(forIdD, "A",miIdEmppal);
                 if (formulariosDbB != null) {
@@ -151,7 +151,7 @@ public class FormularioRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "activar" -> {
+            case "activar" : {
                 Integer forIdDA = (Integer) requestBody.get("for_id");
                 Formulario formulariosDbBA = formularioService.encontrarFormulariosPorId(forIdDA, "I",miIdEmppal);
                 if (formulariosDbBA != null) {
@@ -162,7 +162,7 @@ public class FormularioRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "formularioSoloNombre" -> {
+            case "formularioSoloNombre" : {
                 List<Formulario> formulariosDbS = formularioService.encontrarFormulariosNombres("A",miIdEmppal);
                 if (formulariosDbS != null && !formulariosDbS.isEmpty()) {
                     return new ResponseEntity<>(formulariosDbS, HttpStatus.OK);
@@ -170,7 +170,7 @@ public class FormularioRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            default -> {
+            default : {
                 return ResponseEntity.ok("Opcion no encontrada");
             }
         }

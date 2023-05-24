@@ -7,7 +7,7 @@ import com.plprv.PlataformaProveedores.entity.SubProceso;
 import com.plprv.PlataformaProveedores.service.IRegexService;
 import com.plprv.PlataformaProveedores.service.ISubProcesoServices;
 import com.plprv.PlataformaProveedores.service.ObtenerUsuarioAud;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -59,11 +59,11 @@ public class SubProcesoRestController {
         String checkBoxEstado = (String) requestBody.get("checkBoxEstado");
 
         switch (opcion) {
-            case "cantidad" -> {
+            case "cantidad" : {
                 Integer cantidad = subProcesoService.cantidadSubProcesos(checkBoxEstado,miIdEmppal);
                 return ResponseEntity.ok(cantidad);
             }
-            case "crear" -> {
+            case "crear" : {
                 try {
                     int idEmppal = jsonNode.get("id_emppal").asInt();
                     String sprNombre = jsonNode.get("spr_nombre").asText().trim();
@@ -111,7 +111,7 @@ public class SubProcesoRestController {
                     }
                 }
             }
-            case "informacionTotal" -> {
+            case "informacionTotal" : {
                 Integer numeroDePagina = (Integer) requestBody.get("numeroDePagina");
                 Integer numeroElementosPorPagina = (Integer) requestBody.get("numeroElementosPorPagina");
                 String texto = (String) requestBody.get("texto");
@@ -124,7 +124,7 @@ public class SubProcesoRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "cantidadDePaginas" -> {
+            case "cantidadDePaginas" : {
                 String textoC = (String) requestBody.get("texto");
                 Integer proIdC = (Integer) requestBody.get("proId");
                 Integer subProcesosTodosDbC = subProcesoService.cantidadPaginasSubProcesos(checkBoxEstado, textoC, proIdC,miIdEmppal);
@@ -134,7 +134,7 @@ public class SubProcesoRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "obtenerId" -> {
+            case "obtenerId" : {
                 Integer sprId = (Integer) requestBody.get("spr_id");
                 SubProceso subProcesosDbI = subProcesoService.encontrarSubProcesosPorId(sprId, null,miIdEmppal);
                 if (subProcesosDbI != null) {
@@ -143,7 +143,7 @@ public class SubProcesoRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "borrar" -> {
+            case "borrar" : {
                 Integer sprIdD = (Integer) requestBody.get("spr_id");
                 SubProceso subProcesosDbB = subProcesoService.encontrarSubProcesosPorId(sprIdD, "A",miIdEmppal);
                 if (subProcesosDbB != null) {
@@ -154,7 +154,7 @@ public class SubProcesoRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "activar" -> {
+            case "activar" : {
                 Integer sprIdDA = (Integer) requestBody.get("spr_id");
                 SubProceso subProcesosDbBA = subProcesoService.encontrarSubProcesosPorId(sprIdDA, "I",miIdEmppal);
                 if (subProcesosDbBA != null) {
@@ -165,7 +165,7 @@ public class SubProcesoRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "subProcesoSoloNombre" -> {
+            case "subProcesoSoloNombre" : {
                 List<SubProceso> subProcesosDbS = subProcesoService.encontrarSubProcesosNombres("A",miIdEmppal);
                 if (subProcesosDbS != null && !subProcesosDbS.isEmpty()) {
                     return new ResponseEntity<>(subProcesosDbS, HttpStatus.OK);
@@ -173,7 +173,7 @@ public class SubProcesoRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            default -> {
+            default : {
                 return ResponseEntity.ok("Opcion no encontrada");
             }
         }

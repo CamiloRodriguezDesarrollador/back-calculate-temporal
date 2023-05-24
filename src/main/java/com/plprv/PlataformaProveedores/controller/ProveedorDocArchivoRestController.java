@@ -4,7 +4,7 @@ import com.google.api.services.drive.model.FileList;
 import com.mysql.cj.xdevapi.Client;
 import com.plprv.PlataformaProveedores.entity.*;
 import com.plprv.PlataformaProveedores.service.*;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -69,16 +69,16 @@ public class ProveedorDocArchivoRestController {
 
         if (opcion != null) {
             switch (opcion) {
-                case "descargar" -> {
+                case "descargar" : {
                     String idDocumento = proveedorDocService.encontrarProveedorDocsPorFopId(fopId, prvId,miIdEmppal).getPrdData();
                     byte[] archivo = proveedorDocArchivoService.descargarArchivo(idDocumento);
                     return ResponseEntity.ok(archivo);
                 }
-                case "descargarArchivoId" -> {
+                case "descargarArchivoId" : {
                     byte[] archivoPropio = proveedorDocArchivoService.descargarArchivo(idUnico);
                     return ResponseEntity.ok(archivoPropio);
                 }
-                case "borrar" -> {
+                case "borrar" : {
                     ProveedorDoc miArchivo = proveedorDocService.encontrarProveedorDocsPorFopId(fopId, prvId,miIdEmppal);
                     String dato = miArchivo.getPrdData();
                     proveedorDocArchivoService.borrarArchivo(dato);
@@ -87,22 +87,22 @@ public class ProveedorDocArchivoRestController {
                     proveedorDocService.actualizarProveedorDoc(miArchivo);
                     return ResponseEntity.ok("borrado");
                 }
-                case "guardarDocumentoPropio" -> {
+                case "guardarDocumentoPropio" : {
                     if (file == null || !Objects.equals(file.getContentType(), "application/pdf")) return null;
                     if (file.getSize() > TAMANOMAXIMO) return ResponseEntity.ok("archivo_pesado");
-                    String dataArchivo = proveedorDocArchivoService.cargarArchivo("1AaorBQQI4JxyOeAhIti84O-GJYtx0Obt", nombreDocumento, file);
+                    String dataArchivo = proveedorDocArchivoService.cargarArchivo("1N5vx0_Bhh1yGd2iztYtMD7Eu397BydOG", nombreDocumento, file);
                     FormularioDetalle formularioDetallesDbI = formularioDetalleService.encontrarFormularioDetallesPorId(fodId, null,miIdEmppal);
                     formularioDetallesDbI.setFodAdjunto(dataArchivo);
                     formularioDetallesDbI.setFodTipo("file");
                     formularioDetalleService.actualizarFormularioDetalle(formularioDetallesDbI);
                     return ResponseEntity.ok("actualizado");
                 }
-                case "guardarLogo" -> {
+                case "guardarLogo" : {
                     if (file == null || !file.getContentType().startsWith("image/")) return null;
                     if (file.getSize() > TAMANOMAXIMO) return ResponseEntity.ok("archivo_pesado");
                     Cliente miCliente = clienteService.encontrarClientePorId(miIdEmppal);
                     if (miCliente == null) return null;
-                    String dataArchivoL = proveedorDocArchivoService.cargarArchivo("1AaorBQQI4JxyOeAhIti84O-GJYtx0Obt", nombreDocumento, file);
+                    String dataArchivoL = proveedorDocArchivoService.cargarArchivo("1R6VMe48YeYOspJ6g1TI2HABw8medWHfv", nombreDocumento, file);
                     miCliente.setNitLogo(dataArchivoL);
                     clienteService.actualizarCliente(miCliente);
                     return ResponseEntity.ok("actualizado");

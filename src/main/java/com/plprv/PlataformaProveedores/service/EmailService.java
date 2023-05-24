@@ -1,13 +1,7 @@
 package com.plprv.PlataformaProveedores.service;
 
 import com.google.api.client.http.ByteArrayContent;
-import com.google.api.client.http.FileContent;
-import io.opencensus.metrics.export.Distribution;
-import jakarta.mail.BodyPart;
-import jakarta.mail.MessagingException;
-import jakarta.mail.Multipart;
-import jakarta.mail.internet.MimeMessage;
-import jakarta.mail.util.ByteArrayDataSource;
+import javax.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -17,8 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
-import java.security.GeneralSecurityException;
-import java.sql.Blob;
 import java.util.List;
 
 

@@ -7,7 +7,7 @@ import com.plprv.PlataformaProveedores.entity.Cliente;
 import com.plprv.PlataformaProveedores.service.IClienteService;
 import com.plprv.PlataformaProveedores.service.IRegexService;
 import com.plprv.PlataformaProveedores.service.ObtenerUsuarioAud;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

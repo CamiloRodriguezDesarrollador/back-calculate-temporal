@@ -8,7 +8,7 @@ import com.plprv.PlataformaProveedores.entity.Proveedor;
 import com.plprv.PlataformaProveedores.entity.ProveedorEva;
 import com.plprv.PlataformaProveedores.entity.Usuario;
 import com.plprv.PlataformaProveedores.service.*;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -66,11 +66,11 @@ public class AutenticacionRestController {
         Integer miIdEmppal = obtenerUsuarioAud.obtnerIdEmppalToken (token);
 
         switch (opcion) {
-            case "cantidad" -> {
+            case "cantidad" : {
                 Integer cantidad = autenticacionService.cantidadAutenticacion(checkBoxEstado,miIdEmppal);
                 return ResponseEntity.ok(cantidad);
             }
-            case "informacionTotal" -> {
+            case "informacionTotal" : {
                 Integer numeroDePagina = (Integer) requestBody.get("numeroDePagina");
                 Integer numeroElementosPorPagina = (Integer) requestBody.get("numeroElementosPorPagina");
                 String texto = (String) requestBody.get("texto");
@@ -82,7 +82,7 @@ public class AutenticacionRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "cantidadDePaginas" -> {
+            case "cantidadDePaginas" : {
                 String textoC = (String) requestBody.get("texto");
                 Integer autenticacionTodosDbC = autenticacionService.cantidadPaginasAutenticacion(checkBoxEstado, textoC,miIdEmppal);
                 if (autenticacionTodosDbC != null) {
@@ -91,7 +91,7 @@ public class AutenticacionRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "obtenerId" -> {
+            case "obtenerId" : {
                 Integer autId = (Integer) requestBody.get("aut_id");
                 Autenticacion autenticacionDbI = autenticacionService.encontrarAutenticacionPorId(autId, null,miIdEmppal);
                 if (autenticacionDbI != null) {
@@ -100,7 +100,7 @@ public class AutenticacionRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "borrar" -> {
+            case "borrar" : {
                 Integer autIdD = (Integer) requestBody.get("aut_id");
                 Autenticacion autenticacionDbB = autenticacionService.encontrarAutenticacionPorId(autIdD, "PA",miIdEmppal);
                 if (autenticacionDbB != null) {
@@ -111,7 +111,7 @@ public class AutenticacionRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "activar" -> {
+            case "activar" : {
                 Integer autIdDA = (Integer) requestBody.get("aut_id");
                 Autenticacion autenticacionDbBA = autenticacionService.encontrarAutenticacionPorId(autIdDA, "I",miIdEmppal);
                 if (autenticacionDbBA != null) {
@@ -122,7 +122,7 @@ public class AutenticacionRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "autenticacionSoloNombre" -> {
+            case "autenticacionSoloNombre" : {
                 List<Autenticacion> autenticacionDbS = autenticacionService.encontrarAutenticacionNombres("PA",miIdEmppal);
                 if (autenticacionDbS != null && !autenticacionDbS.isEmpty()) {
                     return new ResponseEntity<>(autenticacionDbS, HttpStatus.OK);
@@ -130,7 +130,7 @@ public class AutenticacionRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            default -> {
+            default : {
                 return ResponseEntity.ok("Opcion no encontrada");
             }
         }
@@ -147,17 +147,18 @@ public class AutenticacionRestController {
         StringBuilder autCodigoCorreo = new StringBuilder();
 
         switch (opcion) {
-            case "crear" -> {
+            case "crear" : {
                 try {
                     String autCorreo = jsonNode.get("aut_correo").asText().trim();
                     String tdcTd = jsonNode.get("tdc_td").asText().trim();
                     String prvNd = jsonNode.get("prv_nd").asText().trim();
                     Integer idEmppal = jsonNode.get("id_emppal").asInt();
 
-                    Usuario miUs = usuarioService.encontrarUsuariosPorNombre(autCorreo,idEmppal);
+                    Usuario miUs = usuarioService.encontrarUsuariosPorNombreSin(autCorreo,idEmppal);
                     if (miUs != null) return new ResponseEntity<>("correo_ya_registrado", HttpStatus.OK);
-                    if (proveedorService.encontrarProveedoresPorNdyTdcTd(prvNd, tdcTd,idEmppal) != null)
-                        return new ResponseEntity<>("proveedor_ya_existe", HttpStatus.OK);
+                    if (proveedorService.encontrarProveedoresPorNdyTdcTd(prvNd, tdcTd,idEmppal) != null) return new ResponseEntity<>("proveedor_ya_existe", HttpStatus.OK);
+                    if (proveedorService.encontrarProveedorPorCorreo(autCorreo, idEmppal) != null) return new ResponseEntity<>("proveedor_ya_existe", HttpStatus.OK);
+
 
                     String autContrasena = jsonNode.get("aut_contrasena").asText().trim();
                     String prvNombre = jsonNode.get("prv_nombre").asText().trim();
@@ -258,7 +259,7 @@ public class AutenticacionRestController {
                     }
                 }
             }
-            case "verificarCodigo" -> {
+            case "verificarCodigo" : {
                 String codigoCorreo = (String) requestBody.get("aut_codigoCorreo");
                 if (!regexService.isTextNormal(codigoCorreo)
                 ) return new ResponseEntity<>("campos incorrectos", HttpStatus.OK);
@@ -274,7 +275,7 @@ public class AutenticacionRestController {
                     return ResponseEntity.ok("verificado");
                 }
             }
-            case "correoRecuperarContrasena" -> {
+            case "correoRecuperarContrasena" : {
                 String correoR = (String) requestBody.get("aut_correo");
                 Integer idEmppal = (Integer) requestBody.get("id_emppal");
 
@@ -284,7 +285,7 @@ public class AutenticacionRestController {
                     int indice = random.nextInt(caracteres.length());
                     autCodigoCorreo.append(caracteres.charAt(indice));
                 }
-                Usuario miUsuario = usuarioService.encontrarUsuariosPorNombre(correoR,idEmppal);
+                Usuario miUsuario = usuarioService.encontrarUsuariosPorNombre(correoR,idEmppal,"A");
                 Autenticacion miAut = autenticacionService.encontrarAutenticacionPorNombre(correoR,idEmppal);
                 if (miUsuario == null) return ResponseEntity.ok("correo_no_registra");
                 if (miAut == null) {
@@ -320,7 +321,7 @@ public class AutenticacionRestController {
                 emailService.sendCorreoRecuperar(correoR, String.valueOf(autCodigoCorreo));
                 return ResponseEntity.ok("enviado");
             }
-            case "cambiarContrasena" -> {
+            case "cambiarContrasena" : {
                 String usuContrasena = (String) requestBody.get("usu_contrasena");
                 usuContrasena = unwrapPassword(usuContrasena);
                 String codigo = (String) requestBody.get("codigo");
@@ -331,7 +332,7 @@ public class AutenticacionRestController {
                     return new ResponseEntity<>("campos incorrectos", HttpStatus.OK);
                 Autenticacion miAutR = autenticacionService.encontrarAutenticacionPorCodigo(codigo);
                 if (miAutR == null) return ResponseEntity.ok("sin_codigo");
-                Usuario miUsuR = usuarioService.encontrarUsuariosPorNombre(miAutR.getAutCorreo(), miAutR.getIdEmppal());
+                Usuario miUsuR = usuarioService.encontrarUsuariosPorNombre(miAutR.getAutCorreo(), miAutR.getIdEmppal(),"A");
                 PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                 String encodedPassword = passwordEncoder.encode(usuContrasena);
                 miUsuR.setUsuContrasena(encodedPassword);
@@ -339,7 +340,7 @@ public class AutenticacionRestController {
                 autenticacionService.actualizarAutenticacion(miAutR);
                 return ResponseEntity.ok("correcto");
             }
-            default -> {
+            default : {
                 return ResponseEntity.ok("Opcion no encontrada");
             }
         }
@@ -369,7 +370,7 @@ public class AutenticacionRestController {
             int perId = jsonNode.get("per_id").asInt();
             int crtId = jsonNode.get("crt_id").asInt();
 
-            Usuario miUs = usuarioService.encontrarUsuariosPorNombre(autCorreo,miIdEmppal);
+            Usuario miUs = usuarioService.encontrarUsuariosPorNombreSin(autCorreo,miIdEmppal);
             if (miUs != null) return new ResponseEntity<>("correo_ya_registrado", HttpStatus.OK);
             if (proveedorService.encontrarProveedoresPorNdyTdcTd(prvNd,tdcTd,miIdEmppal) != null) return new ResponseEntity<>("proveedor_ya_existe", HttpStatus.OK);
 
@@ -451,6 +452,21 @@ public class AutenticacionRestController {
                                 miProveedorEva.setAudUsuario(autenticacionDb.getAudUsuario());
                                 proveedorEvaService.crearProveedorEva(miProveedorEva);
                             }
+                            ProveedorEva proveedorEvasIni = proveedorEvaService.encontrarProveedorEvaPorPerId(1, miProveedor.getPrvId(),miIdEmppal);
+                            if(proveedorEvasIni == null) {
+                                ProveedorEva miProveedorEva = new ProveedorEva();
+                                miProveedorEva.setIdEmppal(miProveedor.getIdEmppal());
+                                miProveedorEva.setPerId(1);
+                                miProveedorEva.setPrvId(miProveedor.getPrvId());
+                                miProveedorEva.setPreResultado(0);
+                                miProveedorEva.setPreObservacion("");
+                                miProveedorEva.setPreContinua("si");
+                                miProveedorEva.setPreEstado("NI");
+                                miProveedorEva.setAudFecha(fechaActualN);
+                                miProveedorEva.setAudUsuario(autenticacionDb.getAudUsuario());
+                                proveedorEvaService.crearProveedorEva(miProveedorEva);
+                            }
+
                         } catch (DataIntegrityViolationException e) {
                             if (((SQLException) e.getCause().getCause()).getErrorCode() == 1062 || ((SQLException) e.getCause().getCause()).getErrorCode() == 1 ) {
                                 String data = "dato_existente";

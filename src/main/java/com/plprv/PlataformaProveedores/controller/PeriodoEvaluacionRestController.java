@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.plprv.PlataformaProveedores.entity.*;
 import com.plprv.PlataformaProveedores.service.*;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -67,11 +67,11 @@ public class PeriodoEvaluacionRestController {
         String checkBoxEstado = (String) requestBody.get("checkBoxEstado");
 
         switch (opcion) {
-            case "cantidad" -> {
+            case "cantidad" : {
                 Integer cantidad = periodoEvaluacionService.cantidadPeriodoEvaluacions(checkBoxEstado,miIdEmppal);
                 return ResponseEntity.ok(cantidad);
             }
-            case "crear" -> {
+            case "crear" : {
                 try {
                     Integer idEmppal = jsonNode.get("id_emppal").asInt();
                     String perNombre = jsonNode.get("per_nombre").asText().trim();
@@ -135,7 +135,6 @@ public class PeriodoEvaluacionRestController {
                             for (Criticidad element : criticidadsDb) {
                                 boolean encontrado = false;
                                 for (JsonNode elementC : selectCriticidadNode) {
-
                                     if (elementC.asInt() == (element.getCrtId())) {
                                         siAplican.add(element);
                                         encontrado = true;
@@ -192,7 +191,7 @@ public class PeriodoEvaluacionRestController {
                                             miProveedorEva.setPerId(miPeriodoEvaluacion.getPerId());
                                             miProveedorEva.setPrvId(proveedor.getPrvId());
                                             miProveedorEva.setPreResultado(0);
-                                            miProveedorEva.setPreContinua("");
+                                            miProveedorEva.setPreContinua("SI");
                                             miProveedorEva.setPreObservacion("");
                                             miProveedorEva.setPreEstado("NA");
                                             miProveedorEva.setAudFecha(fechaActual);
@@ -235,7 +234,7 @@ public class PeriodoEvaluacionRestController {
                     }
                 }
             }
-            case "informacionTotal" -> {
+            case "informacionTotal" : {
                 Integer numeroDePagina = (Integer) requestBody.get("numeroDePagina");
                 Integer numeroElementosPorPagina = (Integer) requestBody.get("numeroElementosPorPagina");
                 String texto = (String) requestBody.get("texto");
@@ -246,7 +245,7 @@ public class PeriodoEvaluacionRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "cantidadDePaginas" -> {
+            case "cantidadDePaginas" : {
                 String textoC = (String) requestBody.get("texto");
                 Integer periodoEvaluacionTodosDbC = periodoEvaluacionService.cantidadPaginasPeriodoEvaluacions(checkBoxEstado, textoC,miIdEmppal);
                 if (periodoEvaluacionTodosDbC != null) {
@@ -255,7 +254,7 @@ public class PeriodoEvaluacionRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "obtenerId" -> {
+            case "obtenerId" : {
                 Integer perId = (Integer) requestBody.get("per_id");
                 PeriodoEvaluacion periodoEvaluacionsDbI = periodoEvaluacionService.encontrarPeriodoEvaluacionsPorId(perId, null,miIdEmppal);
                 if (periodoEvaluacionsDbI != null) {
@@ -264,7 +263,7 @@ public class PeriodoEvaluacionRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "borrar" -> {
+            case "borrar" : {
                 Integer perIdD = (Integer) requestBody.get("per_id");
                 PeriodoEvaluacion periodoEvaluacionsDbB = periodoEvaluacionService.encontrarPeriodoEvaluacionsPorId(perIdD, "A",miIdEmppal);
                 if (periodoEvaluacionsDbB != null) {
@@ -275,7 +274,7 @@ public class PeriodoEvaluacionRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "activar" -> {
+            case "activar" : {
                 Integer perIdDA = (Integer) requestBody.get("per_id");
                 PeriodoEvaluacion periodoEvaluacionsDbBA = periodoEvaluacionService.encontrarPeriodoEvaluacionsPorId(perIdDA, "I",miIdEmppal);
                 if (periodoEvaluacionsDbBA != null) {
@@ -286,7 +285,7 @@ public class PeriodoEvaluacionRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            default -> {
+            default : {
                 return ResponseEntity.ok("Opcion no encontrada");
             }
         }

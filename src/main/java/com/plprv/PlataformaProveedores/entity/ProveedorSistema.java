@@ -1,6 +1,6 @@
 package com.plprv.PlataformaProveedores.entity;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 
 
 @Entity

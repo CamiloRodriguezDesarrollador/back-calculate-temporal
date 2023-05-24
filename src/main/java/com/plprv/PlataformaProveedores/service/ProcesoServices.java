@@ -4,6 +4,9 @@ import com.plprv.PlataformaProveedores.dao.IPeriodoEvaluacionDao;
 import com.plprv.PlataformaProveedores.dao.IProcesoDao;
 import com.plprv.PlataformaProveedores.entity.Proceso;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,8 +63,8 @@ public class ProcesoServices implements IProcesoServices {
         }else if (numeroDePagina<1){
             numeroDePagina = 1;
         }
-        Integer limiteInicial = (numeroDePagina-1)*(numeroElementosPorPagina);
-        return (List<Proceso>) procesoDao.findByProEstadoPaginaFiltro(proEstado,texto.toLowerCase(),numeroElementosPorPagina,limiteInicial, idEmppal);
+        Pageable pageable = PageRequest.of(numeroDePagina - 1, numeroElementosPorPagina, Sort.Direction.DESC, "proId");
+        return (List<Proceso>) procesoDao.findByProEstadoPaginaFiltro(proEstado,texto.toLowerCase(), idEmppal, pageable);
     }
 
     @Override

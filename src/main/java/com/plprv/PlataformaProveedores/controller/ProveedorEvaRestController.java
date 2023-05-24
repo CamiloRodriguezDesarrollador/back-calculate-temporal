@@ -7,7 +7,7 @@ import com.plprv.PlataformaProveedores.entity.PeriodoEvaluacion;
 import com.plprv.PlataformaProveedores.entity.Proveedor;
 import com.plprv.PlataformaProveedores.entity.ProveedorEva;
 import com.plprv.PlataformaProveedores.service.*;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -53,15 +53,12 @@ public class ProveedorEvaRestController {
         String token = authorizationHeader.substring(7);
         String miAud = obtenerUsuarioAud.obtnerUsuarioToken(token);
         Integer miIdEmppal = obtenerUsuarioAud.obtnerIdEmppalToken (token);
-        ObjectMapper objectMapper = new ObjectMapper();
-        String datosJson = objectMapper.writeValueAsString(requestBody.get("datos"));
-        JsonNode jsonNode = objectMapper.readTree(datosJson);
         String opcion = (String) requestBody.get("opcion");
         String checkBoxEstado = (String) requestBody.get("checkBoxEstado");
 
         switch (opcion) {
 
-            case "encontrarResultados" -> {
+            case "encontrarResultados" : {
                 Integer perIdR = (Integer) requestBody.get("per_id");
                 Integer prvIdR = (Integer) requestBody.get("prv_id");
                 ProveedorEva miProveedorEva = proveedorEvaService.encontrarProveedorEvaPorPerId(perIdR, prvIdR,miIdEmppal);
@@ -71,7 +68,7 @@ public class ProveedorEvaRestController {
                     return new ResponseEntity<>(0, HttpStatus.OK);
                 }
             }
-            case "informacionTotal" -> {
+            case "informacionTotal" : {
                 Integer numeroDePagina = (Integer) requestBody.get("numeroDePagina");
                 Integer numeroElementosPorPagina = (Integer) requestBody.get("numeroElementosPorPagina");
                 String texto = (String) requestBody.get("texto");
@@ -84,7 +81,7 @@ public class ProveedorEvaRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "cantidadDePaginas" -> {
+            case "cantidadDePaginas" : {
                 String textoC = (String) requestBody.get("texto");
                 Integer perIdC = (Integer) requestBody.get("perId");
                 Integer proveedorEvaTodosDbC = proveedorEvaService.cantidadPaginasProveedorEva(checkBoxEstado, textoC, perIdC,miIdEmppal);
@@ -94,7 +91,7 @@ public class ProveedorEvaRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "obtenerId" -> {
+            case "obtenerId" : {
                 Integer preId = (Integer) requestBody.get("fod_id");
                 ProveedorEva proveedorEvasDbI = proveedorEvaService.encontrarProveedorEvaPorId(preId, null,miIdEmppal);
                 if (proveedorEvasDbI != null) {
@@ -103,7 +100,7 @@ public class ProveedorEvaRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "proveedorEvaCheck" -> {
+            case "proveedorEvaCheck" : {
                 Integer perIdD = (Integer) requestBody.get("per_id");
                 List<ProveedorEva> proveedorEvasDb = proveedorEvaService.encontrarProveedorEvaPorFormulario(perIdD, "A",miIdEmppal);
                 if (proveedorEvasDb != null) {
@@ -112,7 +109,7 @@ public class ProveedorEvaRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "cambiarEstadoPeriodo" -> {
+            case "cambiarEstadoPeriodo" : {
                 Integer perIdE = (Integer) requestBody.get("per_id");
                 Integer prvIdE = (Integer) requestBody.get("prv_id");
                 Integer idEmppalE = (Integer) requestBody.get("id_emppal");
@@ -164,11 +161,12 @@ public class ProveedorEvaRestController {
                     return new ResponseEntity<>(miProveedorEvaE, HttpStatus.OK);
                 }
             }
-            case "enviarCorreoNoIniciado" -> {
+            case "enviarCorreoNoIniciado" : {
                 List<String> correosProveedor = new ArrayList<>();
                 Integer perIdEn = (Integer) requestBody.get("per_id");
                 List<ProveedorEva> periodoEvaluacions = proveedorEvaService.encontrarProveedorEvaPorFormulario(perIdEn, "NI",miIdEmppal);
                 for (ProveedorEva evaluacion : periodoEvaluacions) {
+                    System.out.println("entra como no iniciado: " + evaluacion.getPrvId() );
                     Proveedor proveedor = proveedorService.encontrarProveedoresPorId(evaluacion.getPrvId(), "A",miIdEmppal);
                     String coreeoProveedor = proveedor.getPrvCorreo();
                     correosProveedor.add(coreeoProveedor);
@@ -178,7 +176,7 @@ public class ProveedorEvaRestController {
                 emailService.sendListEmailNoIniciado(correosProveedor, nombrePeriodo);
                 return new ResponseEntity<>(correosProveedor, HttpStatus.OK);
             }
-            case "enviarCorreoIncompleto" -> {
+            case "enviarCorreoIncompleto" : {
                 List<String> correosProveedorD = new ArrayList<>();
                 Integer perIdEnD = (Integer) requestBody.get("per_id");
                 List<ProveedorEva> periodoEvaluacionsD = proveedorEvaService.encontrarProveedorEvaPorFormulario(perIdEnD, "I",miIdEmppal);
@@ -192,7 +190,7 @@ public class ProveedorEvaRestController {
                 emailService.sendListEmailIncompleto(correosProveedorD, nombrePeriodoD);
                 return ResponseEntity.ok("No hay proveedores recalcular");
             }
-            case "calcularEvaluacionPorcentaje" -> {
+            case "calcularEvaluacionPorcentaje" : {
                 String estado = "I";
                 Integer perIdCa = (Integer) requestBody.get("per_id");
                 List<DocumentosProveedor> proveedoresCacular = proveedorEvaService.encontrarProveedoresEstados(perIdCa,miIdEmppal);
@@ -216,7 +214,7 @@ public class ProveedorEvaRestController {
                 }
                 return ResponseEntity.ok("actualizado");
             }
-            default -> {
+            default : {
                 return ResponseEntity.ok("Opcion no encontrada");
             }
         }
@@ -236,7 +234,7 @@ public class ProveedorEvaRestController {
         String opcion = (String) requestBody.get("opcion");
 
         switch (opcion) {
-            case "guardarFormulario" -> {
+            case "guardarFormulario" : {
                 try {
                     int idEmppal = jsonNode.get("id_emppal").asInt();
                     int prvId = jsonNode.get("prv_id").asInt();
@@ -301,7 +299,7 @@ public class ProveedorEvaRestController {
                     }
                 }
             }
-            case "proveedorPorTokenFormulario" -> {
+            case "proveedorPorTokenFormulario" : {
                 Integer prvId = (Integer) requestBody.get("prv_id");
                 List<ProveedorEva> proveedorDb = proveedorEvaService.encontrarProveedorEvaPorPrvId(prvId,miIdEmppal);
                 if (proveedorDb != null) {
@@ -310,7 +308,7 @@ public class ProveedorEvaRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            default -> {
+            default : {
                 return ResponseEntity.ok("Opcion no encontrada");
             }
         }

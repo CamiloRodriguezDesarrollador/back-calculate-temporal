@@ -4,6 +4,9 @@ import com.plprv.PlataformaProveedores.dao.IProveedorDocDao;
 import com.plprv.PlataformaProveedores.entity.Documentos;
 import com.plprv.PlataformaProveedores.entity.ProveedorDoc;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,9 +61,9 @@ public class ProveedorDocServices implements IProveedorDocServices {
         }else if (numeroDePagina<1){
             numeroDePagina = 1;
         }
-        Integer limiteInicial = (numeroDePagina-1)*(numeroElementosPorPagina);
+        Pageable pageable = PageRequest.of(numeroDePagina - 1, numeroElementosPorPagina, Sort.Direction.DESC, "prdId");
         return (List<Object>) proveedorDocDao.cantidadDocumentacionTabla(prvId,crtId, forId,texto.toLowerCase(),prvNd,prvNombre.toLowerCase(),
-                perId, proId, sprId, prdEstadoDocumental,tipo.toLowerCase(),numeroElementosPorPagina, limiteInicial, idEmppal);
+                perId, proId, sprId, prdEstadoDocumental,tipo.toLowerCase(), idEmppal, pageable);
     }
 
     @Override
@@ -72,9 +75,9 @@ public class ProveedorDocServices implements IProveedorDocServices {
         }else if (numeroDePagina<1){
             numeroDePagina = 1;
         }
-        Integer limiteInicial = (numeroDePagina-1)*(numeroElementosPorPagina);
+        Pageable pageable = PageRequest.of(numeroDePagina - 1, numeroElementosPorPagina, Sort.Direction.DESC, "preId");
         return (List<Object>) proveedorDocDao.cantidadEvaluacionTabla(prvId,crtId, prvNd,  prvNombre.toLowerCase() , perId,
-                proId, sprId, preEstado,numeroElementosPorPagina, limiteInicial, idEmppal);
+                proId, sprId, preEstado, idEmppal, pageable);
     }
 
     @Override

@@ -2,6 +2,8 @@ package com.plprv.PlataformaProveedores.dao;
 
 import com.plprv.PlataformaProveedores.entity.DocumentosProveedor;
 import com.plprv.PlataformaProveedores.entity.ProveedorEva;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -41,10 +43,9 @@ public interface IProveedorEvaDao extends CrudRepository<ProveedorEva, Long> {
             " (p.perId = :perId OR :perId = 0) AND (p.idEmppal = :idEmppal) ORDER BY p.preId DESC")
     List<ProveedorEva> findByPreEstadoFiltro(String preEstado, String texto, Integer perId, Integer idEmppal);
 
-    @Query("SELECT p FROM ProveedorEva p WHERE (p.preResultado LIKE %:texto% ) AND p.preEstado = :preEstado" +
-            " AND (p.perId = :perId OR :perId = 0) AND (p.idEmppal = :idEmppal) ORDER BY p.preId DESC LIMIT " +
-            " :numeroElementosPorPagina OFFSET :limiteInicial")
-    List<ProveedorEva> findByPreEstadoPaginaFiltro(String preEstado, String texto, Integer numeroElementosPorPagina, Integer limiteInicial, Integer perId , Integer idEmppal);
+    @Query("SELECT p FROM ProveedorEva p WHERE (p.preObservacion LIKE %:texto% ) AND p.preEstado = :preEstado" +
+            " AND (p.perId = :perId OR :perId = 0) AND (p.idEmppal = :idEmppal) ORDER BY p.preId DESC")
+    List<ProveedorEva> findByPreEstadoPaginaFiltro(String preEstado, String texto, Integer perId , Integer idEmppal, Pageable pageable);
 
 
 }

@@ -2,6 +2,7 @@ package com.plprv.PlataformaProveedores.dao;
 
 import com.plprv.PlataformaProveedores.entity.Documentos;
 import com.plprv.PlataformaProveedores.entity.ProveedorDoc;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -29,11 +30,10 @@ public interface IProveedorDocDao extends CrudRepository<ProveedorDoc, Long> {
             " JOIN Formulario fo ON fp.forId = fo.forId JOIN Criticidad crt ON p.crtId = crt.crtId  WHERE (p.crtId = :crtId OR :crtId = 0) AND (p.proId = :proId OR :proId = 0) AND (p.sprId = :sprId OR :sprId = 0)" +
             " AND (per.perId = :perId OR :perId = 0) AND (p.prvId = :prvId OR :prvId = 0) AND (fp.forId = :forId OR :forId = 0) " +
             " AND (lower(fd.fodNombre) LIKE %:texto%) AND (p.prvNd LIKE %:prvNd%) AND (lower(p.prvNombre) LIKE %:prvNombre%) AND (fd.fodTipo LIKE %:tipo%) " +
-            "AND pd.prdEstadoDocumental = COALESCE(NULLIF(:prdEstadoDocumental, '') , pd.prdEstadoDocumental)  AND (pd.idEmppal = :idEmppal) ORDER BY pd.prdId DESC LIMIT " +
-            ":numeroElementosPorPagina OFFSET :limiteInicial")
+            "AND pd.prdEstadoDocumental = COALESCE(NULLIF(:prdEstadoDocumental, '') , pd.prdEstadoDocumental)  AND (pd.idEmppal = :idEmppal) ORDER BY pd.prdId")
     public List<Object> cantidadDocumentacionTabla(Integer prvId,Integer crtId, Integer forId, String texto , String prvNd, String prvNombre ,
                                                    Integer perId, Integer proId, Integer sprId, String prdEstadoDocumental,
-                                                   String tipo, Integer numeroElementosPorPagina, Integer limiteInicial, Integer idEmppal);
+                                                   String tipo, Integer idEmppal, Pageable pageable);
 
     @Query("SELECT new com.plprv.PlataformaProveedores.entity.InformeGeneral ( " +
             "pe.perId, pe.prvId, p.tdcTd , p.prvNd, p.prvNombre ,  per.perNombre , per.perFechaEvaluacion , per.perTipo , pro.proNombre , spr.sprNombre ,pe.audFecha,pe.audUsuario, " +
@@ -43,9 +43,9 @@ public interface IProveedorDocDao extends CrudRepository<ProveedorDoc, Long> {
             " JOIN Criticidad crt ON p.crtId = crt.crtId WHERE (p.crtId = :crtId OR :crtId = 0) AND (p.proId = :proId OR :proId = 0) AND (p.sprId = :sprId OR :sprId = 0)" +
             " AND (per.perId = :perId OR :perId = 0) AND (p.prvId = :prvId OR :prvId = 0) " +
             " AND (p.prvNd LIKE %:prvNd%) AND (lower(p.prvNombre) LIKE %:prvNombre%) AND (pe.idEmppal = :idEmppal)" +
-            " AND pe.preEstado = COALESCE(NULLIF(:preEstado, ''), pe.preEstado) ORDER BY pe.perId DESC LIMIT :numeroElementosPorPagina OFFSET :limiteInicial")
+            " AND pe.preEstado = COALESCE(NULLIF(:preEstado, ''), pe.preEstado) ORDER BY pe.perId DESC")
     public List<Object> cantidadEvaluacionTabla(Integer prvId,Integer crtId, String prvNd, String prvNombre , Integer perId, Integer proId, Integer sprId,
-                                                String preEstado, Integer numeroElementosPorPagina, Integer limiteInicial, Integer idEmppal);
+                                                String preEstado, Integer idEmppal, Pageable pageable);
 
 
     @Query("SELECT new com.plprv.PlataformaProveedores.entity.Documentos ( pd.prdId , pd.prdData,pd.prdObservacion,pd.prdFechaDocumento,pd.prdEstadoDocumental," +

@@ -3,6 +3,9 @@ package com.plprv.PlataformaProveedores.service;
 import com.plprv.PlataformaProveedores.dao.IFormularioDao;
 import com.plprv.PlataformaProveedores.entity.Formulario;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,8 +65,8 @@ public class FormularioServices implements IFormularioServices {
         }else if (numeroDePagina<1){
             numeroDePagina = 1;
         }
-        Integer limiteInicial = (numeroDePagina-1)*(numeroElementosPorPagina);
-        return (List<Formulario>) formularioDao.findByForEstadoPaginaFiltro(forEstado,texto.toLowerCase(),numeroElementosPorPagina,limiteInicial, idEmppal);
+        Pageable pageable = PageRequest.of(numeroDePagina - 1, numeroElementosPorPagina, Sort.Direction.DESC, "forId");
+        return (List<Formulario>) formularioDao.findByForEstadoPaginaFiltro(forEstado,texto.toLowerCase(), idEmppal, pageable);
     }
 
     @Override

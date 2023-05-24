@@ -7,7 +7,7 @@ import com.plprv.PlataformaProveedores.entity.Criticidad;
 import com.plprv.PlataformaProveedores.service.ICriticidadServices;
 import com.plprv.PlataformaProveedores.service.IRegexService;
 import com.plprv.PlataformaProveedores.service.ObtenerUsuarioAud;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -57,11 +57,11 @@ public class CriticidadRestController {
         String checkBoxEstado = (String) requestBody.get("checkBoxEstado");
 
         switch (opcion) {
-            case "cantidad" -> {
+            case "cantidad" : {
                 Integer cantidad = criticidadService.cantidadCriticidads(checkBoxEstado,miIdEmppal);
                 return ResponseEntity.ok(cantidad);
             }
-            case "crear" -> {
+            case "crear" : {
                 try {
                     Integer idEmppal = jsonNode.get("id_emppal").asInt();
                     String crtNombre = jsonNode.get("crt_nombre").asText().trim();
@@ -108,7 +108,7 @@ public class CriticidadRestController {
                     }
                 }
             }
-            case "informacionTotal" -> {
+            case "informacionTotal" : {
                 Integer numeroDePagina = (Integer) requestBody.get("numeroDePagina");
                 Integer numeroElementosPorPagina = (Integer) requestBody.get("numeroElementosPorPagina");
                 String texto = (String) requestBody.get("texto");
@@ -120,7 +120,7 @@ public class CriticidadRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "cantidadDePaginas" -> {
+            case "cantidadDePaginas" : {
                 String textoC = (String) requestBody.get("texto");
                 Integer criticidadTodosDbC = criticidadService.cantidadPaginasCriticidads(checkBoxEstado, textoC,miIdEmppal);
                 if (criticidadTodosDbC != null) {
@@ -129,7 +129,7 @@ public class CriticidadRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "obtenerId" -> {
+            case "obtenerId" : {
                 Integer crtId = (Integer) requestBody.get("crt_id");
                 Criticidad criticidadsDbI = criticidadService.encontrarCriticidadsPorId(crtId, null,miIdEmppal);
                 if (criticidadsDbI != null) {
@@ -138,7 +138,7 @@ public class CriticidadRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "borrar" -> {
+            case "borrar" : {
                 Integer crtIdD = (Integer) requestBody.get("crt_id");
                 Criticidad criticidadsDbB = criticidadService.encontrarCriticidadsPorId(crtIdD, "A",miIdEmppal);
                 if (criticidadsDbB != null) {
@@ -149,7 +149,7 @@ public class CriticidadRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "activar" -> {
+            case "activar" : {
                 Integer crtIdDA = (Integer) requestBody.get("crt_id");
                 Criticidad criticidadsDbBA = criticidadService.encontrarCriticidadsPorId(crtIdDA, "I",miIdEmppal);
                 if (criticidadsDbBA != null) {
@@ -160,7 +160,7 @@ public class CriticidadRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "criticidadSoloNombre" -> {
+            case "criticidadSoloNombre" : {
                 List<Criticidad> criticidadsDbS = criticidadService.encontrarCriticidadsNombres("A",miIdEmppal);
                 if (criticidadsDbS != null && !criticidadsDbS.isEmpty()) {
                     return new ResponseEntity<>(criticidadsDbS, HttpStatus.OK);
@@ -168,7 +168,7 @@ public class CriticidadRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            default -> {
+            default : {
                 return ResponseEntity.ok("Opcion no encontrada");
             }
         }

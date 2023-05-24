@@ -1,6 +1,7 @@
 package com.plprv.PlataformaProveedores.dao;
 
 import com.plprv.PlataformaProveedores.entity.FormularioDetalle;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -27,9 +28,8 @@ public interface IFormularioDetalleDao extends CrudRepository<FormularioDetalle,
     List<FormularioDetalle> findByFodEstadoFiltro(String fodEstado, String texto, Integer forId, Integer idEmppal);
 
     @Query("SELECT p FROM FormularioDetalle p WHERE (lower(p.fodNombre) LIKE %:texto% or lower(p.fodAdjunto) LIKE %:texto% or lower(p.fodAdjunto)" +
-            " LIKE %:texto%) AND p.fodEstado = :fodEstado AND (p.forId = :forId OR :forId = 0) AND (p.idEmppal = :idEmppal) ORDER BY p.fodId DESC LIMIT " +
-            " :numeroElementosPorPagina OFFSET :limiteInicial")
-    List<FormularioDetalle> findByFodEstadoPaginaFiltro(String fodEstado, String texto, Integer numeroElementosPorPagina, Integer limiteInicial, Integer forId, Integer idEmppal);
+            " LIKE %:texto%) AND p.fodEstado = :fodEstado AND (p.forId = :forId OR :forId = 0) AND (p.idEmppal = :idEmppal) ORDER BY p.fodId DESC")
+    List<FormularioDetalle> findByFodEstadoPaginaFiltro(String fodEstado, String texto, Integer forId, Integer idEmppal, Pageable pageable);
 
 
 

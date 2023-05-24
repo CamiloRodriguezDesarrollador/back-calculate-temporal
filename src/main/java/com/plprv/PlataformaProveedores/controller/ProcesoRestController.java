@@ -8,7 +8,7 @@ import com.plprv.PlataformaProveedores.entity.SubProceso;
 import com.plprv.PlataformaProveedores.service.IProcesoServices;
 import com.plprv.PlataformaProveedores.service.IRegexService;
 import com.plprv.PlataformaProveedores.service.ObtenerUsuarioAud;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -56,11 +56,11 @@ public class ProcesoRestController {
         String checkBoxEstado = (String) requestBody.get("checkBoxEstado");
 
         switch (opcion) {
-            case "cantidad" -> {
+            case "cantidad" : {
                 Integer cantidad = procesoService.cantidadProcesos(checkBoxEstado,miIdEmppal);
                 return ResponseEntity.ok(cantidad);
             }
-            case "crear" -> {
+            case "crear" : {
                 try {
 
                     Integer idEmppal = jsonNode.get("id_emppal").asInt();
@@ -116,7 +116,7 @@ public class ProcesoRestController {
                     }
                 }
             }
-            case "informacionTotal" -> {
+            case "informacionTotal" : {
                 Integer numeroDePagina = (Integer) requestBody.get("numeroDePagina");
                 Integer numeroElementosPorPagina = (Integer) requestBody.get("numeroElementosPorPagina");
                 String texto = (String) requestBody.get("texto");
@@ -127,7 +127,7 @@ public class ProcesoRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "cantidadDePaginas" -> {
+            case "cantidadDePaginas" : {
                 String textoC = (String) requestBody.get("texto");
                 Integer procesosTodosDbC = procesoService.cantidadPaginasProcesos(checkBoxEstado, textoC,miIdEmppal);
                 if (procesosTodosDbC != null) {
@@ -136,7 +136,7 @@ public class ProcesoRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "obtenerId" -> {
+            case "obtenerId" : {
                 Integer proId = (Integer) requestBody.get("pro_id");
                 Proceso procesosDbI = procesoService.encontrarProcesosPorId(proId, null,miIdEmppal);
                 if (procesosDbI != null) {
@@ -145,7 +145,7 @@ public class ProcesoRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "borrar" -> {
+            case "borrar" : {
                 Integer proIdD = (Integer) requestBody.get("pro_id");
                 Proceso procesosDbB = procesoService.encontrarProcesosPorId(proIdD, "A",miIdEmppal);
                 if (procesosDbB != null) {
@@ -156,7 +156,7 @@ public class ProcesoRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "activar" -> {
+            case "activar" : {
                 Integer proIdDA = (Integer) requestBody.get("pro_id");
                 Proceso procesosDbBA = procesoService.encontrarProcesosPorId(proIdDA, "I",miIdEmppal);
                 if (procesosDbBA != null) {
@@ -167,7 +167,7 @@ public class ProcesoRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "procesoSoloNombre" -> {
+            case "procesoSoloNombre" : {
                 List<Proceso> procesosDbS = procesoService.encontrarProcesosNombres("A",miIdEmppal);
                 if (procesosDbS != null && !procesosDbS.isEmpty()) {
                     return new ResponseEntity<>(procesosDbS, HttpStatus.OK);
@@ -175,7 +175,7 @@ public class ProcesoRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            default -> {
+            default : {
                 return ResponseEntity.ok("Opcion no encontrada");
             }
         }

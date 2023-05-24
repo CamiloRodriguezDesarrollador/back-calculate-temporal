@@ -3,6 +3,9 @@ package com.plprv.PlataformaProveedores.service;
 import com.plprv.PlataformaProveedores.dao.IUsuarioDao;
 import com.plprv.PlataformaProveedores.entity.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,7 +23,12 @@ public class UsuarioServices implements IUsuarioServices {
     }
     @Override
     @Transactional(readOnly = true)
-    public Usuario encontrarUsuariosPorNombre(String usuCorreo, Integer idEmppal) {
+    public Usuario encontrarUsuariosPorNombre(String usuCorreo, Integer idEmppal, String usuEstado) {
+        return (Usuario) usuarioDao.findByUsuCorreoAndIdEmppalAndUsuEstado(usuCorreo, idEmppal, usuEstado);
+    }
+    @Override
+    @Transactional(readOnly = true)
+    public Usuario encontrarUsuariosPorNombreSin(String usuCorreo, Integer idEmppal) {
         return (Usuario) usuarioDao.findByUsuCorreoAndIdEmppal(usuCorreo, idEmppal);
     }
     @Override
@@ -57,11 +65,11 @@ public class UsuarioServices implements IUsuarioServices {
     public List<Usuario> encontrarUsuariosFiltroPaginas(String usuEstado, String texto, Integer numeroDePagina, Integer numeroElementosPorPagina, Integer idEmppal) {
         if(numeroDePagina == null){
             numeroDePagina = 1;
-        }else if (numeroDePagina<1){
+        } else if (numeroDePagina < 1){
             numeroDePagina = 1;
         }
-        Integer limiteInicial = (numeroDePagina-1)*(numeroElementosPorPagina);
-        return (List<Usuario>) usuarioDao.findByUsuEstadoPaginaFiltro(usuEstado,texto.toLowerCase(),numeroElementosPorPagina,limiteInicial, idEmppal);
+        Pageable pageable = PageRequest.of(numeroDePagina - 1, numeroElementosPorPagina, Sort.Direction.DESC, "usuId");
+        return usuarioDao.findByUsuEstadoPaginaFiltro(usuEstado, texto.toLowerCase(), idEmppal, pageable);
     }
 
     @Override

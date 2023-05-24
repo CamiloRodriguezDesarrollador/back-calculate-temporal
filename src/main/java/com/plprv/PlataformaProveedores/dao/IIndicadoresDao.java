@@ -23,7 +23,8 @@ public interface IIndicadoresDao extends CrudRepository<Proveedor, Long> {
 
     @Query("SELECT new com.plprv.PlataformaProveedores.entity.IndicadorEstados (pe.preEstado, COUNT(pe.preEstado)) FROM ProveedorEva pe JOIN Proveedor p ON  " +
             "pe.prvId = p.prvId WHERE (p.crtId = :crtId OR :crtId = 0) " +
-            "AND (pe.perId = :perId OR :perId = 0)  AND (p.proId = :proId OR :proId = 0) AND (pe.idEmppal = :idEmppal) GROUP BY pe.preEstado")
+            "AND (pe.perId = :perId OR :perId = 0)  AND (p.proId = :proId OR :proId = 0) AND (pe.idEmppal = :idEmppal) " +
+            "AND (pe.preEstado <> 'NA') GROUP BY pe.preEstado")
     public List<Object> contarRegistrosPorCriticidad(Integer crtId, Integer perId, Integer proId, Integer idEmppal);
 
     @Query("SELECT DISTINCT (COUNT(pe)) FROM Proveedor p JOIN ProveedorEva pe ON pe.prvId = p.prvId WHERE (p.crtId = :crtId OR :crtId = 0) " +

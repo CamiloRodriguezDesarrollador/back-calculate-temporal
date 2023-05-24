@@ -8,7 +8,7 @@ import com.plprv.PlataformaProveedores.security.UserDetailServiceImpl;
 import com.plprv.PlataformaProveedores.service.IUsuarioServices;
 import com.plprv.PlataformaProveedores.service.IRegexService;
 import com.plprv.PlataformaProveedores.service.ObtenerUsuarioAud;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -64,11 +64,11 @@ public class UsuarioRestController {
         String checkBoxEstado = (String) requestBody.get("checkBoxEstado");
 
         switch (opcion) {
-            case "cantidad" -> {
+            case "cantidad" : {
                 Integer cantidad = usuarioService.cantidadUsuarios(checkBoxEstado,miIdEmppal);
                 return ResponseEntity.ok(cantidad);
             }
-            case "crear" -> {
+            case "crear" : {
                 try {
                     int idEmppal = jsonNode.get("id_emppal").asInt();
                     String usuNombre = jsonNode.get("usu_nombre").asText().trim();
@@ -83,7 +83,7 @@ public class UsuarioRestController {
                     ) return new ResponseEntity<>("campos incorrectos", HttpStatus.OK);
 
 
-                    Usuario usuariosDb = usuarioService.encontrarUsuariosPorNombre(usuCorreo.toLowerCase(),miIdEmppal);
+                    Usuario usuariosDb = usuarioService.encontrarUsuariosPorNombreSin(usuCorreo.toLowerCase(),miIdEmppal);
                     PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                     String encodedPassword = passwordEncoder.encode(usuContrasena);
 
@@ -128,7 +128,7 @@ public class UsuarioRestController {
                     }
                 }
             }
-            case "informacionTotal" -> {
+            case "informacionTotal" : {
                 Integer numeroDePagina = (Integer) requestBody.get("numeroDePagina");
                 Integer numeroElementosPorPagina = (Integer) requestBody.get("numeroElementosPorPagina");
                 String texto = (String) requestBody.get("texto");
@@ -139,7 +139,7 @@ public class UsuarioRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "cantidadDePaginas" -> {
+            case "cantidadDePaginas" : {
                 String textoC = (String) requestBody.get("texto");
                 Integer usuariosTodosDbC = usuarioService.cantidadPaginasUsuarios(checkBoxEstado, textoC,miIdEmppal);
                 if (usuariosTodosDbC != null) {
@@ -148,7 +148,7 @@ public class UsuarioRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "obtenerId" -> {
+            case "obtenerId" : {
                 Integer usuId = (Integer) requestBody.get("usu_id");
                 Usuario usuariosDbI = usuarioService.encontrarUsuariosPorId(usuId, null,miIdEmppal);
                 if (usuariosDbI != null) {
@@ -157,7 +157,7 @@ public class UsuarioRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "borrar" -> {
+            case "borrar" : {
                 Integer usuIdD = (Integer) requestBody.get("usu_id");
                 Usuario usuariosDbB = usuarioService.encontrarUsuariosPorId(usuIdD, "A",miIdEmppal);
                 if (usuariosDbB != null) {
@@ -168,7 +168,7 @@ public class UsuarioRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "activar" -> {
+            case "activar" : {
                 Integer usuIdDA = (Integer) requestBody.get("usu_id");
                 Usuario usuariosDbBA = usuarioService.encontrarUsuariosPorId(usuIdDA, "I",miIdEmppal);
                 if (usuariosDbBA != null) {
@@ -179,7 +179,7 @@ public class UsuarioRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "usuarioSoloNombre" -> {
+            case "usuarioSoloNombre" : {
                 List<Usuario> usuariosDbS = usuarioService.encontrarUsuariosNombres("A",miIdEmppal);
                 if (usuariosDbS != null && !usuariosDbS.isEmpty()) {
                     return new ResponseEntity<>(usuariosDbS, HttpStatus.OK);
@@ -187,7 +187,7 @@ public class UsuarioRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            default -> {
+            default : {
                 return ResponseEntity.ok("Opcion no encontrada");
             }
         }
@@ -203,8 +203,8 @@ public class UsuarioRestController {
         String opcion = (String) requestBody.get("opcion");
 
         switch (opcion) {
-            case "obtenerUsuarioPorToken" -> {
-                Usuario usuario = usuarioService.encontrarUsuariosPorNombre(miCorreo,miIdEmppal);
+            case "obtenerUsuarioPorToken" : {
+                Usuario usuario = usuarioService.encontrarUsuariosPorNombre(miCorreo,miIdEmppal,"A");
                 if (usuario != null) {
                     return new ResponseEntity<>(usuario, HttpStatus.OK);
                 } else {
@@ -212,7 +212,7 @@ public class UsuarioRestController {
                 }
             }
 
-            case "editarContrasena" -> {
+            case "editarContrasena" : {
                 String contrasenaAntigua = (String) requestBody.get("prv_contrasena");
                 contrasenaAntigua = unwrapPassword(contrasenaAntigua);
                 String contrasenaNueva = (String) requestBody.get("prv_contrasenaN");
@@ -222,7 +222,7 @@ public class UsuarioRestController {
                 PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
                 String encodedPasswordN = passwordEncoder.encode(contrasenaNueva);
 
-                Usuario miUsuario = usuarioService.encontrarUsuariosPorNombre(miCorreo,miIdEmppal);
+                Usuario miUsuario = usuarioService.encontrarUsuariosPorNombre(miCorreo,miIdEmppal,"A");
                 if (miUsuario != null) {
                     String miContrasenaActual = miUsuario.getUsuContrasena();
                     if (passwordEncoder.matches(contrasenaAntigua, miContrasenaActual)) {
@@ -237,7 +237,7 @@ public class UsuarioRestController {
                 }
             }
 
-            default -> {
+            default : {
                 return ResponseEntity.ok("Opcion no encontrada");
             }
         }

@@ -10,7 +10,8 @@ public interface IUsuarioServices {
 
     public Usuario encontrarUsuariosPorId(Integer proId, String proEstado, Integer idEmppal);
 
-    public Usuario encontrarUsuariosPorNombre(String proNombre, Integer idEmppal);
+    public Usuario encontrarUsuariosPorNombre(String proNombre, Integer idEmppal, String usuEstado);
+    public Usuario encontrarUsuariosPorNombreSin(String proNombre, Integer idEmppal);
 
     public Integer cantidadUsuarios(String proEstado, Integer idEmppal);
 

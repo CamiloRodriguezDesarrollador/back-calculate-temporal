@@ -3,6 +3,9 @@ package com.plprv.PlataformaProveedores.service;
 import com.plprv.PlataformaProveedores.dao.ISubProcesoDao;
 import com.plprv.PlataformaProveedores.entity.SubProceso;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,10 +65,8 @@ public class SubProcesoServices implements ISubProcesoServices {
         }else if (numeroDePagina<1){
             numeroDePagina = 1;
         }
-        Integer limiteInicial = (numeroDePagina-1)*(numeroElementosPorPagina);
-
-        List<SubProceso> miSubProceso = (List<SubProceso>) subProcesoDao.findBySprEstadoPaginaFiltro(sprEstado,texto.toLowerCase(),numeroElementosPorPagina,
-                limiteInicial , proId, idEmppal);
+        Pageable pageable = PageRequest.of(numeroDePagina - 1, numeroElementosPorPagina, Sort.Direction.DESC, "sprId");
+        List<SubProceso> miSubProceso = (List<SubProceso>) subProcesoDao.findBySprEstadoPaginaFiltro(sprEstado,texto.toLowerCase(), proId, idEmppal, pageable);
         return miSubProceso;
     }
 

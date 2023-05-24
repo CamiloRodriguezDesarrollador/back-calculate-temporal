@@ -15,24 +15,26 @@ public class RegexService implements IRegexService {
 
     @Override
     public boolean isTextNormal(String texto) {
-        Pattern pattern = Pattern.compile("^[a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ./-]{2,300}$");
+        Pattern pattern = Pattern.compile("^[a-zA-Z0-9\\sáéíóúÁÉÍÓÚñÑ.?()¿=:/\\-]{2,300}$");
         return pattern.matcher(texto).matches();
     }
 
     @Override
     public boolean isObservacion(String texto) {
-        Pattern pattern = Pattern.compile("^[a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ./-]{0,300}$");
+         Pattern pattern = Pattern.compile("^[a-zA-Z0-9\\sáéíóúÁÉÍÓÚñÑ.?()¿=:/\\-]{0,300}$");
+
         return pattern.matcher(texto).matches();
     }
     @Override
     public boolean isData(String texto) {
-        Pattern pattern = Pattern.compile("^[a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ./-]{0,300}$");
+         Pattern pattern = Pattern.compile("^[a-zA-Z0-9\\sáéíóúÁÉÍÓÚñÑ./\\-]{0,300}$");
+
         return pattern.matcher(texto).matches();
     }
 
     @Override
     public boolean isSelectText(String texto) {
-        Pattern pattern = Pattern.compile("^[a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ./-]{1,50}$");
+        Pattern pattern = Pattern.compile("^[a-zA-Z0-9\\sáéíóúÁÉÍÓÚñÑ.?()¿=:/\\-]{1,50}$");
         return pattern.matcher(texto).matches();
     }
 
@@ -44,7 +46,7 @@ public class RegexService implements IRegexService {
 
     @Override
     public boolean isSelectNumber(Integer texto) {
-        Pattern pattern = Pattern.compile("^[a-zA-Z0-9\sáéíóúÁÉÍÓÚñÑ./-]{1,50}$");
+        Pattern pattern = Pattern.compile("^[a-zA-Z0-9\\sáéíóúÁÉÍÓÚñÑ./\\-]{1,50}$");
         return pattern.matcher(texto.toString()).matches();
     }
 

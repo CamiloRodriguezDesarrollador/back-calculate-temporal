@@ -4,6 +4,9 @@ import com.plprv.PlataformaProveedores.dao.IProveedorEvaDao;
 import com.plprv.PlataformaProveedores.entity.DocumentosProveedor;
 import com.plprv.PlataformaProveedores.entity.ProveedorEva;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -98,8 +101,8 @@ public class ProveedorEvaServices implements IProveedorEvaServices {
         }else if (numeroDePagina<1){
             numeroDePagina = 1;
         }
-        Integer limiteInicial = (numeroDePagina-1)*(numeroElementosPorPagina);
-        return (List<ProveedorEva>) proveedorEvaDao.findByPreEstadoPaginaFiltro(preEstado,texto.toLowerCase(),numeroElementosPorPagina,limiteInicial,perId, idEmppal);
+        Pageable pageable = PageRequest.of(numeroDePagina - 1, numeroElementosPorPagina, Sort.Direction.DESC, "preId");
+        return (List<ProveedorEva>) proveedorEvaDao.findByPreEstadoPaginaFiltro(preEstado,texto.toLowerCase(),perId, idEmppal, pageable);
     }
 
     @Override

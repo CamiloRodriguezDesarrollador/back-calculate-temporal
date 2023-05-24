@@ -1,6 +1,7 @@
 package com.plprv.PlataformaProveedores.dao;
 
 import com.plprv.PlataformaProveedores.entity.Autenticacion;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -26,7 +27,6 @@ public interface IAutenticacionDao extends CrudRepository<Autenticacion, Long> {
     List<Autenticacion> findByAutEstadoFiltro(String autEstado, String texto, Integer idEmppal);
 
     @Query("SELECT p FROM Autenticacion p WHERE (lower(p.autCorreo) LIKE %:texto% or lower(p.prvNombre) LIKE %:texto% or p.prvNd LIKE %:texto% " +
-            ") AND p.autEstado = :autEstado AND (p.idEmppal = :idEmppal) ORDER BY p.autId DESC LIMIT " +
-            " :numeroElementosPorPagina OFFSET :limiteInicial")
-    List<Autenticacion> findByAutEstadoPaginaFiltro(String autEstado, String texto, Integer numeroElementosPorPagina, Integer limiteInicial, Integer idEmppal);
+            ") AND p.autEstado = :autEstado AND (p.idEmppal = :idEmppal) ORDER BY p.autId DESC")
+    List<Autenticacion> findByAutEstadoPaginaFiltro(String autEstado, String texto, Integer idEmppal, Pageable pageable);
 }

@@ -7,7 +7,7 @@ import com.plprv.PlataformaProveedores.entity.Documentos;
 import com.plprv.PlataformaProveedores.entity.FormularioProceso;
 import com.plprv.PlataformaProveedores.entity.ProveedorDoc;
 import com.plprv.PlataformaProveedores.service.*;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.sql.SQLException;
+import java.sql.SQLOutput;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -55,7 +56,7 @@ public class ProveedorDocRestController {
         Integer miIdEmppal = obtenerUsuarioAud.obtnerIdEmppalToken (token);
 
         switch (opcion) {
-            case "informacionTabla" -> {
+            case "informacionTabla" : {
                 Integer numeroDePagina = jsonNode.get("numeroDePagina").asInt();
                 Integer numeroElementosPorPagina = jsonNode.get("numeroElementosPorPagina").asInt();
                 Integer prvIdD = jsonNode.get("prv_id").asInt();
@@ -78,7 +79,7 @@ public class ProveedorDocRestController {
                     return new ResponseEntity<>("sin_datos", HttpStatus.OK);
                 }
             }
-            case "cantidadDePaginas" -> {
+            case "cantidadDePaginas" : {
                 Integer prvIdP = jsonNode.get("prv_id").asInt();
                 Integer crtIdP = jsonNode.get("crt_id").asInt();
                 Integer perIdP = jsonNode.get("per_id").asInt();
@@ -98,7 +99,7 @@ public class ProveedorDocRestController {
                     return new ResponseEntity<>("sin_datos", HttpStatus.OK);
                 }
             }
-            case "informacionTablaTodo" -> {
+            case "informacionTablaTodo" : {
                 Integer prvIdDT = jsonNode.get("prv_id").asInt();
                 Integer crtIdT = jsonNode.get("crt_id").asInt();
                 Integer forIdT = jsonNode.get("for_id").asInt();
@@ -118,7 +119,7 @@ public class ProveedorDocRestController {
                     return new ResponseEntity<>("sin_datos", HttpStatus.OK);
                 }
             }
-            case "calcularDocumentacion" -> {
+            case "calcularDocumentacion" : {
                 Integer fodId = jsonNode.get("fod_id").asInt();
                 String estadoNuevo = "A";
                 List<FormularioProceso> formularios = formularioProcesoService.encontrarFormulariosPorDetalle(fodId,miIdEmppal);
@@ -136,38 +137,38 @@ public class ProveedorDocRestController {
                         LocalDate hoy;
                         try {
                             switch (vigenciaFormularioDetalle) {
-                                case "1" -> {
+                                case "1" : {
                                     fecha = LocalDate.parse(prov.getPrdFechaDocumento(), DateTimeFormatter.ISO_LOCAL_DATE);
                                     hoy = LocalDate.now();
                                     diasVigencia = 365 - ChronoUnit.DAYS.between(fecha, hoy);
                                 }
-                                case "2" -> {
+                                case "2" : {
                                     fecha = LocalDate.parse(prov.getPrdFechaDocumento(), DateTimeFormatter.ISO_LOCAL_DATE);
                                     hoy = LocalDate.now();
                                     diasVigencia = 730 - ChronoUnit.DAYS.between(fecha, hoy);
                                 }
-                                case "3" -> {
+                                case "3" : {
                                     fecha = LocalDate.parse(prov.getPrdFechaDocumento(), DateTimeFormatter.ISO_LOCAL_DATE);
                                     hoy = LocalDate.now();
                                     diasVigencia = 1095 - ChronoUnit.DAYS.between(fecha, hoy);
                                 }
-                                case "4" -> {
+                                case "4" : {
                                     fecha = LocalDate.parse(prov.getPrdFechaDocumento(), DateTimeFormatter.ISO_LOCAL_DATE);
                                     hoy = LocalDate.now();
                                     diasVigencia = 1460 - ChronoUnit.DAYS.between(fecha, hoy);
                                 }
-                                case "5" -> {
+                                case "5" : {
                                     fecha = LocalDate.parse(prov.getPrdFechaDocumento(), DateTimeFormatter.ISO_LOCAL_DATE);
                                     hoy = LocalDate.now();
                                     diasVigencia = 1825 - ChronoUnit.DAYS.between(fecha, hoy);
                                 }
-                                case "10" -> {
+                                case "10" : {
                                     fecha = LocalDate.parse(prov.getPrdFechaDocumento(), DateTimeFormatter.ISO_LOCAL_DATE);
                                     hoy = LocalDate.now();
                                     diasVigencia = 3650 - ChronoUnit.DAYS.between(fecha, hoy);
                                 }
-                                case "NA" -> diasVigencia = 91;
-                                default -> {
+                                case "NA" : diasVigencia = 91;
+                                default : {
                                 }
                             }
                         } catch (Exception ignored) {
@@ -186,7 +187,7 @@ public class ProveedorDocRestController {
                 }
                 return new ResponseEntity<>("actualizado", HttpStatus.OK);
             }
-            case "informeGeneral" -> {
+            case "informeGeneral" : {
                 Integer prvIdDG = jsonNode.get("prv_id").asInt();
                 Integer crtIdG = jsonNode.get("crt_id").asInt();
                 Integer perIdG = jsonNode.get("per_id").asInt();
@@ -203,7 +204,7 @@ public class ProveedorDocRestController {
                     return new ResponseEntity<>("sin_datos", HttpStatus.OK);
                 }
             }
-            case "informacionTablaEvaluacion" -> {
+            case "informacionTablaEvaluacion" : {
                 Integer numeroDePaginaE = jsonNode.get("numeroDePagina").asInt();
                 Integer numeroElementosPorPaginaE = jsonNode.get("numeroElementosPorPagina").asInt();
                 Integer prvIdE = jsonNode.get("prv_id").asInt();
@@ -222,7 +223,7 @@ public class ProveedorDocRestController {
                     return new ResponseEntity<>("sin_datos", HttpStatus.OK);
                 }
             }
-            case "cantidadDePaginasEvaluacion" -> {
+            case "cantidadDePaginasEvaluacion" : {
                 Integer prvIdC = jsonNode.get("prv_id").asInt();
                 Integer crtIdC = jsonNode.get("crt_id").asInt();
                 Integer perIdC = jsonNode.get("per_id").asInt();
@@ -238,7 +239,7 @@ public class ProveedorDocRestController {
                     return new ResponseEntity<>("sin_datos", HttpStatus.OK);
                 }
             }
-            default -> {
+            default : {
                 return ResponseEntity.ok("Opcion no encontrada");
             }
         }
@@ -261,7 +262,7 @@ public class ProveedorDocRestController {
         String vigencia = "NA";
 
         switch (opcion) {
-            case "guardarFormulario" -> {
+            case "guardarFormulario" : {
                 try {
                     Integer idEmppal = jsonNode.get("id_emppal").asInt();
                     Integer fopId = jsonNode.get("fop_id").asInt();
@@ -287,37 +288,37 @@ public class ProveedorDocRestController {
 
                     try {
                         switch (vigencia) {
-                            case "1" -> {
+                            case "1" : {
                                 fecha = LocalDate.parse(prdFechaDocumento, DateTimeFormatter.ISO_LOCAL_DATE);
                                 hoy = LocalDate.now();
                                 diasVigencia = 365 - ChronoUnit.DAYS.between(fecha, hoy);
                             }
-                            case "2" -> {
+                            case "2" : {
                                 fecha = LocalDate.parse(prdFechaDocumento, DateTimeFormatter.ISO_LOCAL_DATE);
                                 hoy = LocalDate.now();
                                 diasVigencia = 730 - ChronoUnit.DAYS.between(fecha, hoy);
                             }
-                            case "3" -> {
+                            case "3" : {
                                 fecha = LocalDate.parse(prdFechaDocumento, DateTimeFormatter.ISO_LOCAL_DATE);
                                 hoy = LocalDate.now();
                                 diasVigencia = 1095 - ChronoUnit.DAYS.between(fecha, hoy);
                             }
-                            case "4" -> {
+                            case "4" : {
                                 fecha = LocalDate.parse(prdFechaDocumento, DateTimeFormatter.ISO_LOCAL_DATE);
                                 hoy = LocalDate.now();
                                 diasVigencia = 1460 - ChronoUnit.DAYS.between(fecha, hoy);
                             }
-                            case "5" -> {
+                            case "5" : {
                                 fecha = LocalDate.parse(prdFechaDocumento, DateTimeFormatter.ISO_LOCAL_DATE);
                                 hoy = LocalDate.now();
                                 diasVigencia = 1825 - ChronoUnit.DAYS.between(fecha, hoy);
                             }
-                            case "10" -> {
+                            case "10" : {
                                 fecha = LocalDate.parse(prdFechaDocumento, DateTimeFormatter.ISO_LOCAL_DATE);
                                 hoy = LocalDate.now();
                                 diasVigencia = 3650 - ChronoUnit.DAYS.between(fecha, hoy);
                             }
-                            default -> {
+                            default : {
                             }
                         }
                     } catch (Exception ignored) {
@@ -386,7 +387,7 @@ public class ProveedorDocRestController {
                     }
                 }
             }
-            case "proveedorPorTokenFormulario" -> {
+            case "proveedorPorTokenFormulario" : {
                 Integer prvId = (Integer) requestBody.get("prv_id");
                 List<ProveedorDoc> proveedorDb = proveedorDocService.encontrarProveedorDocsPorPrvId(prvId,miIdEmppal);
                 if (proveedorDb != null) {
@@ -395,7 +396,7 @@ public class ProveedorDocRestController {
                     return new ResponseEntity<>("sin_datos", HttpStatus.OK);
                 }
             }
-            default -> {
+            default : {
                 return ResponseEntity.ok("Opcion no encontrada");
             }
         }

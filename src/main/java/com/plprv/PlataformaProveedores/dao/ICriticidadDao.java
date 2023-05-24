@@ -1,6 +1,7 @@
 package com.plprv.PlataformaProveedores.dao;
 
 import com.plprv.PlataformaProveedores.entity.Criticidad;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
@@ -24,7 +25,6 @@ public interface ICriticidadDao extends CrudRepository<Criticidad , Long> {
     List<Criticidad> findByCrtEstadoFiltro(String crtEstado, String texto , Integer idEmppal);
 
     @Query("SELECT p FROM Criticidad p WHERE (lower(p.crtNombre) LIKE %:texto% or lower(p.crtDetalle) LIKE %:texto%)" +
-            " AND p.crtEstado = :crtEstado AND (p.idEmppal = :idEmppal) ORDER BY p.crtId DESC LIMIT " +
-            " :numeroElementosPorPagina OFFSET :limiteInicial")
-    List<Criticidad> findByCrtEstadoPaginaFiltro(String crtEstado, String texto, Integer numeroElementosPorPagina, Integer limiteInicial , Integer idEmppal);
+            " AND p.crtEstado = :crtEstado AND (p.idEmppal = :idEmppal) ORDER BY p.crtId DESC ")
+    List<Criticidad> findByCrtEstadoPaginaFiltro(String crtEstado, String texto, Integer idEmppal, Pageable pageable);
 }

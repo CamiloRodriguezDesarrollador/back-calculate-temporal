@@ -37,7 +37,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
         }
 
         try {
-            Usuario usuario = usuarioDao.findByUsuCorreoAndIdEmppal(correoSinSufijo,idEmppal);
+            Usuario usuario = usuarioDao.findByUsuCorreoAndIdEmppalAndUsuEstado(correoSinSufijo,idEmppal,"A");
             if (usuario!= null) return new UserDetailsImpl(usuario);
         } catch (Exception e) {
         }

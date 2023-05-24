@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.plprv.PlataformaProveedores.service.IIndicadoresServices;
 import com.plprv.PlataformaProveedores.service.ObtenerUsuarioAud;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,43 +42,43 @@ public class IndicadoresRestController {
 
 
         switch (opcion) {
-            case "cantidadProveedoresTotal" -> {
+            case "cantidadProveedoresTotal" : {
                 Integer cantidadTotalProveedores = indicadoresService.cantidadProveedoresTotal(miIdEmppal);
                 return new ResponseEntity<>(cantidadTotalProveedores, HttpStatus.OK);
             }
-            case "cantidadPeriodossTotal" -> {
+            case "cantidadPeriodossTotal" : {
                 Integer cantidadTotalPeriodos = indicadoresService.cantidadPeriodosTotal(miIdEmppal);
                 return new ResponseEntity<>(cantidadTotalPeriodos, HttpStatus.OK);
             }
-            case "cantidadProcesosTotal" -> {
+            case "cantidadProcesosTotal" : {
                 Integer cantidadProcesosTotal = indicadoresService.cantidadProcesosTotal(miIdEmppal);
                 return new ResponseEntity<>(cantidadProcesosTotal, HttpStatus.OK);
             }
-            case "obtenerTodaInformacionProveedorEva" -> {
+            case "obtenerTodaInformacionProveedorEva" : {
                 List<Object> informacionTotal = indicadoresService.obtenerTodaInformacionProveedorEva(crtId, perId, proId,miIdEmppal);
                 return new ResponseEntity<>(informacionTotal, HttpStatus.OK);
             }
-            case "informacionTotalGrafico" -> {
+            case "informacionTotalGrafico" : {
                 List<Object> informacionTotalGrafico = indicadoresService.obtenerTodaInformacionTabla(crtId, perId, proId,miIdEmppal);
                 return new ResponseEntity<>(informacionTotalGrafico, HttpStatus.OK);
             }
-            case "cantidadProveedoresFiltro" -> {
+            case "cantidadProveedoresFiltro" : {
                 Integer cantidadProveedoresFiltro = indicadoresService.cantidadProveedoreFiltroTabla(crtId, perId, proId,miIdEmppal);
                 return new ResponseEntity<>(cantidadProveedoresFiltro, HttpStatus.OK);
             }
-            case "cantidadProcesosFiltro" -> {
+            case "cantidadProcesosFiltro" : {
                 List<Object> informacionProcesosGrafico = indicadoresService.obtenerProcesosFiltroTabla(crtId, perId, proId,miIdEmppal);
                 return new ResponseEntity<>(informacionProcesosGrafico, HttpStatus.OK);
             }
-            case "cantidadDocumentosFiltro" -> {
+            case "cantidadDocumentosFiltro" : {
                 List<Object> informacionDocumentosFiltro = indicadoresService.obtenerEstadoDocimentos(crtId, perId, proId,miIdEmppal);
                 return new ResponseEntity<>(informacionDocumentosFiltro, HttpStatus.OK);
             }
-            case "calcularPorcentaje" -> {
+            case "calcularPorcentaje" : {
                 Double procentaje = indicadoresService.porcentajeAvance(crtId, perId, proId,miIdEmppal);
                 return new ResponseEntity<>(procentaje, HttpStatus.OK);
             }
-            default -> {
+            default : {
                 return ResponseEntity.ok("Opcion no encontrada");
             }
         }

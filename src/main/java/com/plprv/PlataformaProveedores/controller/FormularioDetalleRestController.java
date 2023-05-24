@@ -7,7 +7,7 @@ import com.plprv.PlataformaProveedores.entity.FormularioDetalle;
 import com.plprv.PlataformaProveedores.service.IFormularioDetalleServices;
 import com.plprv.PlataformaProveedores.service.IRegexService;
 import com.plprv.PlataformaProveedores.service.ObtenerUsuarioAud;
-import jakarta.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -56,11 +56,11 @@ public class FormularioDetalleRestController {
         String checkBoxEstado = (String) requestBody.get("checkBoxEstado");
 
         switch (opcion) {
-            case "cantidad" -> {
+            case "cantidad" : {
                 Integer cantidad = formularioDetalleService.cantidadFormularioDetalles(checkBoxEstado,miIdEmppal);
                 return ResponseEntity.ok(cantidad);
             }
-            case "crear" -> {
+            case "crear" : {
                 try {
                     Integer idEmppal = jsonNode.get("id_emppal").asInt();
                     String fodNombre = jsonNode.get("fod_nombre").asText().trim();
@@ -115,7 +115,7 @@ public class FormularioDetalleRestController {
                     }
                 }
             }
-            case "informacionTotal" -> {
+            case "informacionTotal" : {
                 Integer numeroDePagina = (Integer) requestBody.get("numeroDePagina");
                 Integer numeroElementosPorPagina = (Integer) requestBody.get("numeroElementosPorPagina");
                 String texto = (String) requestBody.get("texto");
@@ -128,7 +128,7 @@ public class FormularioDetalleRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "cantidadDePaginas" -> {
+            case "cantidadDePaginas" : {
                 String textoC = (String) requestBody.get("texto");
                 Integer forIdC = (Integer) requestBody.get("forId");
                 Integer formularioDetalleTodosDbC = formularioDetalleService.cantidadPaginasFormularioDetalles(checkBoxEstado, textoC, forIdC,miIdEmppal);
@@ -138,7 +138,7 @@ public class FormularioDetalleRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "obtenerId" -> {
+            case "obtenerId" : {
                 Integer fodId = (Integer) requestBody.get("fod_id");
                 FormularioDetalle formularioDetallesDbI = formularioDetalleService.encontrarFormularioDetallesPorId(fodId, null,miIdEmppal);
                 if (formularioDetallesDbI != null) {
@@ -147,7 +147,7 @@ public class FormularioDetalleRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "borrar" -> {
+            case "borrar" : {
                 Integer fodIdD = (Integer) requestBody.get("fod_id");
                 FormularioDetalle formularioDetallesDbB = formularioDetalleService.encontrarFormularioDetallesPorId(fodIdD, "A",miIdEmppal);
                 if (formularioDetallesDbB != null) {
@@ -158,7 +158,7 @@ public class FormularioDetalleRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "activar" -> {
+            case "activar" : {
                 Integer fodIdDA = (Integer) requestBody.get("fod_id");
                 FormularioDetalle formularioDetallesDbBA = formularioDetalleService.encontrarFormularioDetallesPorId(fodIdDA, "I",miIdEmppal);
                 if (formularioDetallesDbBA != null) {
@@ -169,7 +169,7 @@ public class FormularioDetalleRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "formularioDetalleSoloNombre" -> {
+            case "formularioDetalleSoloNombre" : {
                 List<FormularioDetalle> formularioDetallesDbS = formularioDetalleService.encontrarFormularioDetallesNombres("A",miIdEmppal);
                 if (formularioDetallesDbS != null && !formularioDetallesDbS.isEmpty()) {
                     return new ResponseEntity<>(formularioDetallesDbS, HttpStatus.OK);
@@ -177,7 +177,7 @@ public class FormularioDetalleRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            case "formularioDetalleCheck" -> {
+            case "formularioDetalleCheck" : {
                 Integer forIdD = (Integer) requestBody.get("for_id");
                 List<FormularioDetalle> formularioDetallesDb = formularioDetalleService.encontrarFormularioDetallesPorFormulario(forIdD, "A",miIdEmppal);
                 if (formularioDetallesDb != null) {
@@ -186,7 +186,7 @@ public class FormularioDetalleRestController {
                     return new ResponseEntity<>(null, HttpStatus.OK);
                 }
             }
-            default -> {
+            default : {
                 return ResponseEntity.ok("Opcion no encontrada");
             }
         }
