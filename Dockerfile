@@ -10,7 +10,7 @@ FROM eclipse-temurin:17-jdk-alpine
 
 VOLUME /tmp
 
-COPY --from=build /app/target/*.jar authorization.jar
+COPY --from=build /app/target/*.jar client.jar
 
 EXPOSE 8080
 
