@@ -1,26 +1,16 @@
-# Etapa de construcción
-FROM gradle:8.2.1-jdk17 AS build
+FROM maven:3.8.4-openjdk-17-slim AS build
 
 WORKDIR /app
 
-# Copia los archivos de Gradle y el archivo de configuración
-COPY gradle gradle
-COPY settings.gradle.kts .
-COPY build.gradle.kts .
+COPY . .
 
-# Copia el código fuente
-COPY src src
+RUN mvn package -DskipTests
 
-# Ejecuta el build usando Gradle
-RUN gradle build --no-daemon
-
-# Etapa de ejecución
 FROM eclipse-temurin:17-jdk-alpine
 
 VOLUME /tmp
 
-# Copia el JAR construido desde la etapa de construcción
-COPY --from=build /app/build/libs/*.jar client.jar
+COPY --from=build /app/target/*.jar authorization.jar
 
 EXPOSE 8080
 
