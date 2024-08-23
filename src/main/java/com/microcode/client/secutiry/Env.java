@@ -13,9 +13,6 @@ public class Env {
 
     @Value("${type.client}")
     public Integer typeClient;
-    @Value("${id.folder.principal.app.provider}")
-    public String idFolderPrincipalProvider;
-
 
     private static final ThreadLocal<String> currentToken = ThreadLocal.withInitial(() -> null);
     private static final ThreadLocal<Integer> currentClient = ThreadLocal.withInitial(() -> null);

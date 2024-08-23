@@ -3,7 +3,6 @@ package com.microcode.client.controller;
 import com.microcode.client.clients.AuditServices;
 import com.microcode.client.clients.AuthServices;
 import com.microcode.client.clients.AuthorizationServices;
-import com.microcode.client.clients.DocumentServices;
 import com.microcode.client.entity.Client;
 import com.microcode.client.entity.clients.Audit;
 import com.microcode.client.entity.clients.Authorization;
@@ -14,7 +13,6 @@ import com.microcode.client.service.ClientServicesI;
 import com.microcode.client.service.RegexServiceI;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
-import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +22,6 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api/client")
-@RefreshScope
 @ResponseStatus(HttpStatus.OK)
 @AllArgsConstructor
 public class ClientRestController {
@@ -32,7 +29,6 @@ public class ClientRestController {
     private final ClientServicesI clientServices;
     private final RegexServiceI regexService;
     private final AuthServices authServices;
-    private final DocumentServices documentServices;
     private final AuthorizationServices authorizationServices;
     private final AuditServices auditServices;
     private final Env env;
@@ -67,7 +63,7 @@ public class ClientRestController {
             client.setCliStatus("I");
             clientServices.updated(client);
             auditServices.create(new Audit("/delete","client",client.toString(), Env.getCurrentMail(), request.getMethod(),
-                    request.getRemoteAddr(),request.getHeader("User-Agent")));
+                    request.getHeader("X-Forwarded-For"),request.getHeader("User-Agent")));
             return "deleted";
         }
         return "not_found";
@@ -81,7 +77,7 @@ public class ClientRestController {
             client.setCliStatus("A");
             clientServices.updated(client);
             auditServices.create(new Audit("/active","client",client.toString(), Env.getCurrentMail(), request.getMethod(),
-                    request.getRemoteAddr(),request.getHeader("User-Agent")));
+                    request.getHeader("X-Forwarded-For"),request.getHeader("User-Agent")));
             return "activated";
         }
         return "not_found";
@@ -164,17 +160,7 @@ public class ClientRestController {
             cli.setCliStatus("A");
             cli.setAudUser(Env.getCurrentMail());
             try {
-                if(!documentServices.ping()) throw new RuntimeException("Document services not available.");
                 clientServices.create(cli);
-                String nameFolderClient = cli.getCliName()+"-"+cli.getCliNd();
-                String folderClient = documentServices.createFolder(env.idFolderPrincipalProvider, nameFolderClient,false);
-                if(folderClient == null)  throw new RuntimeException("Folder client dont exist.");
-                cli.setCliFolder(folderClient);
-                String folderInternal = documentServices.createFolder(folderClient, "Documentos Internos",true);
-                if(folderInternal == null)  throw new RuntimeException("Folder internal client dont exist");
-                cli.setCliFolderInternal(folderInternal);
-                clientServices.create(cli);
-
             } catch (DataIntegrityViolationException e) {
                 if (((SQLException) e.getCause().getCause()).getErrorCode() == 1062 || ((SQLException) e.getCause().getCause()).getErrorCode() == 1)
                     return "it_already_exists";
@@ -196,7 +182,7 @@ public class ClientRestController {
         client.setCliFolder(cliFolder);
         clientServices.updated(client);
         auditServices.create(new Audit("/updatedFolder","client",client.toString(), Env.getCurrentMail(), request.getMethod(),
-                request.getRemoteAddr(),request.getHeader("User-Agent")));
+                request.getHeader("X-Forwarded-For"),request.getHeader("User-Agent")));
         return "updated";
     }
 
@@ -208,7 +194,7 @@ public class ClientRestController {
         clients.setCliFolderInternal(cliFolder);
         clientServices.updated(clients);
         auditServices.create(new Audit("/updatedFolder","client",clients.toString(), Env.getCurrentMail(), request.getMethod(),
-                request.getRemoteAddr(),request.getHeader("User-Agent")));
+                request.getHeader("X-Forwarded-For"),request.getHeader("User-Agent")));
         return "updated";
     }
 
@@ -242,7 +228,7 @@ public class ClientRestController {
             try {
                 clientServices.updated(client);
                 auditServices.create(new Audit("/","client",client.toString(), Env.getCurrentMail(), request.getMethod(),
-                        request.getRemoteAddr(),request.getHeader("User-Agent")));
+                        request.getHeader("X-Forwarded-For"),request.getHeader("User-Agent")));
 
             } catch (DataIntegrityViolationException e) {
                 if (((SQLException) e.getCause().getCause()).getErrorCode() == 1062 || ((SQLException) e.getCause().getCause()).getErrorCode() == 1 ) {
@@ -284,7 +270,7 @@ public class ClientRestController {
             try {
                 clientServices.updated(client);
                 auditServices.create(new Audit("/update","client",client.toString(), Env.getCurrentMail(), request.getMethod(),
-                        request.getRemoteAddr(),request.getHeader("User-Agent")));
+                        request.getHeader("X-Forwarded-For"),request.getHeader("User-Agent")));
             } catch (DataIntegrityViolationException e) {
                 if (((SQLException) e.getCause().getCause()).getErrorCode() == 1062 || ((SQLException) e.getCause().getCause()).getErrorCode() == 1 )
                     return "it_already_exists";
