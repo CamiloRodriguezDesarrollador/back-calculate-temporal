@@ -1,4 +1,4 @@
-package com.microcode.client;
+package com.microcode.client.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
@@ -12,8 +12,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry config) {
-        config.enableSimpleBroker("/company");
-        config.setApplicationDestinationPrefixes("/app");
+        config.enableSimpleBroker("/api/chat/company");
+        config.setApplicationDestinationPrefixes("/api/chat/app");
     }
 
     @Override
@@ -21,10 +21,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/gs-guide-websocket")
                 .addInterceptors(new IpHandshakeInterceptor())
                 .setAllowedOrigins(
-                        "http://localhost:4200",
-                        "http://localhost:5173",
-                        "http://127.0.0.1:5500"
+                        "http://localhost:5173"
                 )
         ;
     }
+
+
 }

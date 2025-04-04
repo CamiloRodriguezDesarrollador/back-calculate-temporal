@@ -1,60 +1,48 @@
 package com.microcode.client.service.oracle;
 
+import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.service.ChatSessionManager;
 import com.microcode.client.entity.Chat;
 import com.microcode.client.entity.ContentResponse;
 import com.microcode.client.entity.Option;
 import com.microcode.client.entity.oracle.Employee;
+import com.microcode.client.service.mysql.ActionServices;
 import com.microcode.client.service.mysql.QuantityChatServices;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 @Service
+@AllArgsConstructor
+@Setter
+@Getter
 public class ActionsOracleServices {
 
     private final EmployeeServices employeeService;
     private final ContractServices contractServices;
     private final ChatSessionManager chatSessionManager;
     private final QuantityChatServices quantityChatServices;
-    private final HttpServletRequest request;
+    private final ActionServices actionServices;
+    public static List<Option> optionsBasic;
+    public static List<Option> optionsPrincipal;
 
-    public ActionsOracleServices(EmployeeServices employeeService
-            , ContractServices contractServices
-            , ChatSessionManager chatSessionManager
-            , QuantityChatServices quantityChatServices
-            , HttpServletRequest request ) {
-        this.employeeService = employeeService;
-        this.contractServices = contractServices;
-        this.chatSessionManager = chatSessionManager;
-        this.quantityChatServices = quantityChatServices;
-        this.request = request;
+    //    Inicializar opciones
+
+    @PostConstruct
+    public void init() {
+        actionServices.updateTypesChat();
     }
 
-    public List<Option> optionsPrincipal =
-            List.of(
-                    new Option(3,"Certificados laborales 📄",null),
-                    new Option(4,"Comprobante de pago 💲",null),
-                    new Option(5,"Planilla Autoliquidación 📆",null),
-                    new Option(6,"Ingresos y retenciones 💰",null),
-                    new Option(7,"Información CCF 🗃",null),
-                    new Option(8,"Información EPS 🧂",null),
-                    new Option(998,"Finalizar chat 🚪",null));
-
-    public ContentResponse responseUnauthorized
-            = new ContentResponse(
-                    "<p>Para utilizar esta opción debes estar autenticado.<p>",
-            null, "verified",null);
-
-    public ContentResponse responseTimeOut
-            = new ContentResponse(
-            "<p>Se ha vencido el tiempo de autorización, por favor verificar nuevamente tu identificación.<p>",
-            null, "verified",null);
-
+    //    Respuestas llamadas desde actions
 
     public ContentResponse initialChat(Map<String,String> inputs){
         return new ContentResponse(
@@ -106,7 +94,8 @@ public class ActionsOracleServices {
                 String.format("""
                 <p>Estás solicitando información para la persona con documento <strong>%s-%s</strong>.
                 Para continuar, por favor verifica el código enviado a tu correo.
-                Tu correo registrado es: <strong>%s</strong></p>
+                Tu correo registrado es: <strong>%s</strong>. En caso que no sea tu correo, por favor contacta
+                a tu empresa.</p>
                 """, typeDocument, document, mailUser),
                 null, "number", 2
         );
@@ -147,8 +136,8 @@ public class ActionsOracleServices {
     public ContentResponse getCertifiedJob(Map<String,String> inputs) {
         String chatId = inputs.get("chatId");
         Chat chat = chatSessionManager.getChatById(chatId);
-        if(chat == null || !chat.getChatAuthenticated() ) return responseUnauthorized;
-        if(chatSessionManager.validateTime(chat) || !chat.getChatAuthenticated()) return responseTimeOut;
+        if(chat == null || !chat.getChatAuthenticated() ) return unauthorized();
+        if(chatSessionManager.validateTime(chat) || !chat.getChatAuthenticated()) return timeOut();
 
         List<String> contracts = contractServices.findByIds(Long.valueOf(chat.getDocument()), chat.getTypeDocument());
 
@@ -171,8 +160,8 @@ public class ActionsOracleServices {
         String chatId = inputs.get("chatId");
         String actionId = inputs.get("actionId");
         Chat chat = chatSessionManager.getChatById(chatId);
-        if(chat == null || !chat.getChatAuthenticated() ) return responseUnauthorized;
-        if(chatSessionManager.validateTime(chat) || !chat.getChatAuthenticated()) return responseTimeOut;
+        if(chat == null || !chat.getChatAuthenticated() ) return unauthorized();
+        if(chatSessionManager.validateTime(chat) || !chat.getChatAuthenticated()) return timeOut();
 
         String detail = inputs.get("detail");
         quantityChatServices.createForAction( Integer.valueOf(actionId), chat.getTypeDocument(), chat.getDocument()  );
@@ -180,10 +169,45 @@ public class ActionsOracleServices {
         return new ContentResponse(
                 String.format("""
                     <p>Se ha remitido el certificado del contrato <strong>%s</strong> a tu correo.
-                    Por favor confirma si requieres algo mas</p>
+                    Por favor confirma si requieres algo mas.</p>
                     """, detail),
-                optionsPrincipal, "select",9);
+                optionsBasic, "select",9);
 
+    }
+
+    public ContentResponse finalizedChat(Map<String,String> inputs) {
+        return new ContentResponse(
+                "<p>Espero haberte sido de gran ayuda, si te gusto mi servicio, me harías muy feliz calificándome<p>",
+                null, "calification",999);
+    }
+
+    public ContentResponse closeChat(Map<String,String> inputs) {
+        return new ContentResponse(
+                "<p>Chat cerrado.<p>",
+                null, null,1);
+    }
+
+    public ContentResponse inactiveChat(Map<String,String> inputs) {
+        String chatId = inputs.get("chatId");
+        Chat chat = chatSessionManager.getChatById(chatId);
+        chat.setChatAuthenticated(false);
+        chatSessionManager.setChatById(chatId,chat);
+        return timeOut();
+    }
+
+    public ContentResponse moreOptions(Map<String,String> inputs) {
+        return new ContentResponse(
+                "<p>Por favor elige una de las siguientes opciones.<p>",
+                optionsPrincipal, "select",null);
+    }
+
+
+//    Respuestas predeterminadas
+
+    public ContentResponse unauthorized() {
+        return new ContentResponse(
+                "<p>Para utilizar esta opción debes estar autenticado.<p>",
+                null, "verified",null);
     }
 
     public ContentResponse notFound() {
@@ -204,32 +228,11 @@ public class ActionsOracleServices {
                 optionsPrincipal, "select",null);
     }
 
-    public ContentResponse finalizedChat(Map<String,String> inputs) {
+    public ContentResponse timeOut() {
         return new ContentResponse(
-                "<p>Espero haberte sido de gran ayuda, si te gusto mi servicio, me harías muy feliz calificándome<p>",
-                null, "calification",999);
+                "<p>Se ha vencido el tiempo de autorización, por favor verificar nuevamente tu identificación.<p>",
+                null, "verified",null);
     }
-
-    public ContentResponse closeChat(Map<String,String> inputs) {
-        return new ContentResponse(
-                "<p>Chat cerrado.<p>",
-                null, null,1);
-    }
-
-    public ContentResponse inactiveChat(Map<String,String> inputs) {
-        String chatId = inputs.get("chatId");
-        Chat chat = chatSessionManager.getChatById(chatId);
-        chat.setChatAuthenticated(false);
-        chatSessionManager.setChatById(chatId,chat);
-        return responseTimeOut;
-    }
-
-    public ContentResponse unauthorized() {
-        return responseUnauthorized;
-    }
-
-
-
 
     public String generateCode(){
         String CARACTERES = "abcdefghijklmnopqrstuvwxyz0123456789";
@@ -240,4 +243,13 @@ public class ActionsOracleServices {
                 .reduce((a, b) -> a + b)
                 .orElse("");
     }
+
+    // Actualización opciones
+    public static void updateOptionsPrincipal(List<Option> options) {
+        optionsPrincipal = options;
+    }
+    public static void updateOptionsBasic(List<Option> options) {
+        optionsBasic = options;
+    }
+
 }

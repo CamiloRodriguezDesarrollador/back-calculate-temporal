@@ -2,7 +2,11 @@ package com.microcode.client.service;
 
 import com.microcode.client.entity.Chat;
 import com.microcode.client.entity.ContentMessage;
+import com.microcode.client.entity.mysql.Action;
+import com.microcode.client.entity.mysql.QuantityChat;
+import com.microcode.client.service.mysql.QuantityChatServices;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,6 +15,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -24,6 +29,7 @@ public class ChatSessionManager {
 
     private final ConcurrentMap<String, Chat> activeChats = new ConcurrentHashMap<>();
     private final HttpServletRequest request;
+    private final QuantityChatServices quantityChatServices;
 
     public void updateChatActivity(String chatId, ContentMessage message) {
         try {
@@ -77,6 +83,13 @@ public class ChatSessionManager {
         boolean validate = diffInMinutes > 15;
         if(validate) activeChats.remove(chat.getChatId());
         return validate;
+    }
+
+    public boolean validityQuantityRequest(Action action, Chat chat ) {
+        List<QuantityChat> quantityChats = quantityChatServices.findQuantityForDocumentAndAction(
+                action.getActionId(), chat.getTypeDocument(), chat.getDocument()
+        );
+        return quantityChats.size() >= action.getActionQuantity();
     }
 
     @Scheduled(fixedRate = 600000) // 600000ms = 10 minutos

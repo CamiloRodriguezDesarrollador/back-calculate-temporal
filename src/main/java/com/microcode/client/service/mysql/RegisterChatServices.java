@@ -4,12 +4,18 @@ import com.microcode.client.dao.mysql.IRegisterChatDao;
 import com.microcode.client.entity.Chat;
 import com.microcode.client.entity.ContentMessage;
 import com.microcode.client.entity.ContentResponse;
+import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.entity.mysql.RegisterChat;
 import com.microcode.client.service.ChatSessionManager;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @AllArgsConstructor
@@ -62,6 +68,19 @@ public class RegisterChatServices implements RegisterChatServicesI {
             System.out.println(e.getMessage());
 
         }
+    }
+
+    @Override
+    public List<RegisterChat> findTableData(String text, Integer numberPage, Integer numberElementPage) {
+        if(numberPage == null) numberPage = 1;
+        else if (numberPage<1)  numberPage = 1;
+        Pageable pageable = PageRequest.of(numberPage - 1, numberElementPage, Sort.Direction.DESC, "id");
+        return registerChatDao.findTableData(text.toLowerCase(), pageable);
+    }
+
+    @Override
+    public Integer findTableQuantity(String text) {
+        return registerChatDao.findTableQuantity(text);
     }
 
 }

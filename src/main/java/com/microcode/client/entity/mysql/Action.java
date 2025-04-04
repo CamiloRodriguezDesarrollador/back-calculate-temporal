@@ -20,11 +20,14 @@ public class Action implements Serializable {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Integer actionId;
 
-    @Column(name = "ACT_NAME" , length = 100, nullable = false)
-    private String actionName;
+    @Column(name = "ACT_NAME_FUNCTION" , length = 100, nullable = false)
+    private String actionNameFunction;
 
     @Column(name = "ACT_MESSAGE", length = 250)
     private String actionMessage;
+
+    @Column(name = "ACT_TYPE", length = 250)
+    private String actionType;
 
     @Column(name = "ACT_QUANTITY", length = 10, nullable = false)
     private Integer actionQuantity;
@@ -38,6 +41,7 @@ public class Action implements Serializable {
 
     @Column(name = "AUD_USER" ,length = 100)
     private String audUser;
+
 
     @PrePersist
     public void prePersist() {

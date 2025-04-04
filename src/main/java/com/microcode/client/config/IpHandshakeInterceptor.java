@@ -1,4 +1,4 @@
-package com.microcode.client;
+package com.microcode.client.config;
 
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;

@@ -25,19 +25,33 @@ public class QuantityChat implements Serializable {
     @Column(name = "EPL_ND")
     private String document;
 
-    @Column(name = "AQTC_ID")
+    @Column(name = "ACT_ID")
     private Integer actionId;
 
     @Column(name = "AUD_DATE", nullable = false)
     private Date audDate;
 
-
     @Serial
     private static final long serialVersionUID = 1L;
+
+    @Transient
+    private String actionName;
 
 
     @PrePersist
     public void prePersist() {
         audDate = new Date();
+    }
+
+    public QuantityChat(Integer quantityId, String typeDocument, String document, Integer actionId, Date audDate, String actionName) {
+        this.quantityId = quantityId;
+        this.typeDocument = typeDocument;
+        this.document = document;
+        this.actionId = actionId;
+        this.audDate = audDate;
+        this.actionName = actionName;
+    }
+
+    public QuantityChat() {
     }
 }

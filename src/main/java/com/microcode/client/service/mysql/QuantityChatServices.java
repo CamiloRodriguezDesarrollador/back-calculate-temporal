@@ -1,8 +1,12 @@
 package com.microcode.client.service.mysql;
 
 import com.microcode.client.dao.mysql.IQuantityChatDao;
+import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.entity.mysql.QuantityChat;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -28,6 +32,18 @@ public class QuantityChatServices implements QuantityChatServicesI {
         quantityChatDao.save(quantityChat);
     }
 
+    @Override
+    public List<QuantityChat> findTableData(String text, Integer numberPage, Integer numberElementPage) {
+        if(numberPage == null) numberPage = 1;
+        else if (numberPage<1)  numberPage = 1;
+        Pageable pageable = PageRequest.of(numberPage - 1, numberElementPage, Sort.Direction.DESC, "quantityId");
+        return quantityChatDao.findTableData(text.toLowerCase(), pageable);
+    }
+
+    @Override
+    public Integer findTableQuantity(String text) {
+        return quantityChatDao.findTableQuantity( text);
+    }
 
     public void createForAction(Integer actionId, String typeDocument,String document){
         QuantityChat quantityChat = new QuantityChat();

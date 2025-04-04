@@ -1,15 +1,17 @@
-package com.microcode.client.controller;
+package com.microcode.client.controller.manage;
 
 import com.microcode.client.service.ChatSessionManager;
 import com.microcode.client.entity.*;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.concurrent.ConcurrentMap;
 
 @RestController
 @AllArgsConstructor
+@RequestMapping("/api/chat/chats")
 public class ChatRestController {
 
     private ChatSessionManager chatSessionManager;
@@ -18,6 +20,7 @@ public class ChatRestController {
     public ConcurrentMap<String, Chat> getActiveChats() {
         return chatSessionManager.getActiveChats();
     }
+
 
 
 }
