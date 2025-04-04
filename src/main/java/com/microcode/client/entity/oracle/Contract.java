@@ -1,4 +1,4 @@
-package com.microcode.client.entity.Oracle;
+package com.microcode.client.entity.oracle;
 
 
 import jakarta.persistence.Column;

@@ -4,7 +4,7 @@ import com.microcode.client.service.ChatSessionManager;
 import com.microcode.client.entity.Chat;
 import com.microcode.client.entity.ContentResponse;
 import com.microcode.client.entity.Option;
-import com.microcode.client.entity.Oracle.Employee;
+import com.microcode.client.entity.oracle.Employee;
 import com.microcode.client.service.mysql.QuantityChatServices;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Service;

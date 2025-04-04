@@ -1,6 +1,6 @@
 package com.microcode.client.dao.oracle;
 
-import com.microcode.client.entity.Oracle.Employee;
+import com.microcode.client.entity.oracle.Employee;
 import org.springframework.data.repository.CrudRepository;
 
 public interface IEmployeeDao extends CrudRepository<Employee, Long> {

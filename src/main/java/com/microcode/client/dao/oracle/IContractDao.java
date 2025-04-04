@@ -1,6 +1,6 @@
 package com.microcode.client.dao.oracle;
 
-import com.microcode.client.entity.Oracle.Contract;
+import com.microcode.client.entity.oracle.Contract;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 

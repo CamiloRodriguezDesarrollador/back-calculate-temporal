@@ -1,7 +1,7 @@
 package com.microcode.client.service.oracle;
 
 import com.microcode.client.dao.oracle.IEmployeeDao;
-import com.microcode.client.entity.Oracle.Employee;
+import com.microcode.client.entity.oracle.Employee;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
