@@ -66,9 +66,12 @@ public class RegisterChatRestController {
             return resp;
 
         }catch (Exception e){
+            Chat chat = chatSessionManager.getChatById(chatId);
             System.out.println(e.getMessage());
+            if(chat.getChatAuthenticated()) return actionsOracleServices.notFound();
+            return actionsOracleServices.unauthorized();
 
-            return actionsOracleServices.notFound();
+
         }
 
     }

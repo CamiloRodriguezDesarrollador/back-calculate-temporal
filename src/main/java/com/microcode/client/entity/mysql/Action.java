@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name="PLCHT_ACTION")
+@Table(name="plcht_action")
 @Getter
 @Setter
 public class Action implements Serializable {

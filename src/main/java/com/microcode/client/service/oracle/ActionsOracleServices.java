@@ -224,6 +224,10 @@ public class ActionsOracleServices {
         return responseTimeOut;
     }
 
+    public ContentResponse unauthorized() {
+        return responseUnauthorized;
+    }
+
 
 
 

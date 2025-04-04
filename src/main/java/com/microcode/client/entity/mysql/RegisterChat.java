@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name="PLCHT_REGISTER_CHAT")
+@Table(name="plcht_register_chat")
 @Getter
 @Setter
 public class RegisterChat implements Serializable {
