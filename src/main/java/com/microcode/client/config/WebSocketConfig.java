@@ -21,7 +21,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint("/api/chat/gs-guide-websocket")
                 .addInterceptors(new IpHandshakeInterceptor())
                 .setAllowedOrigins(
-//                        "http://localhost:5173"
+                        "http://localhost:5173"
                 )
         ;
     }
