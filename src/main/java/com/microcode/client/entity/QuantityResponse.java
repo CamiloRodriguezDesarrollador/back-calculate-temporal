@@ -5,17 +5,16 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.util.Date;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @ToString
-public class Option {
+public class QuantityResponse {
 
-    private Integer actionId;
-    private String actionMessage;
-    private String detail;
-    private String actionInternal;
+    private LocalDate dateOptionTrain;
+    private Boolean isOver;
 
 }

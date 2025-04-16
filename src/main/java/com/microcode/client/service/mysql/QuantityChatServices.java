@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -23,8 +24,13 @@ public class QuantityChatServices implements QuantityChatServicesI {
     }
 
     @Override
-    public List<QuantityChat> findQuantityForDocumentAndAction(Integer actionId, String typeDocument,String document) {
-        return quantityChatDao.findByActionIdAndTypeDocumentAndDocument(actionId, typeDocument,document);
+    public  List<QuantityChat> findQuantityForDocumentAndAction(Integer actionId, String typeDocument, String document, Date startDate, Date endDate, String actionDetail) {
+        return quantityChatDao.findByActionIdAndTypeDocumentAndDocument(actionId, typeDocument,document,startDate,endDate,actionDetail);
+    }
+
+    @Override
+    public List<QuantityChat> findQuantityForDocument(String typeDocument, String document, Date startDate, Date endDate, String actionDetail) {
+        return quantityChatDao.findByTypeDocumentAndDocument(typeDocument,document,startDate,endDate,actionDetail);
     }
 
     @Override
@@ -45,11 +51,12 @@ public class QuantityChatServices implements QuantityChatServicesI {
         return quantityChatDao.findTableQuantity( text);
     }
 
-    public void createForAction(Integer actionId, String typeDocument,String document){
+    public void createForAction(Integer actionId, String typeDocument,String document, String detail){
         QuantityChat quantityChat = new QuantityChat();
         quantityChat.setTypeDocument(typeDocument);
         quantityChat.setDocument(document);
         quantityChat.setActionId(actionId);
+        quantityChat.setActionDetail(detail);
         this.create(quantityChat);
     }
 

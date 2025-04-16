@@ -9,11 +9,11 @@ import java.util.List;
 public interface IContractDao extends CrudRepository<Contract, Long> {
 
     @Query("""
-            SELECT CONCAT(p.ctoNumero,' - Ing: ',p.ctoIng )  FROM Contract p
+            SELECT p  FROM Contract p
             WHERE p.eplNd = :eplNd AND p.tdcTdEpl = :tdcTd
             ORDER BY p.ctoIng DESC
-            FETCH FIRST 5 ROWS ONLY
+            FETCH FIRST 2 ROWS ONLY
     """)
-    List<String> findByEplNdAndTdcTdEpl(Long eplNd, String tdcTd);
+    List<Contract> findByEplNdAndTdcTdEpl(Long eplNd, String tdcTd);
 
 }

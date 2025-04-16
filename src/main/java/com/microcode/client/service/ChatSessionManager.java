@@ -2,11 +2,11 @@ package com.microcode.client.service;
 
 import com.microcode.client.entity.Chat;
 import com.microcode.client.entity.ContentMessage;
+import com.microcode.client.entity.QuantityResponse;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.entity.mysql.QuantityChat;
 import com.microcode.client.service.mysql.QuantityChatServices;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -14,6 +14,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -66,8 +68,11 @@ public class ChatSessionManager {
             if (partialChat.getChatDateAuthorized() != null)
                 existingChat.setChatDateAuthorized(partialChat.getChatDateAuthorized());
 
-            if (partialChat.getChatIp() != null)
-                existingChat.setChatIp(partialChat.getChatIp());
+            if (partialChat.getChatStart() != null)
+                existingChat.setChatStart(partialChat.getChatStart());
+
+            if (partialChat.getChatAttempts() != null)
+                existingChat.setChatAttempts(partialChat.getChatAttempts());
 
 
             return existingChat;
@@ -76,20 +81,83 @@ public class ChatSessionManager {
 
     public boolean validateTime(Chat chat) {
         Date lastModified = chat.getChatDateAuthorized();
+        if (lastModified == null && validateTimeStart(chat)) activeChats.remove(chat.getChatId());
         if (lastModified == null) return true;
         Date now = new Date();
         long diffInMillis = now.getTime() - lastModified.getTime();
         long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillis);
-        boolean validate = diffInMinutes > 15;
+        boolean validate = diffInMinutes > 5;
         if(validate) activeChats.remove(chat.getChatId());
         return validate;
     }
 
-    public boolean validityQuantityRequest(Action action, Chat chat ) {
+    public boolean validateTimeCode(Chat chat) {
+        Date generateCode = chat.getChatDateCode();
+        Date now = new Date();
+        long diffInMillis = now.getTime() - generateCode.getTime();
+        long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillis);
+        return diffInMinutes > 5;
+    }
+
+    public boolean validateTimeStart(Chat chat) {
+        Date generateStart = chat.getChatStart();
+        Date now = new Date();
+        long diffInMillis = now.getTime() - generateStart.getTime();
+        long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillis);
+        return diffInMinutes > 5;
+    }
+
+    public boolean validateAttemptsCode(Chat chat) {
+        return chat.getChatAttempts() >= 3;
+    }
+
+
+
+    public QuantityResponse validityQuantityRequest(Action action, Chat chat, String detail ) {
+        Integer quantity = action.getActionDaysQuantity();
+        if(quantity == null) return new QuantityResponse(null,false);
+
+        Date endDate = new Date();
+        LocalDate endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate startLocalDate = endLocalDate.minusDays(quantity);
+
+        Date startDate = Date.from(startLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         List<QuantityChat> quantityChats = quantityChatServices.findQuantityForDocumentAndAction(
-                action.getActionId(), chat.getTypeDocument(), chat.getDocument()
+                action.getActionId(), chat.getTypeDocument(), chat.getDocument(), startDate, endDate, detail
         );
-        return quantityChats.size() >= action.getActionQuantity();
+
+        if(quantityChats == null)  return new QuantityResponse(null,false);
+
+        LocalDate dateLast = quantityChats.get(0).getAudDate().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+                .plusDays(action.getActionDaysQuantity());
+
+        Boolean isOver = quantityChats.size() >= action.getActionQuantity();
+
+        return new QuantityResponse(dateLast,isOver);
+    }
+
+
+    public QuantityResponse validityQuantityRequest(Chat chat, String detail ) {
+
+        Date endDate = new Date();
+        Date startDate = new Date();
+        LocalDate endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate startLocalDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        List<QuantityChat> quantityChats = quantityChatServices.findQuantityForDocument(
+                chat.getTypeDocument(), chat.getDocument(), startDate, endDate, detail
+        );
+
+        LocalDate dateLast = quantityChats.get(0).getAudDate().toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDate()
+                .plusDays(0);
+
+        Boolean isOver = quantityChats.size() >= 50;
+
+        return new QuantityResponse(dateLast,isOver);
     }
 
     @Scheduled(fixedRate = 600000) // 600000ms = 10 minutos

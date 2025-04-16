@@ -1,21 +1,20 @@
 package com.microcode.client.entity;
 
+import com.microcode.client.entity.mysql.Action;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @ToString
-public class Option {
+public class MessageInvoke {
 
-    private Integer actionId;
-    private String actionMessage;
-    private String detail;
-    private String actionInternal;
+    private Map<String,String> messageRequest;
+    private Action action;
 
 }

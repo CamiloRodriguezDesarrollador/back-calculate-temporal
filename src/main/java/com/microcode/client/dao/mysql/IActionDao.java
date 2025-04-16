@@ -13,23 +13,24 @@ public interface IActionDao extends CrudRepository<Action, Long> {
 
     List<Action> findByActionTypeAndActionStatus(String actionType, String status);
 
+    List<Action> findByActionStatus(String status);
+
     Action findByActionMessageAndActionStatus(String actionMessage, String status);
 
     @Query(""" 
             SELECT p
             FROM Action p
             WHERE ( lower(p.actionMessage) LIKE %:text% or lower(p.actionType) LIKE %:text% )
-            AND ( lower(p.actionStatus) LIKE %:status% )
             ORDER BY p.actionId DESC
             """)
-    List<Action> findTableData(String status, String text, Pageable pageable);
+    List<Action> findTableData(String text, Pageable pageable);
 
     @Query(""" 
             SELECT count(p)
             FROM Action p
             WHERE ( lower(p.actionMessage) LIKE %:text% or lower(p.actionType) LIKE %:text% )
-            AND ( lower(p.actionStatus) LIKE %:status% )
+
             """)
-    Integer findTableQuantity(String status, String text);
+    Integer findTableQuantity(String text);
 
 }

@@ -16,8 +16,11 @@ public class Chat {
     private String typeDocument;
     private String document;
     private String chatMail;
-    private String chatIp;
+    private Date chatStart;
     private Date chatDateAuthorized;
+    private String names;
+    private Date chatDateCode;
+    private Integer chatAttempts;
 
     public Chat() {
     }

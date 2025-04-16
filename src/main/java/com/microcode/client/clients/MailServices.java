@@ -23,7 +23,7 @@ public class MailServices {
     }
 
     @Async
-    public Integer sendMailVerified(String emailTo,  String code) {
+    public String sendMailVerified(String emailTo,  String code) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("emailTo", emailTo);
         params.add("code", code);
@@ -32,9 +32,10 @@ public class MailServices {
                     .uri(urlMail +"/sendMailVerified")
                     .bodyValue(params)
                     .retrieve()
-                    .bodyToMono(Integer.class)
+                    .bodyToMono(String.class)
                     .onErrorResume(RestClientException.class, ex -> Mono.empty()).block();
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return null;
         }
     }

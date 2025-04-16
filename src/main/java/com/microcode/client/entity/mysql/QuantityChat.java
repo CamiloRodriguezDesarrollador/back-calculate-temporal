@@ -28,6 +28,9 @@ public class QuantityChat implements Serializable {
     @Column(name = "ACT_ID")
     private Integer actionId;
 
+    @Column(name = "ACT_DETAIL", length = 100)
+    private String actionDetail;
+
     @Column(name = "AUD_DATE", nullable = false)
     private Date audDate;
 

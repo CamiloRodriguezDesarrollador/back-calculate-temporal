@@ -45,7 +45,7 @@ public class RegexService implements RegexServiceI {
 
     @Override
     public boolean isNumber(Integer text) {
-        Pattern pattern = Pattern.compile("^\\d{6,30}$");
+        Pattern pattern = Pattern.compile("^\\d{3,30}$");
         return pattern.matcher(text.toString()).matches();
     }
 
@@ -75,7 +75,7 @@ public class RegexService implements RegexServiceI {
 
     @Override
     public boolean isActionCorrect(Action act) {
-        return isTextNormal(act.getActionMessage()) && isTextNormal(act.getActionType())
+        return isTextNormal(act.getActionType())
             && isNumber(act.getActionQuantity()) && isTextNormal(act.getActionNameFunction());
     }
 

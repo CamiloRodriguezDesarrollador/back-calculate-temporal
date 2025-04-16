@@ -1,6 +1,7 @@
 package com.microcode.client.service.mysql;
 
 import com.microcode.client.dao.mysql.IActionDao;
+import com.microcode.client.entity.ContentResponse;
 import com.microcode.client.entity.Option;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.service.oracle.ActionsOracleServices;
@@ -10,7 +11,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -38,12 +42,12 @@ public class ActionServices implements ActionServicesI {
         if(numberPage == null) numberPage = 1;
         else if (numberPage<1)  numberPage = 1;
         Pageable pageable = PageRequest.of(numberPage - 1, numberElementPage, Sort.Direction.DESC, "actionId");
-        return actionDao.findTableData(status,text.toLowerCase(), pageable);
+        return actionDao.findTableData(text.toLowerCase(), pageable);
     }
 
     @Override
     public Integer findTableQuantity(String status, String text) {
-        return actionDao.findTableQuantity(status, text);
+        return actionDao.findTableQuantity(text);
     }
 
     @Override
@@ -52,17 +56,63 @@ public class ActionServices implements ActionServicesI {
     }
 
     public void updateTypesChat(){
-        List<Action> principal = this.findByTypeAndStatus("principal","A");
-        List<Option> optionsPrincipal = new java.util.ArrayList<>(List.of());
-        principal.forEach(a -> {optionsPrincipal.add(new Option(a.getActionId(),a.getActionMessage(),null));});
-        ActionsOracleServices.updateOptionsPrincipal(optionsPrincipal);
+        List<Action> actions = actionDao.findByActionStatus("A");
+        ActionsOracleServices.updateActions(actions);
 
+        updateOptionsByType(actions, "principal", ActionsOracleServices::updateOptionsPrincipal);
+        updateOptionsByType(actions, "principal", ActionsOracleServices::updateOptionsPrincipal);
+        updateOptionsByType(actions, "basic", ActionsOracleServices::updateOptionsBasic);
+        updateOptionsById(actions, ActionsOracleServices::updateOptionEndChat);
+        updateOptionsByType(actions, "documents", ActionsOracleServices::updateOptionsDocument);
+        updateOptionsByType(actions, "liq", ActionsOracleServices::updateOptionsLiq);
+        updateOptionsByType(actions, "entities", ActionsOracleServices::updateOptionEntities);
 
-        List<Action> basic = this.findByTypeAndStatus("basic","A");
-        List<Option> optionsBasic = new java.util.ArrayList<>(List.of());
-        basic.forEach(a -> {optionsBasic.add(new Option(a.getActionId(),a.getActionMessage(),null));});
-        ActionsOracleServices.updateOptionsBasic(optionsBasic);
+        List<Option> optionsUnit = new ArrayList<>();
+        optionsUnit.addAll(ActionsOracleServices.optionsPrincipal);
+        optionsUnit.addAll(ActionsOracleServices.optionEndChat);
+
+        ActionsOracleServices.unauthorized = buildResponse(actions, "unauthorized", null);
+        ActionsOracleServices.notFound = buildResponse(actions, "notFound", optionsUnit);
+        ActionsOracleServices.noAction = buildResponse(actions, "noAction", optionsUnit);
+        ActionsOracleServices.timeOut = buildResponse(actions, "timeOut", null);
+        ActionsOracleServices.error = buildResponse(actions, "error", optionsUnit);
+        ActionsOracleServices.quantityMax = buildResponse(actions, "quantityMax", optionsUnit);
+        ActionsOracleServices.maxAttempts = buildResponse(actions, "maxAttempts", null);
 
     }
+
+    private static ContentResponse buildResponse(List<Action> actions, String actionName, List<Option> secondParam) {
+        return actions.stream()
+                .filter(a -> actionName.equals(a.getActionNameFunction()))
+                .findFirst()
+                .map(a -> new ContentResponse(
+                        a.getActionRespOkMessage(),
+                        secondParam,
+                        a.getActionRespOkRequest(),
+                        null,
+                        null,
+                        a.getActionType()
+                ))
+                .orElse(null);
+    }
+
+    private static void updateOptionsByType(List<Action> actions,String type,Consumer<List<Option>> updater ) {
+        List<Option> options = actions.stream()
+                .filter(a -> type.equalsIgnoreCase(a.getActionType()))
+                .map(a -> new Option(a.getActionId(), a.getActionMessage(), null, a.getActionId().toString()))
+                .collect(Collectors.toList());
+
+        updater.accept(options);
+    }
+
+    private static void updateOptionsById(List<Action> actions, Consumer<List<Option>> updater ) {
+        List<Option> options = actions.stream()
+                .filter(a -> ((Integer) 1000).equals(a.getActionId()))
+                .map(a -> new Option(a.getActionId(), a.getActionMessage(), null, a.getActionId().toString()))
+                .collect(Collectors.toList());
+
+        updater.accept(options);
+    }
+
 
 }

@@ -1,6 +1,9 @@
 package com.microcode.client.service.oracle;
 
+import com.microcode.client.clients.MailServices;
+import com.microcode.client.entity.QuantityResponse;
 import com.microcode.client.entity.mysql.Action;
+import com.microcode.client.entity.oracle.Contract;
 import com.microcode.client.service.ChatSessionManager;
 import com.microcode.client.entity.Chat;
 import com.microcode.client.entity.ContentResponse;
@@ -8,18 +11,15 @@ import com.microcode.client.entity.Option;
 import com.microcode.client.entity.oracle.Employee;
 import com.microcode.client.service.mysql.ActionServices;
 import com.microcode.client.service.mysql.QuantityChatServices;
+import com.microcode.client.service.mysql.Salt;
 import jakarta.annotation.PostConstruct;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @AllArgsConstructor
@@ -31,9 +31,24 @@ public class ActionsOracleServices {
     private final ContractServices contractServices;
     private final ChatSessionManager chatSessionManager;
     private final QuantityChatServices quantityChatServices;
+    private final MailServices mailServices;
     private final ActionServices actionServices;
     public static List<Option> optionsBasic;
     public static List<Option> optionsPrincipal;
+    public static List<Option> optionsDocument;
+    public static List<Option> optionsEntities;
+    public static List<Option> optionEndChat;
+    public static List<Option> optionsLiq;
+    public static List<Action> actionsPrincipal;
+
+    public static ContentResponse unauthorized;
+    public static ContentResponse notFound;
+    public static ContentResponse quantityMax;
+    public static ContentResponse noAction;
+    public static ContentResponse timeOut;
+    public static ContentResponse error;
+    public static ContentResponse maxAttempts;
+
 
     //    Inicializar opciones
 
@@ -44,198 +59,278 @@ public class ActionsOracleServices {
 
     //    Respuestas llamadas desde actions
 
-    public ContentResponse initialChat(Map<String,String> inputs){
-        return new ContentResponse(
-                "<p>Chat Iniciado</p>",
-                null, "select", 1
-        );
-    }
+    public ContentResponse getDataUser(Map<String,String> inputs, Action action) {
+        try{
+            String typeDocument = inputs.get("typeDocument");
+            String document = inputs.get("document");
+            String chatId = inputs.get("chatId");
+            Chat chat = chatSessionManager.getChatById(chatId);
+            if (typeDocument == null || document == null) return notFound;
 
-    public ContentResponse getDataUser(Map<String,String> inputs) {
-        String typeDocument = inputs.get("typeDocument");
-        String document = inputs.get("document");
-        String chatId = inputs.get("chatId");
-        String ip = inputs.get("ip");
+            chat.setChatStart(new Date());
 
-        Chat chat = chatSessionManager.getChatById(chatId);
-        chat.setChatIp(ip);
+            Long docSearch = Long.valueOf(document);
+            Employee employee = employeeService.findByIds(docSearch,typeDocument);
+            if (employee == null)
+                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), typeDocument, document),null, action);
 
-        if (typeDocument == null || document == null) {
-            return new ContentResponse(
-                    """
-                    <p>No has ingresado correctamente los datos.
-                    """,
-                    null    , "verified", null
-            );
-        }
-        Long docSearch = Long.valueOf(document);
-        Employee employee = employeeService.findByIds(docSearch,typeDocument);
-        if (employee == null) {
-            return new ContentResponse(
-                    String.format("""
-                    <p>La persona a la cual solicitas información <strong>%s-%s</strong>, no existe en nuestro sistema.
-                    Por favor intenta nuevamente, o valida con el ejecutivo de cuenta.
-                    """, typeDocument, document),
-                    null, "verified", null
-            );
+            chat.setNames(employee.getEmplName() + " " + employee.getEmpLastName() );
+            chat.setDocument(document);
+            chat.setTypeDocument(typeDocument);
+            chat.setChatMail(employee.getEmail());
+            chat.setChatAuthenticated(false);
+            chatSessionManager.setChatById( chatId, chat );
+
+            String mailUser = employee.getEmail().toLowerCase().replaceAll("(?<=.).(?=[^@]*?@)", "*");
+
+            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), mailUser),null, action);
+        } catch (Exception e) {
+            return error;
         }
 
-        String code = generateCode();
-        System.out.println("Code: " + code);
-        chat.setChatCode(code);
-        chat.setDocument(document);
-        chat.setTypeDocument(typeDocument);
-        chat.setChatMail(employee.getEmail());
-        chatSessionManager.setChatById(chatId, chat );
 
-        String mailUser = employee.getEmail().toLowerCase().replaceAll("(?<=.).(?=[^@]*?@)", "*");
-
-        return new ContentResponse(
-                String.format("""
-                <p>Estás solicitando información para la persona con documento <strong>%s-%s</strong>.
-                Para continuar, por favor verifica el código enviado a tu correo.
-                Tu correo registrado es: <strong>%s</strong>. En caso que no sea tu correo, por favor contacta
-                a tu empresa.</p>
-                """, typeDocument, document, mailUser),
-                null, "number", 2
-        );
     }
 
-    public ContentResponse verified(Map<String,String> inputs) {
-        String codeVerified = inputs.get("codeVerification");
-        String chatId = inputs.get("chatId");
-        String actionId = inputs.get("actionId");
+    public ContentResponse verifiedMail(Map<String,String> inputs, Action action) {
+        try {
+            String isMailCorrect = inputs.get("isMailCorrect");
+            String chatId = inputs.get("chatId");
+            Chat chat = chatSessionManager.getChatById(chatId);
 
-        Chat chat = chatSessionManager.getChatById(chatId);
+            if (isMailCorrect.equals("Y")) {
+                String code = "123456";
+//                String code = generateCode();
+                chat.setChatCode(code);
+                chat.setChatAttempts(1);
+                chat.setChatDateCode(new Date());
+//                mailServices.sendMailVerified(chat.getChatMail(),code);
+                return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action);
+            }
 
-        if(codeVerified.toLowerCase().equals(chat.getChatCode())){
-            chat.setChatAuthenticated(true);
-            chat.setChatDateAuthorized(new Date());
-            chatSessionManager.setChatById(chatId, chat );
-            quantityChatServices.createForAction( Integer.valueOf(actionId), chat.getTypeDocument(), chat.getDocument()  );
+            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), null, action);
+        } catch (Exception e) {
+            return error;
+        }
+    }
 
-            return new ContentResponse(
-                    """
-                        <p>Tu correo ha sido verificado con exito.
-                        A continuación encontraras las opciones que puedes elegir.
-                        Cuentas con <strong> 15 minutos </strong>, de lo contrario deberás volver a generar el código </p>
-                        """,
+    public ContentResponse verified(Map<String,String> inputs, Action action) {
+        try{
 
-                    optionsPrincipal, "select",997);
-        }else {
-            return new ContentResponse(
-                    """
-                    <p>El codigo informado no corresponde, por favor intenta nuevamente.</p>
-                    """,
-                    null, "number", 2
-            );
+            String codeVerified = inputs.get("codeVerification");
+            String chatId = inputs.get("chatId");
+
+            Chat chat = chatSessionManager.getChatById(chatId);
+
+            if(chatSessionManager.validateTimeCode(chat)) return timeOut;
+            if(chatSessionManager.validateAttemptsCode(chat)) return maxAttempts;
+
+            if(codeVerified.toLowerCase().equals(chat.getChatCode()) ){
+                chat.setChatAuthenticated(true);
+                chat.setChatDateAuthorized(new Date());
+                chatSessionManager.setChatById( chatId, chat );
+                return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), chat.getNames()),optionsPrincipal, action);
+
+            }
+            chat.setChatAttempts(chat.getChatAttempts()+1);
+            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),null, action);
+        } catch (Exception e) {
+            return error;
         }
 
     }
 
-    public ContentResponse getCertifiedJob(Map<String,String> inputs) {
+    public ContentResponse getOptions(Map<String,String> inputs, Action action) {
         String chatId = inputs.get("chatId");
         Chat chat = chatSessionManager.getChatById(chatId);
-        if(chat == null || !chat.getChatAuthenticated() ) return unauthorized();
-        if(chatSessionManager.validateTime(chat) || !chat.getChatAuthenticated()) return timeOut();
+        ContentResponse resp = this.validateInitial(chat);
+        if(resp != null) return resp;
 
-        List<String> contracts = contractServices.findByIds(Long.valueOf(chat.getDocument()), chat.getTypeDocument());
+        try{
+            String option = action.getActionTypeCall();
 
-        if(contracts == null || contracts.isEmpty()){
-            return new ContentResponse("<p>El trabajador no cuenta con registro de contratos, por favor elige otra documento o otra opción.<p>",
-                    null, "verified",null);
+            List<Option> options = switch (option) {
+                case "principal" -> optionsPrincipal;
+                case "documents" -> optionsDocument;
+                case "entities" -> optionsEntities;
+                default -> List.of();
+            };
+            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(),chat.getNames()),options, action);
+        } catch (Exception e) {
+
+            return error;
+        }
+    }
+
+//    public ContentResponse getStatusLiq(Map<String,String> inputs, Action action) {
+//        try {
+//            String chatId = inputs.get("chatId");
+//            Chat chat = chatSessionManager.getChatById(chatId);
+//            ContentResponse resp = this.validateInitial(chat);
+//            if(resp != null) return resp;
+//            if(chatSessionManager.validityQuantityRequest(action,chat,"1")) return quantityMax;
+//            quantityChatServices.createForAction( Integer.valueOf(action.getActionId().toString()), chat.getTypeDocument(), chat.getDocument(), "1"  );
+//            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()),optionsPrincipal, action);
+//        } catch (Exception e) {
+//            return error;
+//        }
+//
+//    }
+
+    public ContentResponse getCertifiedJob(Map<String,String> inputs, Action action) {
+        try {
+            String chatId = inputs.get("chatId");
+            Chat chat = chatSessionManager.getChatById(chatId);
+            ContentResponse resp = this.validateInitial(chat);
+            if(resp != null) return resp;
+
+            List<Contract> contracts = contractServices.findByIds(Long.valueOf(chat.getDocument()), chat.getTypeDocument());
+
+            if(contracts == null || contracts.isEmpty())
+                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),optionsPrincipal, action);
+
+            List<Option> options = new ArrayList<>(List.of());
+            List<String> labels = List.of("Último contrato", "Contrato Anterior");
+
+            for (int i = 0; i < contracts.size() && i < 2; i++) {
+                var contrato = contracts.get(i);
+                options.add(
+                        new Option(
+                                action.getActionRespOkAction(),
+                                labels.get(i),
+                                contrato.getCtoNumero().toString(),
+                                contrato.getCtoNumero().toString()
+                        )
+                );
+            }
+
+            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), chat.getNames()),options, action);
+        } catch (Exception e) {
+            return error;
         }
 
-        List<Option> options = new java.util.ArrayList<>(List.of());
-        contracts.forEach(e->{
-                    options.add(new Option(9,"Contrato: " + e,e  ));
-                }
-        );
-
-        return new ContentResponse("<p>Estas solicitando un certificado laboral, por favor selecciona el contrato.<p>",
-                options, "select",null);
     }
 
-    public ContentResponse getCertifiedJobDetail(Map<String,String> inputs) {
-        String chatId = inputs.get("chatId");
-        String actionId = inputs.get("actionId");
-        Chat chat = chatSessionManager.getChatById(chatId);
-        if(chat == null || !chat.getChatAuthenticated() ) return unauthorized();
-        if(chatSessionManager.validateTime(chat) || !chat.getChatAuthenticated()) return timeOut();
+    public ContentResponse getCertifiedJobDetail(Map<String,String> inputs, Action action) {
+        try{
+            String detail = inputs.get("detail");
+            String chatId = inputs.get("chatId");
+            Chat chat = chatSessionManager.getChatById(chatId);
 
-        String detail = inputs.get("detail");
-        quantityChatServices.createForAction( Integer.valueOf(actionId), chat.getTypeDocument(), chat.getDocument()  );
+            ContentResponse validateQuantity = validateQuantityOver(action,chat,detail);
+            if(validateQuantity != null) return responseWithOptionsParam(validateQuantity, action);
 
-        return new ContentResponse(
-                String.format("""
-                    <p>Se ha remitido el certificado del contrato <strong>%s</strong> a tu correo.
-                    Por favor confirma si requieres algo mas.</p>
-                    """, detail),
-                optionsBasic, "select",9);
+            ContentResponse resp = this.validateInitial(chat);
+            if(resp != null) return resp;
 
+            quantityChatServices.createForAction( Integer.valueOf(action.getActionId().toString()), chat.getTypeDocument(), chat.getDocument(), detail  );
+            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()),optionsBasic, action);
+        } catch (Exception e) {
+            return error;
+        }
     }
 
-    public ContentResponse finalizedChat(Map<String,String> inputs) {
-        return new ContentResponse(
-                "<p>Espero haberte sido de gran ayuda, si te gusto mi servicio, me harías muy feliz calificándome<p>",
-                null, "calification",999);
+    public ContentResponse finalizedChat(Map<String,String> inputs, Action action) {
+        try{
+            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()),null, action);
+        } catch (Exception e) {
+            return error;
+        }
     }
 
-    public ContentResponse closeChat(Map<String,String> inputs) {
-        return new ContentResponse(
-                "<p>Chat cerrado.<p>",
-                null, null,1);
+    public ContentResponse closeChat(Map<String,String> inputs, Action action) {
+        try{
+        return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()),null, action);
+        } catch (Exception e) {
+            return error;
+        }
     }
 
-    public ContentResponse inactiveChat(Map<String,String> inputs) {
-        String chatId = inputs.get("chatId");
-        Chat chat = chatSessionManager.getChatById(chatId);
-        chat.setChatAuthenticated(false);
-        chatSessionManager.setChatById(chatId,chat);
-        return timeOut();
+    public ContentResponse inactiveChat(Map<String,String> inputs, Action action) {
+        try{
+            String chatId = inputs.get("chatId");
+            Chat chat = chatSessionManager.getChatById(chatId);
+            chat.setChatAuthenticated(false);
+            chatSessionManager.setChatById(chatId,chat);
+            return timeOut;
+        } catch (Exception e) {
+            return error;
+        }
     }
 
-    public ContentResponse moreOptions(Map<String,String> inputs) {
-        return new ContentResponse(
-                "<p>Por favor elige una de las siguientes opciones.<p>",
-                optionsPrincipal, "select",null);
+    public ContentResponse moreOptions(Map<String,String> inputs, Action action) {
+        try{
+            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()),optionsPrincipal, action);
+        } catch (Exception e) {
+            return error;
+        }
     }
 
 
-//    Respuestas predeterminadas
+//    Validación Inicial
 
-    public ContentResponse unauthorized() {
-        return new ContentResponse(
-                "<p>Para utilizar esta opción debes estar autenticado.<p>",
-                null, "verified",null);
+    public ContentResponse validateInitial(Chat chat){
+        if(chat == null || !chat.getChatAuthenticated() ) return unauthorized;
+        if(chatSessionManager.validateTime(chat) || !chat.getChatAuthenticated()) return timeOut;
+        chat.setChatDateAuthorized(new Date());
+        return null;
     }
 
-    public ContentResponse notFound() {
-        return new ContentResponse(
-                "<p>La opción selecciona no se encuentra habilitada, por favor selecciona una diferente<p>",
-                optionsPrincipal, "select",null);
+    public ContentResponse validateQuantityOver(Action action, Chat chat, String detail){
+        QuantityResponse quantityResponse = chatSessionManager.validityQuantityRequest(action,chat,detail);
+        if(!quantityResponse.getIsOver()) return null;
+        ContentResponse responseClone = ContentResponse.cloneContentResponse(quantityMax);
+        responseClone.setActionMessage(String.format(quantityMax.getActionMessage(),quantityResponse.getDateOptionTrain()));
+        return responseClone;
     }
 
-    public ContentResponse quantityMax() {
-        return new ContentResponse(
-                "<p>Has superado el limite de solicitudes de este acción, por favor intenta el siguiente mes, o intenta una opción diferente.<p>",
-                optionsPrincipal, "select",null);
+    public static ContentResponse responseWithOptionsParam(ContentResponse response, Action action){
+        ContentResponse responseClone = ContentResponse.cloneContentResponse(response);
+        List<Option> options;
+
+        if(action.getActionTypeCall().equals("documents")) options = optionsDocument;
+        else if(action.getActionTypeCall().equals("entities")) options = optionsEntities;
+        else options = optionsPrincipal;
+
+        responseClone.setOptions(options);
+        return responseClone;
     }
 
-    public ContentResponse notAction() {
-        return new ContentResponse(
-                "<p>La opción solicitada no puede ser procesada.<p>",
-                optionsPrincipal, "select",null);
+    // Actualización opciones
+
+    public static void updateActions(List<Action> actions) {
+        actionsPrincipal = actions;
     }
 
-    public ContentResponse timeOut() {
-        return new ContentResponse(
-                "<p>Se ha vencido el tiempo de autorización, por favor verificar nuevamente tu identificación.<p>",
-                null, "verified",null);
+    public static void updateOptionsBasic(List<Option> options) {
+        optionsBasic = options;
     }
+
+    public static void updateOptionsDocument(List<Option> options) {
+        optionsDocument = options;
+    }
+
+    public static void updateOptionEntities(List<Option> options) {
+        optionsEntities = options;
+    }
+
+    public static void updateOptionsLiq(List<Option> options) {
+        optionsLiq = options;
+    }
+
+    public static void updateOptionEndChat(List<Option> options) {
+        optionEndChat = options;
+    }
+
+    public static void updateOptionsPrincipal(List<Option> options) {
+        optionsPrincipal = options;
+    }
+
+
+    // Validación
 
     public String generateCode(){
-        String CARACTERES = "abcdefghijklmnopqrstuvwxyz0123456789";
+//        String CARACTERES = "abcdefghijklmnopqrstuvwxyz0123456789";
+        String CARACTERES = "0123456789";
         SecureRandom random = new SecureRandom();
 
         return random.ints(6, 0, CARACTERES.length())
@@ -244,12 +339,19 @@ public class ActionsOracleServices {
                 .orElse("");
     }
 
-    // Actualización opciones
-    public static void updateOptionsPrincipal(List<Option> options) {
-        optionsPrincipal = options;
+    public Action getActionForId(Integer actionId ){
+        return actionsPrincipal.stream()
+                .filter(e -> Objects.equals(e.getActionId(), actionId))
+                .findFirst()
+                .orElse(null);
+
     }
-    public static void updateOptionsBasic(List<Option> options) {
-        optionsBasic = options;
+
+    public static ContentResponse wrapMessage(ContentResponse contentResponse){
+        contentResponse.setActionMessage(Salt.wrapMessage(contentResponse.getActionMessage()));
+        return contentResponse;
     }
+
+
 
 }

@@ -1,6 +1,7 @@
 package com.microcode.client.service.oracle;
 
 import com.microcode.client.dao.oracle.IContractDao;
+import com.microcode.client.entity.oracle.Contract;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ public class ContractServices implements ContractServicesI {
 
 
     @Override
-    public List<String> findByIds(Long eplNd, String tdcTd) {
+    public List<Contract> findByIds(Long eplNd, String tdcTd) {
         return ContractDao.findByEplNdAndTdcTdEpl(eplNd,tdcTd);
     }
 }

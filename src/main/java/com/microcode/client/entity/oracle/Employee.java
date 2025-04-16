@@ -27,4 +27,11 @@ public class Employee implements Serializable {
     @Column(name = "EPL_EMAIL")
     private String email;
 
+    @Column(name = "EPL_NOM1")
+    private String emplName;
+
+    @Column(name = "EPL_APELL1")
+    private String empLastName;
+
+
 }

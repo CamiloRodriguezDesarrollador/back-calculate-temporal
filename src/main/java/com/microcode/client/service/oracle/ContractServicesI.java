@@ -1,9 +1,11 @@
 package com.microcode.client.service.oracle;
 
+import com.microcode.client.entity.oracle.Contract;
+
 import java.util.List;
 
 public interface ContractServicesI {
 
-    List<String> findByIds(Long eplNd, String tdcTd);
+    List<Contract> findByIds(Long eplNd, String tdcTd);
 
 }
