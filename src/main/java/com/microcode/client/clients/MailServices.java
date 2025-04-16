@@ -35,8 +35,19 @@ public class MailServices {
                     .bodyToMono(String.class)
                     .onErrorResume(RestClientException.class, ex -> Mono.empty()).block();
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return null;
+        }
+    }
+
+
+    public void ping() {
+        try{
+            this.webClient.post()
+                    .uri(urlMail + "/ping")
+                    .retrieve()
+                    .bodyToMono(Void.class)
+                    .onErrorResume(RestClientException.class, ex -> Mono.empty()).subscribe();
+        } catch (Exception ignored) {
         }
     }
 

@@ -82,7 +82,7 @@ public class ActionsOracleServices {
             chatSessionManager.setChatById( chatId, chat );
 
             String mailUser = employee.getEmail().toLowerCase().replaceAll("(?<=.).(?=[^@]*?@)", "*");
-
+            mailServices.ping();
             return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), mailUser),null, action);
         } catch (Exception e) {
             return error;

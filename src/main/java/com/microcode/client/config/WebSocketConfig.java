@@ -18,10 +18,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/gs-guide-websocket")
+        registry.addEndpoint("/api/chat/gs-guide-websocket")
                 .addInterceptors(new IpHandshakeInterceptor())
                 .setAllowedOrigins(
-                        "http://localhost:5173"
+//                        "http://localhost:5173"
                 )
         ;
     }
