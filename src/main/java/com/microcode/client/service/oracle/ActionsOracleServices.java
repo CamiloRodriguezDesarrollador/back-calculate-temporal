@@ -64,7 +64,14 @@ public class ActionsOracleServices {
             String typeDocument = inputs.get("typeDocument");
             String document = inputs.get("document");
             String chatId = inputs.get("chatId");
-            Chat chat = chatSessionManager.getChatById(chatId);
+            Chat chat;
+
+            chat = chatSessionManager.getChatById(chatId);
+            if(chat == null){
+                chatSessionManager.updateChatActivity(chatId,null);
+                chat = chatSessionManager.getChatById(chatId);
+            }
+
             if (typeDocument == null || document == null) return notFound;
 
             chat.setChatStart(new Date());
@@ -96,6 +103,7 @@ public class ActionsOracleServices {
             String isMailCorrect = inputs.get("isMailCorrect");
             String chatId = inputs.get("chatId");
             Chat chat = chatSessionManager.getChatById(chatId);
+            chat.setChatStart(new Date());
 
             if (isMailCorrect.equals("Y")) {
                 String code = "123456";

@@ -100,7 +100,7 @@ public class ChatSessionManager {
     }
 
     public boolean validateTimeStart(Chat chat) {
-        Date generateStart = chat.getChatStart();
+        Date generateStart = chat.getChatStart() == null ? new Date() : chat.getChatStart();
         Date now = new Date();
         long diffInMillis = now.getTime() - generateStart.getTime();
         long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillis);

@@ -83,8 +83,20 @@ public class ActionRestController {
             action.setActionMessage(act.getActionMessage());
             action.setActionStatus(act.getActionStatus());
             action.setActionType(act.getActionType());
+            action.setActionTypeCall(act.getActionTypeCall());
             action.setActionQuantity(act.getActionQuantity());
+            action.setActionDaysQuantity(act.getActionDaysQuantity());
             action.setActionNameFunction(act.getActionNameFunction());
+            action.setActionRespOkMessage(act.getActionRespOkMessage());
+            action.setActionRespOkAction(act.getActionRespOkAction());
+            action.setActionRespOkRequest(act.getActionRespOkRequest());
+            action.setActionRespOkFile(act.getActionRespOkFile());
+
+            action.setActionRespFailMessage(act.getActionRespFailMessage());
+            action.setActionRespFailAction(act.getActionRespFailAction());
+            action.setActionRespFailRequest(act.getActionRespFailRequest());
+            action.setActionRespFailFile(act.getActionRespFailFile());
+
             try {
                 actionServices.create(action);
             } catch (DataIntegrityViolationException e) {
