@@ -114,7 +114,7 @@ public class ActionsOracleServices {
                 chat.setChatCode(code);
                 chat.setChatAttempts(1);
                 chat.setChatDateCode(new Date());
-                mailServices.sendMailVerified("javiercamilo75@gmail.com",code);
+                mailServices.sendMailVerified("yriascos@activos.com.co",code);
 //                mailServices.sendMailVerified(chat.getChatMail(),code);
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action);
             }
