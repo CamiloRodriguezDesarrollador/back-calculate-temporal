@@ -121,12 +121,14 @@ public class ChatSessionManager {
         LocalDate endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDate startLocalDate = endLocalDate.minusDays(quantity);
 
+
         Date startDate = Date.from(startLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         List<QuantityChat> quantityChats = quantityChatServices.findQuantityForDocumentAndAction(
                 action.getActionId(), chat.getTypeDocument(), chat.getDocument(), startDate, endDate, detail
         );
 
-        if(quantityChats == null)  return new QuantityResponse(null,false);
+
+        if(quantityChats == null || quantityChats.isEmpty())  return new QuantityResponse(null,false);
 
         LocalDate dateLast = quantityChats.get(0).getAudDate().toInstant()
                 .atZone(ZoneId.systemDefault())
@@ -134,10 +136,8 @@ public class ChatSessionManager {
                 .plusDays(action.getActionDaysQuantity());
 
         Boolean isOver = quantityChats.size() >= action.getActionQuantity();
-
         return new QuantityResponse(dateLast,isOver);
     }
-
 
     public QuantityResponse validityQuantityRequest(Chat chat, String detail ) {
 

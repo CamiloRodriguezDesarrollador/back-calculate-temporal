@@ -64,6 +64,8 @@ public class ActionServices implements ActionServicesI {
         updateOptionsByType(actions, "basic", ActionsOracleServices::updateOptionsBasic);
         updateOptionsById(actions, ActionsOracleServices::updateOptionEndChat);
         updateOptionsByType(actions, "documents", ActionsOracleServices::updateOptionsDocument);
+        updateOptionsByType(actions, "eps", ActionsOracleServices::updateOptionsEps);
+        updateOptionsByType(actions, "bienestar", ActionsOracleServices::updateOptionsBienestar);
         updateOptionsByType(actions, "liq", ActionsOracleServices::updateOptionsLiq);
         updateOptionsByType(actions, "entities", ActionsOracleServices::updateOptionEntities);
 

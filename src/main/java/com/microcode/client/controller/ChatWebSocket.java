@@ -17,8 +17,7 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Objects;
 
-import static com.microcode.client.service.oracle.ActionsOracleServices.error;
-import static com.microcode.client.service.oracle.ActionsOracleServices.notFound;
+import static com.microcode.client.service.oracle.ActionsOracleServices.*;
 
 @Controller
 @AllArgsConstructor
@@ -61,9 +60,9 @@ public class ChatWebSocket {
         catch (Exception e){
             ContentResponse responseWrap;
             Chat chat = chatSessionManager.getChatById(chatId);
-            if(chat != null && !chat.getChatAuthenticated()) responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.unauthorized);
-            else if(chat != null) responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.responseWithOptionsParam(notFound,action));
-            else responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.responseWithOptionsParam(error,action));
+            if (chat == null) responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.unauthorized);
+            else if(chat.getChatAuthenticated() == null || !chat.getChatAuthenticated()) responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.unauthorized);
+            else responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.responseWithOptionsParam(notFound,action));
 
             return ActionsOracleServices.wrapMessage(responseWrap);
         }
