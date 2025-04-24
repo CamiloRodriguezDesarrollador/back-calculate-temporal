@@ -18,4 +18,9 @@ public class ContractServices implements ContractServicesI {
     public List<Contract> findByIds(Long eplNd, String tdcTd) {
         return ContractDao.findByEplNdAndTdcTdEpl(eplNd,tdcTd);
     }
+
+    @Override
+    public Contract findContractActive(Long eplNd, String tdcTd) {
+        return ContractDao.findContractActive(eplNd,tdcTd);
+    }
 }

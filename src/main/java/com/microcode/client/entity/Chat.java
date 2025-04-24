@@ -21,6 +21,8 @@ public class Chat {
     private String names;
     private Date chatDateCode;
     private Integer chatAttempts;
+    private String tdcTdFil;
+    private Long empNdFil;
 
     public Chat() {
     }

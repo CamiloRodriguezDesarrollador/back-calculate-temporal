@@ -5,10 +5,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -19,19 +16,29 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class Contract implements Serializable {
 
     @Id
     @Column(name = "CTO_NUMERO")
     private Long ctoNumero;
 
-    @Column(name = "EPL_ND")
-    private Long eplNd;
-
     @Column(name = "TDC_TD_EPL")
     private String tdcTdEpl;
 
+    @Column(name = "EPL_ND")
+    private Long eplNd;
+
     @Column(name = "CTO_FECING")
     private Date ctoIng;
+
+    @Column(name = "ECT_SIGLA")
+    private String ectSigla;
+
+    @Column(name = "TDC_TD_FIL")
+    private String tdcTdFil;
+
+    @Column(name = "EMP_ND_FIL")
+    private Long empNdFil;
 
 }

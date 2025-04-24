@@ -74,6 +74,12 @@ public class ChatSessionManager {
             if (partialChat.getChatAttempts() != null)
                 existingChat.setChatAttempts(partialChat.getChatAttempts());
 
+            if (partialChat.getTdcTdFil() != null)
+                existingChat.setTdcTdFil(partialChat.getTdcTdFil());
+
+            if (partialChat.getEmpNdFil() != null)
+                existingChat.setEmpNdFil(partialChat.getEmpNdFil());
+
 
             return existingChat;
         });

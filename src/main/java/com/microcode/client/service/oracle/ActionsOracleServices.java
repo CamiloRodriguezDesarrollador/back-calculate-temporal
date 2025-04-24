@@ -4,6 +4,7 @@ import com.microcode.client.clients.MailServices;
 import com.microcode.client.entity.QuantityResponse;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.entity.oracle.Contract;
+import com.microcode.client.entity.oracle.Responsible;
 import com.microcode.client.service.ChatSessionManager;
 import com.microcode.client.entity.Chat;
 import com.microcode.client.entity.ContentResponse;
@@ -19,6 +20,7 @@ import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.sql.Array;
 import java.util.*;
 
 @Service
@@ -28,11 +30,13 @@ import java.util.*;
 public class ActionsOracleServices {
 
     private final EmployeeServices employeeService;
+    private final ResponsibleServices responsibleServices;
     private final ContractServices contractServices;
     private final ChatSessionManager chatSessionManager;
     private final QuantityChatServices quantityChatServices;
     private final MailServices mailServices;
     private final ActionServices actionServices;
+    public static List<Action> actionsPrincipal;
     public static List<Option> optionsBasic;
     public static List<Option> optionsEps;
     public static List<Option> optionsBienestar;
@@ -42,7 +46,8 @@ public class ActionsOracleServices {
     public static List<Option> optionsEntities;
     public static List<Option> optionEndChat;
     public static List<Option> optionsLiq;
-    public static List<Action> actionsPrincipal;
+    public static List<Option> optionsPension;
+    public static List<Option> optionsInca;
 
     public static ContentResponse unauthorized;
     public static ContentResponse notFound;
@@ -84,11 +89,18 @@ public class ActionsOracleServices {
             if (employee == null)
                 return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), typeDocument, document),null, action);
 
+            Contract contract = contractServices.findContractActive(employee.getEplNd() ,employee.getTdcTd());
+
             chat.setNames(employee.getEmplName() + " " + employee.getEmpLastName() );
             chat.setDocument(document);
             chat.setTypeDocument(typeDocument);
             chat.setChatMail(employee.getEmail());
             chat.setChatAuthenticated(false);
+            if (contract != null) {
+                chat.setEmpNdFil(contract.getEmpNdFil() != null ? contract.getEmpNdFil() : chat.getEmpNdFil());
+                chat.setTdcTdFil(contract.getTdcTdFil() != null ? contract.getTdcTdFil() : chat.getTdcTdFil());
+            }
+
             chatSessionManager.setChatById( chatId, chat );
 
             String mailUser = generateMail(employee.getEmail().toLowerCase());
@@ -169,6 +181,8 @@ public class ActionsOracleServices {
                 case "eps" -> optionsEps;
                 case "bienestar" -> optionsBienestar;
                 case "entities" -> optionsEntities;
+                case "pension" -> optionsPension;
+                case "incapacidades" -> optionsInca;
                 default -> List.of();
             };
             return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(),chat.getNames()),options, action);
@@ -272,6 +286,70 @@ public class ActionsOracleServices {
         return methodStandard(inputs, action, optionsBasic);
     }
 
+    public ContentResponse getDataConCesan(Map<String,String> inputs, Action action) {
+        return methodStandard(inputs, action, optionsBasic);
+    }
+
+    public ContentResponse getInformationPension(Map<String,String> inputs, Action action) {
+        return methodStandardRedirect(inputs,action,optionsPension);
+    }
+
+    public ContentResponse getDataCesanAffiliation(Map<String,String> inputs, Action action) {
+        return methodStandard(inputs, action, optionsBasic);
+    }
+    public ContentResponse getIncAffiliation(Map<String,String> inputs, Action action) {
+        return methodStandard(inputs, action, optionsBasic);
+    }
+
+    public ContentResponse getInformationInca(Map<String,String> inputs, Action action) {
+        return methodStandardRedirect(inputs,action,optionsInca);
+    }
+
+    public ContentResponse getDataInca(Map<String,String> inputs, Action action) {
+        try {
+            String detail = inputs.get("detail");
+            String chatId = inputs.get("chatId");
+            Chat chat = chatSessionManager.getChatById(chatId);
+
+            ContentResponse validateQuantity = validateQuantityOver(action, chat, detail);
+            if (validateQuantity != null) return responseWithOptionsParam(validateQuantity, action);
+
+            ContentResponse resp = this.validateInitial(chat);
+            if (resp != null) return resp;
+
+            quantityChatServices.createForAction(
+                    Integer.valueOf(action.getActionId().toString()),
+                    chat.getTypeDocument(),
+                    chat.getDocument(),
+                    detail
+            );
+
+            if(chat.getEmpNdFil() == null)
+                return ContentResponse.buildContentResponseFail(
+                        String.format(action.getActionRespFailMessage()),
+                        optionsInca,
+                        action
+                );
+            String responsible = null;
+            if(isPrincipal(chat.getEmpNdFil())) {
+                action.setActionRespOkFile(null);
+                action.setActionRespOkMessage("<p>Genial !, los trabajadores internos deberán acceder al sitio del trabajador, por favor confirmame si tienes otro requerimiento 👇.</p>");
+            }else{
+                responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
+                if(responsible == null) responsible = "auxincapacidades3@activos.com.co";
+            }
+            return ContentResponse.buildContentResponseOk(
+                    String.format(action.getActionRespOkMessage(), responsible),
+                    optionsBasic,
+                    action
+            );
+        } catch (Exception e) {
+            return error;
+        }
+    }
+
+
+
 
 //   Metodo estandar
 
@@ -286,7 +364,6 @@ public class ActionsOracleServices {
             return error;
         }
     }
-
 
     private ContentResponse methodStandard(Map<String,String> inputs, Action action, List<Option> options) {
         try {
@@ -357,6 +434,13 @@ public class ActionsOracleServices {
         optionsBienestar = options;
     }
 
+    public static void updateOptionsPension(List<Option> options) {
+        optionsPension = options;
+    }
+    public static void updateOptionsInca(List<Option> options) {
+        optionsInca = options;
+    }
+
     public static void updateOptionEntities(List<Option> options) {
         optionsEntities = options;
     }
@@ -387,6 +471,11 @@ public class ActionsOracleServices {
                 .orElse("");
     }
 
+    public boolean isPrincipal(Long empNdFil){
+        List<Long> emp = List.of(830057687L, 860090915L, 800148972L, 800165661L, 800141699L);
+        return emp.contains(empNdFil);
+    }
+
     public String generateMail(String email){
 
         int atIndex = email.indexOf('@');
@@ -410,13 +499,15 @@ public class ActionsOracleServices {
 
     public static ContentResponse responseWithOptionsParam(ContentResponse response, Action action){
         ContentResponse responseClone = ContentResponse.cloneContentResponse(response);
-        List<Option> options;
-
-        if(action.getActionTypeCall().equals("documents")) options = optionsDocument;
-        else if(action.getActionTypeCall().equals("entities")) options = optionsEntities;
-        else if(action.getActionTypeCall().equals("bienestar")) options = optionsBienestar;
-        else if(action.getActionTypeCall().equals("eps")) options = optionsEps;
-        else options = optionsPrincipal;
+        List<Option> options = switch (action.getActionTypeCall()) {
+            case "documents" -> optionsDocument;
+            case "entities" -> optionsEntities;
+            case "bienestar" -> optionsBienestar;
+            case "eps" -> optionsEps;
+            case "pension" -> optionsPension;
+            case "incapacidades" -> optionsInca;
+            default -> optionsPrincipal;
+        };
 
         responseClone.setOptions(options);
         return responseClone;
