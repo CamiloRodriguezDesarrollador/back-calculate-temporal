@@ -88,10 +88,21 @@ public class ActionsOracleServices {
             Employee employee = employeeService.findByIds(docSearch,typeDocument);
             if (employee == null)
                 return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), typeDocument, document),null, action);
+            List<Contract> contracts = contractServices.findByIds(employee.getEplNd(), employee.getTdcTd());
+
+            if(contracts == null || contracts.isEmpty())
+                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), typeDocument, document),null, action);
+
+
+            if(employee.getEmail() == null) return ContentResponse.buildNotMail(null);
+            if(employee.getEmpLastName() == null && employee.getEmplName() == null )
+                return ContentResponse.buildNotMail(null);
 
             Contract contract = contractServices.findContractActive(employee.getEplNd() ,employee.getTdcTd());
 
-            chat.setNames(employee.getEmplName() + " " + employee.getEmpLastName() );
+            String firstName = employee.getEmplName() != null ? employee.getEmplName() : "";
+            String lastName = employee.getEmpLastName() != null ? employee.getEmpLastName() : "";
+            chat.setNames(firstName + " " + lastName);
             chat.setDocument(document);
             chat.setTypeDocument(typeDocument);
             chat.setChatMail(employee.getEmail());

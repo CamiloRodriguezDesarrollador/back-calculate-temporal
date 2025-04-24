@@ -68,6 +68,19 @@ public class ContentResponse {
     }
 
 
+    public static ContentResponse buildNotMail(List<Option> options) {
+        return new ContentResponse(
+                "<p>No cuentas con un correo registrado 😟, por favor contactate con tu empresa, o intenta nuevamente 👇.<p/>",
+                options,
+                "verified",
+                null,
+                null,
+                null
+        );
+    }
+
+
+
 
 
 }

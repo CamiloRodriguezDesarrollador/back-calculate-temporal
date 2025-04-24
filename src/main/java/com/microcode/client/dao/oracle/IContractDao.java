@@ -11,6 +11,7 @@ public interface IContractDao extends CrudRepository<Contract, Long> {
     @Query("""
             SELECT p FROM Contract p
             WHERE p.eplNd = :eplNd AND p.tdcTdEpl = :tdcTd
+            AND p.ectSigla IN ("ACT","RET","PRL")
             ORDER BY p.ctoIng DESC
             FETCH FIRST 2 ROWS ONLY
     """)
