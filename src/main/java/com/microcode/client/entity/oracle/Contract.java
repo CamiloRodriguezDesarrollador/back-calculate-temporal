@@ -41,4 +41,13 @@ public class Contract implements Serializable {
     @Column(name = "EMP_ND_FIL")
     private Long empNdFil;
 
+    @Column(name = "TDC_TD")
+    private String tdcTd;
+
+    @Column(name = "EMP_ND")
+    private Long empNd;
+
+    @Column(name = "PER_SIGLA")
+    private String perSigla;
+
 }

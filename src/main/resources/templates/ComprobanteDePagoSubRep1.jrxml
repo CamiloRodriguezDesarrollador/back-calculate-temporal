@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="ComprobanteDePagoSubRep1" language="groovy" pageWidth="444" pageHeight="752" columnWidth="444" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="f7ca45b4-4a75-455a-b06c-92cfadd69df8">
+	<property name="ireport.zoom" value="2.1435888100000016"/>
+	<property name="ireport.x" value="21"/>
+	<property name="ireport.y" value="0"/>
+	<field name="trpNombre" class="java.lang.String"/>
+	<field name="preCodigo" class="java.lang.Long"/>
+	<field name="preValor" class="java.lang.Double"/>
+	<field name="preSaldo" class="java.lang.Double"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="13" splitType="Stretch">
+			<staticText>
+				<reportElement uuid="4831666f-f61d-4050-8ade-e8748269f0a1" x="72" y="2" width="119" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Descripcion]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="bd5d6e89-7aef-4407-acc9-5388f00da67d" x="6" y="2" width="61" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Prestamo]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="36d95aaa-3c7b-48fa-a468-6fd704a9d3e2" x="195" y="2" width="56" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Sal. Inic.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement uuid="bf2f585c-34ae-4da3-a8f5-7566f3ec22f9" x="261" y="2" width="53" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="8" isBold="true" pdfFontName="Helvetica-Bold"/>
+				</textElement>
+				<text><![CDATA[Saldo]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="11" splitType="Stretch">
+			<textField>
+				<reportElement uuid="d532a1f6-9ac8-45e4-becb-abb5598f8a0b" x="72" y="0" width="119" height="11"/>
+				<textElement>
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{trpNombre}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement uuid="ca1214bd-0c49-46a6-ae4e-4355d25f3e3b" x="6" y="0" width="61" height="11"/>
+				<textElement textAlignment="Center">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{preCodigo}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0;#,##0-">
+				<reportElement uuid="a29d698b-0614-46ab-8c64-56cbc484fa23" x="195" y="0" width="56" height="11"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{preValor}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0;#,##0-">
+				<reportElement uuid="5b5c3433-4480-4295-a267-2e97d31383ab" x="261" y="0" width="53" height="11"/>
+				<textElement textAlignment="Right">
+					<font size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{preSaldo}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band splitType="Stretch"/>
+	</summary>
+</jasperReport>

@@ -23,6 +23,9 @@ public class Chat {
     private Integer chatAttempts;
     private String tdcTdFil;
     private Long empNdFil;
+    private Long ctoNumber;
+
+
 
     public Chat() {
     }

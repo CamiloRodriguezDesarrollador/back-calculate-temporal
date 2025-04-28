@@ -8,5 +8,6 @@ public interface ContractServicesI {
 
     List<Contract> findByIds(Long eplNd, String tdcTd);
     Contract findContractActive(Long eplNd, String tdcTd);
+    Contract findForCtoNumber(Long ctoNumber);
 
 }

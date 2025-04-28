@@ -23,4 +23,9 @@ public class ContractServices implements ContractServicesI {
     public Contract findContractActive(Long eplNd, String tdcTd) {
         return ContractDao.findContractActive(eplNd,tdcTd);
     }
+
+    @Override
+    public Contract findForCtoNumber(Long ctoNumber) {
+        return ContractDao.findForContract(ctoNumber);
+    }
 }

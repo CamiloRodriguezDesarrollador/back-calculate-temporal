@@ -4,12 +4,12 @@ import com.microcode.client.clients.MailServices;
 import com.microcode.client.entity.QuantityResponse;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.entity.oracle.Contract;
-import com.microcode.client.entity.oracle.Responsible;
 import com.microcode.client.service.ChatSessionManager;
 import com.microcode.client.entity.Chat;
 import com.microcode.client.entity.ContentResponse;
 import com.microcode.client.entity.Option;
 import com.microcode.client.entity.oracle.Employee;
+import com.microcode.client.service.jasper.JasperService;
 import com.microcode.client.service.mysql.ActionServices;
 import com.microcode.client.service.mysql.QuantityChatServices;
 import com.microcode.client.service.mysql.Salt;
@@ -20,7 +20,8 @@ import lombok.Setter;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
-import java.sql.Array;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
@@ -34,6 +35,7 @@ public class ActionsOracleServices {
     private final ContractServices contractServices;
     private final ChatSessionManager chatSessionManager;
     private final QuantityChatServices quantityChatServices;
+    private final JasperService jasperService;
     private final MailServices mailServices;
     private final ActionServices actionServices;
     public static List<Action> actionsPrincipal;
@@ -132,12 +134,12 @@ public class ActionsOracleServices {
             chat.setChatStart(new Date());
 
             if (isMailCorrect.equals("Y")) {
-//                String code = "123456";
-                String code = generateCode();
+                String code = "123456";
+//                String code = generateCode();
                 chat.setChatCode(code);
                 chat.setChatAttempts(1);
                 chat.setChatDateCode(new Date());
-                mailServices.sendMailVerified("yriascos@activos.com.co",code);
+//                mailServices.sendMailVerified("yriascos@activos.com.co",code);
 //                mailServices.sendMailVerified(chat.getChatMail(),code);
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action);
             }
@@ -230,6 +232,16 @@ public class ActionsOracleServices {
                 );
             }
 
+            Action actionBack = getActionForId(514);
+            options.add(
+                    new Option(
+                            actionBack.getActionRespOkAction(),
+                            actionBack.getActionMessage(),
+                            null,
+                            null
+                    )
+            );
+
             return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), chat.getNames()),options, action);
         } catch (Exception e) {
             return error;
@@ -238,6 +250,55 @@ public class ActionsOracleServices {
     }
 
     public ContentResponse getCertifiedJobDetail(Map<String,String> inputs, Action action) {
+        return methodStandard(inputs, action, optionsBasic);
+    }
+
+    public ContentResponse getCertifiedPay(Map<String,String> inputs, Action action) {
+        try {
+            String chatId = inputs.get("chatId");
+            Chat chat = chatSessionManager.getChatById(chatId);
+            ContentResponse resp = this.validateInitial(chat);
+            if(resp != null) return resp;
+
+            Contract contract = contractServices.findContractActive(Long.valueOf(chat.getDocument()), chat.getTypeDocument());
+
+            if(contract == null )
+                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),optionsDocument, action);
+
+            chat.setCtoNumber(contract.getCtoNumero());
+
+            List<Option> options = new ArrayList<>(List.of());
+            List<String> labels = getPeriodLabels(contract.getPerSigla());
+
+            for (String label : labels) {
+                options.add(
+                        new Option(
+                                action.getActionRespOkAction(),
+                                label,
+                                label,
+                                label
+                        )
+                );
+            }
+
+            Action actionBack = getActionForId(514);
+            options.add(
+                    new Option(
+                            actionBack.getActionRespOkAction(),
+                            actionBack.getActionMessage(),
+                            null,
+                            null
+                    )
+            );
+
+            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), chat.getNames()),options, action);
+        } catch (Exception e) {
+            return error;
+        }
+
+    }
+
+    public ContentResponse getCertifiedPayDetail(Map<String,String> inputs, Action action) {
         return methodStandard(inputs, action, optionsBasic);
     }
 
@@ -317,48 +378,8 @@ public class ActionsOracleServices {
     }
 
     public ContentResponse getDataInca(Map<String,String> inputs, Action action) {
-        try {
-            String detail = inputs.get("detail");
-            String chatId = inputs.get("chatId");
-            Chat chat = chatSessionManager.getChatById(chatId);
-
-            ContentResponse validateQuantity = validateQuantityOver(action, chat, detail);
-            if (validateQuantity != null) return responseWithOptionsParam(validateQuantity, action);
-
-            ContentResponse resp = this.validateInitial(chat);
-            if (resp != null) return resp;
-
-            quantityChatServices.createForAction(
-                    Integer.valueOf(action.getActionId().toString()),
-                    chat.getTypeDocument(),
-                    chat.getDocument(),
-                    detail
-            );
-
-            if(chat.getEmpNdFil() == null)
-                return ContentResponse.buildContentResponseFail(
-                        String.format(action.getActionRespFailMessage()),
-                        optionsInca,
-                        action
-                );
-            String responsible = null;
-            if(isPrincipal(chat.getEmpNdFil())) {
-                action.setActionRespOkFile(null);
-                action.setActionRespOkMessage("<p>Genial !, los trabajadores internos deberán acceder al sitio del trabajador, por favor confirmame si tienes otro requerimiento 👇.</p>");
-            }else{
-                responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
-                if(responsible == null) responsible = "auxincapacidades3@activos.com.co";
-            }
-            return ContentResponse.buildContentResponseOk(
-                    String.format(action.getActionRespOkMessage(), responsible),
-                    optionsBasic,
-                    action
-            );
-        } catch (Exception e) {
-            return error;
-        }
+        return methodStandard(inputs, action, optionsBasic);
     }
-
 
 
 
@@ -388,12 +409,63 @@ public class ActionsOracleServices {
             ContentResponse resp = this.validateInitial(chat);
             if (resp != null) return resp;
 
+            if(action.getActionId() == 502){
+                Contract cont = contractServices.findForCtoNumber(Long.valueOf(detail));
+                byte[] file = jasperService.getCertificateJob(
+                        cont.getEmpNd(),
+                        cont.getTdcTd(),
+                        Long.valueOf(detail)
+                );
+
+                file = jasperService.protectPdfWithPassword(file,chat.getDocument());
+
+                mailServices.sendMailCertificateJob(
+                        chat.getNames(),"cgonzalez@activos.com.co",file,"Cert.pdf"
+                ).subscribe();
+            }
+
+            if(action.getActionId() == 528){
+                byte[] file = jasperService.getCertificatePay(
+                        chat.getCtoNumber(),
+                        detail
+                );
+
+                file = jasperService.protectPdfWithPassword(file,chat.getDocument());
+
+                mailServices.sendMailCertificateJob(
+                        chat.getNames(),"cgonzalez@activos.com.co",file,"Nomina.pdf"
+                ).subscribe();
+            }
+
+
             quantityChatServices.createForAction(
                     Integer.valueOf(action.getActionId().toString()),
                     chat.getTypeDocument(),
                     chat.getDocument(),
                     detail
             );
+
+            if(action.getActionId() == 524){
+                if(chat.getEmpNdFil() == null)
+                    return ContentResponse.buildContentResponseFail(
+                            String.format(action.getActionRespFailMessage()),
+                            optionsInca,
+                            action
+                    );
+                String responsible = null;
+                if(isPrincipal(chat.getEmpNdFil())) {
+                    action.setActionRespOkFile(null);
+                    action.setActionRespOkMessage("<p>Genial !, los trabajadores internos deberán acceder al sitio del trabajador, por favor confirmame si tienes otro requerimiento 👇.</p>");
+                }else{
+                    responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
+                    if(responsible == null) responsible = "auxincapacidades3@activos.com.co";
+                }
+                return ContentResponse.buildContentResponseOk(
+                        String.format(action.getActionRespOkMessage(), responsible),
+                        optionsBasic,
+                        action
+                );
+            }
 
             return ContentResponse.buildContentResponseOk(
                     String.format(action.getActionRespOkMessage()),
@@ -421,7 +493,6 @@ public class ActionsOracleServices {
         responseClone.setActionMessage(String.format(quantityMax.getActionMessage(),quantityResponse.getDateOptionTrain()));
         return responseClone;
     }
-
 
     // Actualización opciones
 
@@ -510,6 +581,10 @@ public class ActionsOracleServices {
 
     public static ContentResponse responseWithOptionsParam(ContentResponse response, Action action){
         ContentResponse responseClone = ContentResponse.cloneContentResponse(response);
+        if(action == null || action.getActionTypeCall() == null) {
+            responseClone.setOptions(optionsPrincipal);
+            return responseClone;
+        }
         List<Option> options = switch (action.getActionTypeCall()) {
             case "documents" -> optionsDocument;
             case "entities" -> optionsEntities;
@@ -523,6 +598,30 @@ public class ActionsOracleServices {
         responseClone.setOptions(options);
         return responseClone;
     }
+
+    public List<String> getPeriodLabels(String perSigla) {
+        LocalDate today = LocalDate.now();
+        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        List<String> labels = new ArrayList<>();
+
+        if ("M".equals(perSigla)) {
+            for (int i = 1; i <= 3; i++) {
+                LocalDate month = today.minusMonths(i);
+                labels.add(fmt.format(month.withDayOfMonth(1)) + " - " + fmt.format(month.withDayOfMonth(month.lengthOfMonth())));
+            }
+        }
+        else if ("Q".equals(perSigla)) {
+            LocalDate ref = today.getDayOfMonth() > 15 ? today.withDayOfMonth(1) : today.minusMonths(1).withDayOfMonth(15);
+            for (int i = 0; i < 6; i++) {
+                LocalDate start = ref.getDayOfMonth() == 1 ? ref : ref.withDayOfMonth(1);
+                LocalDate end = ref.getDayOfMonth() == 1 ? ref.withDayOfMonth(15) : ref.withDayOfMonth(ref.lengthOfMonth());
+                labels.add(fmt.format(start) + " - " + fmt.format(end));
+                ref = ref.getDayOfMonth() == 1 ? ref.minusMonths(1).withDayOfMonth(15) : ref.withDayOfMonth(1);
+            }
+        }
+        return labels;
+    }
+
 
 
 

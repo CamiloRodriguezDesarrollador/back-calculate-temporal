@@ -80,6 +80,8 @@ public class ChatSessionManager {
             if (partialChat.getEmpNdFil() != null)
                 existingChat.setEmpNdFil(partialChat.getEmpNdFil());
 
+            if (partialChat.getCtoNumber() != null)
+                existingChat.setCtoNumber(partialChat.getCtoNumber());
 
             return existingChat;
         });

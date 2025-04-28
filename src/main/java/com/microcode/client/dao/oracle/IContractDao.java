@@ -2,7 +2,9 @@ package com.microcode.client.dao.oracle;
 
 import com.microcode.client.entity.oracle.Contract;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -26,5 +28,14 @@ public interface IContractDao extends CrudRepository<Contract, Long> {
             FETCH FIRST 1 ROWS ONLY
     """)
     Contract findContractActive(Long eplNd, String tdcTd);
+
+    @Query("""
+            SELECT p FROM Contract p
+            WHERE p.ctoNumero = :ctoNumber
+            ORDER BY p.ctoIng DESC
+            FETCH FIRST 1 ROWS ONLY
+    """)
+    Contract findForContract(Long ctoNumber);
+
 
 }

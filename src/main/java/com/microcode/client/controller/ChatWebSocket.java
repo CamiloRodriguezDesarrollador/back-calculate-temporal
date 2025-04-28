@@ -26,7 +26,6 @@ public class ChatWebSocket {
     private ChatSessionManager chatSessionManager;
     private final RegisterChatServices registerChatServices;
     private final ActionsOracleServices actionsOracleServices;
-    private final Salt salt;
 
     @MessageMapping("/chat/{chatId}")
     @SendTo("/api/chat/company/chat/{chatId}")
@@ -43,7 +42,6 @@ public class ChatWebSocket {
 
             if (message == null || message.getActionId() == null) return ActionsOracleServices.wrapMessage(ActionsOracleServices.responseWithOptionsParam(error,action));
             ContentMessage messageUnwrapped = Salt.unwrapContentMessage(message);
-
             chatSessionManager.updateChatActivity(chatId, messageUnwrapped);
             registerChatServices.createForMessage(chatId,messageUnwrapped,clientIp);
 
@@ -58,8 +56,6 @@ public class ChatWebSocket {
 
         }
         catch (Exception e){
-            System.out.println(e.getMessage());
-
             ContentResponse responseWrap;
             Chat chat = chatSessionManager.getChatById(chatId);
             if (chat == null) responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.unauthorized);
