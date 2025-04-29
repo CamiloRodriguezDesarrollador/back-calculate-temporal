@@ -205,12 +205,9 @@ public class CertificatesService {
             params.put("p_radicacion", radicacion);
 
             Map<String, Object> results = super.execute(params);
-            System.out.println(results.toString());
 
             CertificatePay comprobante = new CertificatePay();
             String error = (String) results.get("p_error");
-
-            System.out.println(results.toString());
 
             if (error == null || error.isEmpty()) {
                 comprobante.setNombreEmpresa((String) results.get("p_nombre_empresa"));
@@ -230,37 +227,63 @@ public class CertificatesService {
                 comprobante.setOtroMensaje((String) results.get("p_otro_mensaje"));
                 comprobante.setMonto((String) results.get("p_monto"));
                 comprobante.setMensaje2((String) results.get("p_mensaje2"));
-                System.out.println("aca nsasao");
 
-                // Procesar array de pagos
                 Array arrPago = (Array) results.get("p_tabla_pago");
-                System.out.println("aca no");
-                System.out.println(arrPago.toString());
-                List<RegisterPay> pagos = new ArrayList<>();
-
                 if (arrPago != null) {
                     try {
-                        System.out.println("aca deberia");
-                        Object[] tablaPago = (Object[]) arrPago.getArray();
-                        System.out.println("aca");
-                        System.out.println(tablaPago);
-                        for (Object item : tablaPago) {
-                            Struct structItem = (Struct) item;
-                            Object[] reg = structItem.getAttributes();
+                        // Asegúrate de que sea de Oracle
+                        oracle.sql.ARRAY oracleArray = (oracle.sql.ARRAY) arrPago;
+                        Object[] data = (Object[]) oracleArray.getArray();
+
+                        List<RegisterPay> pagos = new ArrayList<>();
+                        for (Object item : data) {
+                            oracle.sql.STRUCT struct = (oracle.sql.STRUCT) item;
+                            Object[] attributes = struct.getAttributes();
 
                             RegisterPay rp = new RegisterPay();
-                            rp.setConcepto((String) reg[0]);
-                            rp.setCantidad((BigDecimal) reg[1]);
-                            rp.setValor((BigDecimal) reg[2]);
-                            rp.setTipo((String) reg[3]);
+                            rp.setConcepto((String) attributes[0]);
+                            rp.setCantidad((BigDecimal) attributes[1]);
+                            rp.setValor((BigDecimal) attributes[2]);
+                            rp.setTipo((String) attributes[3]);
                             pagos.add(rp);
                         }
-                    } catch (SQLException e) {
+                        comprobante.setTablaPago(pagos);
+                    } catch (Exception e) {
+
                         System.out.println(e.getMessage());
-                        throw new RuntimeException("Error procesando array de pagos", e);
+                        throw new RuntimeException("Error al procesar RHU.CB_PAGO_TABLA", e);
                     }
                 }
-                comprobante.setTablaPago(pagos);
+
+
+                // Procesar array de pagos
+//                Array arrPago = (Array) results.get("p_tabla_pago");
+//                System.out.println(arrPago.toString());
+//                List<RegisterPay> pagos = new ArrayList<>();
+//
+//                if (arrPago != null) {
+//                    try {
+//                        System.out.println("aca deberia");
+//                        Object[] tablaPago = (Object[]) arrPago.getArray();
+//                        System.out.println("aca");
+//                        System.out.println(tablaPago);
+//                        for (Object item : tablaPago) {
+//                            Struct structItem = (Struct) item;
+//                            Object[] reg = structItem.getAttributes();
+//
+//                            RegisterPay rp = new RegisterPay();
+//                            rp.setConcepto((String) reg[0]);
+//                            rp.setCantidad((BigDecimal) reg[1]);
+//                            rp.setValor((BigDecimal) reg[2]);
+//                            rp.setTipo((String) reg[3]);
+//                            pagos.add(rp);
+//                        }
+//                    } catch (SQLException e) {
+//                        System.out.println(e.getMessage());
+//                        throw new RuntimeException("Error procesando array de pagos", e);
+//                    }
+//                }
+//                comprobante.setTablaPago(pagos);
 
                 // Procesar cursor de préstamos
                 try (ResultSet rs = (ResultSet) results.get("p_cursor_prestamos")) {

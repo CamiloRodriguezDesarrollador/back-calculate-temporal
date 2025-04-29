@@ -30,7 +30,7 @@ public class ChatRestController {
 
     @PostMapping("/jasper")
     public void getJasper() throws JRException, MalformedURLException, SQLException {
-        certificatesService.getDataCertificatedPay(null,921599L,"01/04/2025 - 15/04/2025",478672L);
+        certificatesService.getDataCertificatedPay(1L,921599L,"01/01/2025 - 01/04/2025",478672L);
     }
 
 }

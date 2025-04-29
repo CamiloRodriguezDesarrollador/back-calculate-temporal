@@ -134,12 +134,12 @@ public class ActionsOracleServices {
             chat.setChatStart(new Date());
 
             if (isMailCorrect.equals("Y")) {
-                String code = "123456";
-//                String code = generateCode();
+//                String code = "123456";
+                String code = generateCode();
                 chat.setChatCode(code);
                 chat.setChatAttempts(1);
                 chat.setChatDateCode(new Date());
-//                mailServices.sendMailVerified("yriascos@activos.com.co",code);
+                mailServices.sendMailVerified("yriascos@activos.com.co",code);
 //                mailServices.sendMailVerified(chat.getChatMail(),code);
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action);
             }
@@ -381,7 +381,13 @@ public class ActionsOracleServices {
         return methodStandard(inputs, action, optionsBasic);
     }
 
+    public ContentResponse getInfRetiredCesa(Map<String,String> inputs, Action action) {
+        return methodStandard(inputs,action,optionsBasic);
+    }
 
+    public ContentResponse getDocumentCesa(Map<String,String> inputs, Action action) {
+        return methodStandard(inputs,action,optionsBasic);
+    }
 
 //   Metodo estandar
 
