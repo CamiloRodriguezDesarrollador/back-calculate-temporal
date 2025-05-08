@@ -5,14 +5,13 @@ import com.microcode.client.entity.oracle.CertificatePay;
 import com.microcode.client.entity.oracle.TypeNovCompany;
 import com.microcode.client.service.oracle.CertificatesService;
 import com.microcode.client.service.oracle.TypeNovServices;
-import jakarta.annotation.PostConstruct;
-import lombok.AllArgsConstructor;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
@@ -22,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.util.ResourceUtils;
-import org.springframework.web.servlet.View;
 
 @Service
 public class JasperService {
@@ -37,7 +35,7 @@ public class JasperService {
 
     public byte[] getCertificateJob(Long empNd, String tdcTd, Long ctoNumber) {
         try {
-            File file = ResourceUtils.getFile("classpath:templates/CertificacionLaboral.jasper");
+            InputStream file = new ClassPathResource("templates/CertificacionLaboral.jasper").getInputStream();
             JasperReport cachedReportJob = (JasperReport) JRLoader.loadObject(file);
 
             TypeNovCompany typ = typeNovServices.findByIds(empNd, tdcTd, 10L);
@@ -77,7 +75,7 @@ public class JasperService {
     public byte[] getCertificatePay(Long empNd, String tdcTd, Long ctoNumber, String period) {
 
         try{
-            File file = ResourceUtils.getFile("classpath:templates/ComprobanteDePago.jasper");
+            InputStream file = new ClassPathResource("classpath:templates/ComprobanteDePago.jasper").getInputStream();
             JasperReport cachedReportJob = (JasperReport) JRLoader.loadObject(file);
 
             TypeNovCompany typ = typeNovServices.findByIds(empNd, tdcTd, 11L);
