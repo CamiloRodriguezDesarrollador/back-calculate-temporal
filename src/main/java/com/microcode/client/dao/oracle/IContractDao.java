@@ -32,10 +32,12 @@ public interface IContractDao extends CrudRepository<Contract, Long> {
     @Query("""
             SELECT p FROM Contract p
             WHERE p.ctoNumero = :ctoNumber
+            AND  p.empNd = :empNd
+            AND p.tdcTd = :tdcTd
             ORDER BY p.ctoIng DESC
             FETCH FIRST 1 ROWS ONLY
     """)
-    Contract findForContract(Long ctoNumber);
+    Contract findForContract(Long ctoNumber,Long empNd, String tdcTd );
 
 
 }

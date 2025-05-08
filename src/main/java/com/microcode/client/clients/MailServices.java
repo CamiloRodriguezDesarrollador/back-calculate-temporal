@@ -2,12 +2,10 @@ package com.microcode.client.clients;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -26,26 +24,27 @@ public class MailServices {
                 .build();
     }
 
-    @Async
-    public String sendMailVerified(String emailTo,  String code) {
+    public void sendMailVerified(String emailTo, String code) {
         MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
         params.add("emailTo", emailTo);
         params.add("code", code);
         try{
-            return this.webClient.post()
-                    .uri(urlMail +"/sendMailVerified")
+            this.webClient.post()
+                    .uri(urlMail + "/sendMailVerified")
                     .bodyValue(params)
                     .retrieve()
                     .bodyToMono(String.class)
                     .onErrorResume(RestClientException.class, ex -> Mono.empty()).block();
         } catch (Exception e) {
-            return null;
+            System.out.println(e.getMessage());
         }
     }
 
-    public Mono<String> sendMailCertificateJob(String employeeName, String emailTo, byte[] fileBytes, String filename) throws IOException {
+    public Mono<String> sendMailCertificates(String employeeName,String typeCertificate, String emailTo, byte[] fileBytes, String filename) throws IOException {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("typeCertificate", typeCertificate);
         body.add("employeeName", employeeName);
+        body.add("sendMailCertificates", employeeName);
         body.add("emailTo", emailTo);
 
         if (fileBytes == null || fileBytes.length == 0) return Mono.empty();
@@ -58,11 +57,32 @@ public class MailServices {
         });
 
         return this.webClient.post()
-                .uri(urlMail + "/sendMailCertificateJob")
+                .uri(urlMail + "/sendMailCertificates")
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(String.class)
                 .onErrorResume(RestClientException.class, ex -> Mono.empty());
+    }
+
+    public Mono<String> sendMailInformationCCF(String employeeName, String emailTo,String companyName,
+                                         String fileRequirements, String fileDeclaration, String fileVideo) {
+        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+        params.add("employeeName", employeeName);
+        params.add("emailTo", emailTo);
+        params.add("companyName", companyName);
+        params.add("fileRequirements", fileRequirements);
+        params.add("fileDeclaration", fileDeclaration);
+        params.add("fileVideo", fileVideo);
+        try{
+            return this.webClient.post()
+                    .uri(urlMail +"/sendMailInformationCCF")
+                    .bodyValue(params)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .onErrorResume(RestClientException.class, ex -> Mono.empty());
+        } catch (Exception e) {
+            return null;
+        }
     }
 
 

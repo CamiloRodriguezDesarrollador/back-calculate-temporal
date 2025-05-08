@@ -5,9 +5,11 @@ import com.microcode.client.entity.oracle.CertificatePay;
 import com.microcode.client.entity.oracle.TypeNovCompany;
 import com.microcode.client.service.oracle.CertificatesService;
 import com.microcode.client.service.oracle.TypeNovServices;
+import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.util.JRLoader;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
@@ -20,34 +22,26 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.util.ResourceUtils;
+import org.springframework.web.servlet.View;
 
 @Service
-@AllArgsConstructor
 public class JasperService {
 
     private final CertificatesService certificatesService;
     private final TypeNovServices typeNovServices;
 
-
-    public byte[] exportToPdf(Map<String, Object> params,JRBeanCollectionDataSource ds, String route) throws JRException, FileNotFoundException {
-        return JasperExportManager.exportReportToPdf(getReport(params,ds,route));
-    }
-
-    private JasperPrint getReport(Map<String, Object> params , JRBeanCollectionDataSource ds, String route) throws FileNotFoundException, JRException {
-        return JasperFillManager.fillReport(JasperCompileManager.compileReport(
-                ResourceUtils.getFile(route)
-                        .getAbsolutePath()), params, new JREmptyDataSource());
-
+    public JasperService(CertificatesService certificatesService, TypeNovServices typeNovServices) {
+        this.certificatesService = certificatesService;
+        this.typeNovServices = typeNovServices;
     }
 
     public byte[] getCertificateJob(Long empNd, String tdcTd, Long ctoNumber) {
-        TypeNovCompany typ = typeNovServices.findByIds(empNd,tdcTd,10L);
-        CertificateJob cert = certificatesService.getDataCertificatedJob(typ.getTneCodigo(),ctoNumber,"N","QUIEN INTERESE");
+        try {
+            File file = ResourceUtils.getFile("classpath:templates/CertificacionLaboral.jasper");
+            JasperReport cachedReportJob = (JasperReport) JRLoader.loadObject(file);
 
-        System.out.println(typ.toString());
-        System.out.println(cert.toString());
-        
-        try{
+            TypeNovCompany typ = typeNovServices.findByIds(empNd, tdcTd, 10L);
+            CertificateJob cert = certificatesService.getDataCertificatedJob(typ.getTneCodigo(), ctoNumber, "N", "QUIEN INTERESE");
 
             Map<String, Object> hm = new HashMap<>();
             hm.put("P_NOM_EMPRESA_PPAL", cert.getNombreEmpresaPrincipal());
@@ -57,8 +51,8 @@ public class JasperService {
             hm.put("P_RESPONSABLE", cert.getResponsable());
             hm.put("P_AREA_RESPONSABLE", cert.getAreaResponsable());
             hm.put("P_NOM_EMPRESA_USUARIA", cert.getNombreEmpresaFilial());
-            hm.put("P_LOGO", "attachment/" +  empNd + "/logo.jpg");
-            hm.put("P_FIRMA","attachment/"  + empNd  + "/" + cert.getDirFirma());
+            hm.put("P_LOGO", "attachment/" + empNd + "/logo.jpg");
+            hm.put("P_FIRMA", "attachment/" + empNd + "/" + cert.getDirFirma());
             hm.put("P_NO_CONTRATO", ctoNumber);
             hm.put("P_CONFIRMACION", cert.getTextoConfirmacion());
             hm.put("P_INFO_EMPRESA", cert.getPieInfEmpresa());
@@ -67,44 +61,80 @@ public class JasperService {
             hm.put("P_TEXTO_TITULO", cert.getTextoTitulo());
             hm.put("P_TEXTO_ATTE", cert.getTextoAtte());
 
-            return exportToPdf(hm,new JRBeanCollectionDataSource(null),"classpath:templates/CertificacionLaboral.jrxml");
+            JasperPrint jasperPrint = JasperFillManager.fillReport(
+                    cachedReportJob,
+                    hm,
+                    new JREmptyDataSource()
+            );
 
+            return JasperExportManager.exportReportToPdf(jasperPrint);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
         }
-
     }
 
-    public byte[] getCertificatePay(Long ctoNumber, String period) {
+    public byte[] getCertificatePay(Long empNd, String tdcTd, Long ctoNumber, String period) {
 
         try{
-        CertificatePay cert = certificatesService.getDataCertificatedPay(
-                11L,ctoNumber,period,1L);
+            File file = ResourceUtils.getFile("classpath:templates/ComprobanteDePago.jasper");
+            JasperReport cachedReportJob = (JasperReport) JRLoader.loadObject(file);
+
+            TypeNovCompany typ = typeNovServices.findByIds(empNd, tdcTd, 11L);
+
+            List<Long> rads =certificatesService.getDataNumbersRads(
+                    ctoNumber,typ.getTneCodigo(),period
+            );
+
+            List<JasperPrint> jpF = new ArrayList<>();
+            if(rads == null || rads.isEmpty()) return null;
+
+            for(Long rad : rads){
+                CertificatePay cert = certificatesService.getDataCertificatedPay(
+                        typ.getTneCodigo(),ctoNumber,period,rad
+                );
+
+                if(cert == null) return null;
+
+                Map<String, Object> hm = new HashMap<>();
+                hm.put("P_NOM_EMPRESA_PPAL",  cert.getNombreEmpresa() != null ? cert.getNombreEmpresa() : "");
+                hm.put("P_NOM_EMPRESA_FIL", cert.getNombreEmpresaFilial() != null ? cert.getNombreEmpresaFilial() : "");
+                hm.put("P_PERIODO_NOMINA", cert.getPeriodoNomina() != null ? cert.getPeriodoNomina() : "");
+                hm.put("P_CONSECUTIVO_HPR", cert.getConsecutivoHpr() != null ? cert.getConsecutivoHpr() : "");
+                hm.put("P_NOMBRE_EMPLEADO", cert.getNombreEmpleado() != null ? cert.getNombreEmpleado() : "");
+                hm.put("P_ID_EMPLEADO", cert.getIdentificacionEmpleado() != null ? cert.getIdentificacionEmpleado() : "");
+                hm.put("P_SUELDO", cert.getSueldo() != null ? cert.getSueldo() : "");
+                hm.put("P_IPP", cert.getIpp() != null ? cert.getIpp() : "");
+                hm.put("P_RETEFUENTE", cert.getRtefte() != null ? cert.getRtefte() : "");
+                hm.put("P_CENTRO_COSTO", cert.getCentroCosto() != null ? cert.getCentroCosto() : "");
+                hm.put("P_CIUDAD", cert.getNombreCiudad() != null ? cert.getNombreCiudad() : "");
+                hm.put("P_MENSAJE_BASICO", cert.getMensajeBasico() != null ? cert.getMensajeBasico() : "");
+                hm.put("P_CESANTIAS", cert.getCesantias() != null ? cert.getCesantias() : "");
+                hm.put("P_MENSAJE", cert.getMensaje() != null ? cert.getMensaje() : "");
+                hm.put("P_OTRO_MENSAJE", cert.getOtroMensaje() != null ? cert.getOtroMensaje() : "");
+                hm.put("P_MONTO", cert.getMonto() != null ? cert.getMonto() : "");
+                hm.put("P_MENSAJE2", cert.getMensaje2() != null ? cert.getMensaje2() : "");
+                hm.put("P_PRESTAMOS", cert.getTablaAhorroPrestamo() != null ? cert.getTablaAhorroPrestamo() : "");
+                hm.put("P_NO_CONTRATO", ctoNumber != null ? ctoNumber : "");
+
+                hm.put("P_RUTA_REPORTES","templates/");
+                hm.put("P_RUTA_SEPARADOR_REP","");
 
 
-            Map<String, Object> hm = new HashMap<>();
-            hm.put("P_NOM_EMPRESA_PPAL", cert.getNombreEmpresa());
-            hm.put("P_NOM_EMPRESA_FIL", cert.getNombreEmpresaFilial());
-            hm.put("P_PERIODO_NOMINA", cert.getPeriodoNomina());
-            hm.put("P_CONSECUTIVO_HPR", cert.getConsecutivoHpr());
-            hm.put("P_NOMBRE_EMPLEADO", cert.getNombreEmpleado());
-            hm.put("P_ID_EMPLEADO", cert.getIdentificacionEmpleado());
-            hm.put("P_SUELDO", cert.getSueldo());
-            hm.put("P_IPP", cert.getIpp());
-            hm.put("P_RETEFUENTE", cert.getRtefte());
-            hm.put("P_CENTRO_COSTO", cert.getCentroCosto());
-            hm.put("P_CIUDAD", cert.getNombreCiudad());
-            hm.put("P_MENSAJE_BASICO",cert.getMensajeBasico());
-            hm.put("P_CESANTIAS", cert.getCesantias());
-            hm.put("P_MENSAJE", cert.getMensaje());
-            hm.put("P_OTRO_MENSAJE", cert.getOtroMensaje());
-            hm.put("P_MONTO", cert.getMonto());
-            hm.put("P_PRESTAMOS", cert.getTablaAhorroPrestamo());
-            JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(cert.getTablaPago());
-            hm.put("P_NO_CONTRATO", ctoNumber);
+                JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(cert.getTablaPago());
+                JasperPrint jasperPrint = JasperFillManager.fillReport(cachedReportJob, hm, ds);
+                jpF.add(jasperPrint);
 
-            return exportToPdf(hm,ds,"classpath:templates/ComprobanteDePago.jrxml");
+            }
+
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            JasperExportManager.exportReportToPdfStream(jpF.get(0), byteArrayOutputStream);
+
+            for (int i = 1; i < jpF.size(); i++) {
+                JasperExportManager.exportReportToPdfStream(jpF.get(i), byteArrayOutputStream);
+            }
+
+            return byteArrayOutputStream.toByteArray();
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -127,3 +157,8 @@ public class JasperService {
         }
     }
 }
+
+//        String jrxmlPath = "src/main/resources/templates/CertificacionLaboral.jrxml";
+//        String jasperPath = "src/main/resources/templates/CertificacionLaboral.jasper";
+//        JasperCompileManager.compileReportToFile(jrxmlPath, jasperPath);
+//        System.out.println("Reporte compilado con éxito.");

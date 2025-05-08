@@ -25,7 +25,7 @@ public class ContractServices implements ContractServicesI {
     }
 
     @Override
-    public Contract findForCtoNumber(Long ctoNumber) {
-        return ContractDao.findForContract(ctoNumber);
+    public Contract findForCtoNumber(Long ctoNumber,Long empNd, String tdcTd) {
+        return ContractDao.findForContract(ctoNumber,empNd,tdcTd);
     }
 }

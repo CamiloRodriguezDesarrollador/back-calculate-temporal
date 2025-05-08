@@ -11,7 +11,9 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -21,6 +23,7 @@ import static com.microcode.client.service.oracle.ActionsOracleServices.*;
 
 @Controller
 @AllArgsConstructor
+@Component
 public class ChatWebSocket {
 
     private ChatSessionManager chatSessionManager;
@@ -56,6 +59,7 @@ public class ChatWebSocket {
 
         }
         catch (Exception e){
+            System.out.println(e.getMessage());
             ContentResponse responseWrap;
             Chat chat = chatSessionManager.getChatById(chatId);
             if (chat == null) responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.unauthorized);

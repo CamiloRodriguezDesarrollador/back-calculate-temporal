@@ -24,7 +24,8 @@ public class Chat {
     private String tdcTdFil;
     private Long empNdFil;
     private Long ctoNumber;
-
+    private String tdcTd;
+    private Long empNd;
 
 
     public Chat() {

@@ -83,6 +83,12 @@ public class ChatSessionManager {
             if (partialChat.getCtoNumber() != null)
                 existingChat.setCtoNumber(partialChat.getCtoNumber());
 
+            if (partialChat.getTdcTd() != null)
+                existingChat.setTdcTd(partialChat.getTdcTd());
+
+            if (partialChat.getEmpNd() != null)
+                existingChat.setEmpNd(partialChat.getEmpNd());
+
             return existingChat;
         });
     }
