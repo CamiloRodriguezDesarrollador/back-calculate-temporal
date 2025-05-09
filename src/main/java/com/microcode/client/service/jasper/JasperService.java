@@ -100,7 +100,6 @@ public class JasperService {
                     ctoNumber,typ.getTneCodigo(),period
             );
 
-            System.out.println(rads);
             List<JasperPrint> jpF = new ArrayList<>();
             if(rads == null || rads.isEmpty()) return null;
 
@@ -108,7 +107,6 @@ public class JasperService {
                 CertificatePay cert = certificatesService.getDataCertificatedPay(
                         typ.getTneCodigo(),ctoNumber,period,rad
                 );
-                System.out.println(cert);
 
                 if(cert == null) return null;
 
@@ -138,20 +136,14 @@ public class JasperService {
 
 
                 JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(cert.getTablaPago());
-                System.out.println("Llega acaasadas");
-                System.out.println(cachedReportPay);
-                System.out.println("Llega acaasadsadassaa");
 
                 try{
                     JasperPrint jasperPrint = JasperFillManager.fillReport(cachedReportPay, hm, ds);
                     jpF.add(jasperPrint);
                 }catch (Throwable e){
-                    System.out.println("Esrte es errroororororor");
                     System.out.println(e.getMessage());
-                    e.printStackTrace();
                 }
 
-                System.out.println("pasa");
             }
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
@@ -164,7 +156,6 @@ public class JasperService {
             return byteArrayOutputStream.toByteArray();
 
         } catch (Exception e) {
-            System.out.println("eerror aca");
             System.out.println(e.getMessage());
             return null;
         }
