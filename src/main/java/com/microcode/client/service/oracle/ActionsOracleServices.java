@@ -461,44 +461,58 @@ public class ActionsOracleServices {
     public Object methodStandardAdditional(String detail, Action action, Chat chat) throws IOException {
         try{
             switch (action.getActionId()) {
-                case 502 :
-                    String[] part = detail.split("-");
-                    Long contract = Long.parseLong(part[0]);
-                    Long empNd = Long.parseLong(part[1]);
-                    String tdcTd = part[2];
+                case 502:
+                    if (helperService.isPrincipal(chat.getEmpNdFil())) {
+                        action.setActionRespOkFile(null);
+                        action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
+                    } else {
+                        String[] part = detail.split("-");
+                        Long contract = Long.parseLong(part[0]);
+                        Long empNd = Long.parseLong(part[1]);
+                        String tdcTd = part[2];
 
-                    Contract cont = contractServices.findForCtoNumber(contract,empNd,tdcTd);
+                        Contract cont = contractServices.findForCtoNumber(contract, empNd, tdcTd);
 
-                    byte[] file = jasperService.getCertificateJob(
-                            cont.getEmpNd(),
-                            cont.getTdcTd(),
-                            contract
-                    );
+                        byte[] file = jasperService.getCertificateJob(
+                                cont.getEmpNd(),
+                                cont.getTdcTd(),
+                                contract
+                        );
 
 
-                    if (file == null) return error;
-                    file = jasperService.protectPdfWithPassword(file,chat.getDocument());
-                    mailServices.sendMailCertificates(
-                            chat.getNames(),"Laboral",MAIL_TEST,file,"CertificadoLaboral.pdf"
-                    ).subscribe();
-
+                        if (file == null) return error;
+                        file = jasperService.protectPdfWithPassword(file, chat.getDocument());
+                        mailServices.sendMailCertificates(
+                                chat.getNames(), "Laboral", MAIL_TEST, file, "CertificadoLaboral.pdf"
+                        ).subscribe();
+                    }
                     return null;
                 case 528:
-                    byte[] filePay = jasperService.getCertificatePay(
-                            chat.getEmpNd(),
-                            chat.getTdcTd(),
-                            chat.getCtoNumber(),
-                            detail
-                    );
-                    if (filePay == null) return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),optionsDocument, action);
-                    filePay = jasperService.protectPdfWithPassword(filePay,chat.getDocument());
+                    if (helperService.isPrincipal(chat.getEmpNdFil())) {
+                        action.setActionRespOkFile(null);
+                        action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
+                    } else {
+                        byte[] filePay = jasperService.getCertificatePay(
+                                chat.getEmpNd(),
+                                chat.getTdcTd(),
+                                chat.getCtoNumber(),
+                                detail
+                        );
+                        if (filePay == null)
+                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), optionsDocument, action);
+                        filePay = jasperService.protectPdfWithPassword(filePay, chat.getDocument());
 
-                    mailServices.sendMailCertificates(
-                            chat.getNames(),"de pago",MAIL_TEST,filePay,"CertificacionPago.pdf"
-                    ).subscribe();
+                        mailServices.sendMailCertificates(
+                                chat.getNames(), "de pago", MAIL_TEST, filePay, "CertificacionPago.pdf"
+                        ).subscribe();
+                    }
 
                     return null;
                 case 505:
+                    if (helperService.isPrincipal(chat.getEmpNdFil())) {
+                        action.setActionRespOkFile(null);
+                        action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
+                    }else{
                     String url = certificatesService.getDataCertificatedDian(
                             chat.getTdcTd(),
                             chat.getEmpNd(),
@@ -508,9 +522,10 @@ public class ActionsOracleServices {
                             helperService.getDateCertifiedDianEndDate()
                     );
 
-
-                    if (url == null) return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),optionsDocument, action);
+                    if (url == null)
+                        return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), optionsDocument, action);
                     action.setActionRespOkFile(url);
+                     }
                     return null;
                 case 529:
                     Company comp = entitiesServices.findForDataEpl(

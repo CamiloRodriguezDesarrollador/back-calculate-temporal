@@ -133,7 +133,7 @@ public class JasperService {
                 hm.put("P_PRESTAMOS", cert.getTablaAhorroPrestamo() != null ? cert.getTablaAhorroPrestamo() : "");
                 hm.put("P_NO_CONTRATO", ctoNumber != null ? ctoNumber : "");
 
-                hm.put("P_RUTA_REPORTES", "classes/templates/");
+                hm.put("P_RUTA_REPORTES", "templates/");
                 hm.put("P_RUTA_SEPARADOR_REP","");
 
 
