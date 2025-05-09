@@ -93,7 +93,7 @@ public class JasperService {
                     ctoNumber,typ.getTneCodigo(),period
             );
 
-
+            System.out.println(rads);
             List<JasperPrint> jpF = new ArrayList<>();
             if(rads == null || rads.isEmpty()) return null;
 
@@ -101,6 +101,7 @@ public class JasperService {
                 CertificatePay cert = certificatesService.getDataCertificatedPay(
                         typ.getTneCodigo(),ctoNumber,period,rad
                 );
+                System.out.println(cert);
 
                 if(cert == null) return null;
 
@@ -125,13 +126,14 @@ public class JasperService {
                 hm.put("P_PRESTAMOS", cert.getTablaAhorroPrestamo() != null ? cert.getTablaAhorroPrestamo() : "");
                 hm.put("P_NO_CONTRATO", ctoNumber != null ? ctoNumber : "");
 
-                hm.put("P_RUTA_REPORTES", "templates/");
+                hm.put("P_RUTA_REPORTES", "classes/templates/");
                 hm.put("P_RUTA_SEPARADOR_REP","");
 
 
                 JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(cert.getTablaPago());
                 JasperPrint jasperPrint = JasperFillManager.fillReport(cachedReportPay, hm, ds);
                 jpF.add(jasperPrint);
+                System.out.println(jasperPrint);
 
             }
 
@@ -145,6 +147,7 @@ public class JasperService {
             return byteArrayOutputStream.toByteArray();
 
         } catch (Exception e) {
+            System.out.println("eerror aca");
             System.out.println(e.getMessage());
             return null;
         }
@@ -162,6 +165,9 @@ public class JasperService {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             document.save(out);
             return out.toByteArray();
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return null;
         }
     }
 }
