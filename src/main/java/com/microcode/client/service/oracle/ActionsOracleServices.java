@@ -19,6 +19,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -74,8 +75,8 @@ public class ActionsOracleServices {
 
     //    Respuestas llamadas desde actions
 
-    public final String MAIL_TEST = "yriascos@activos.com.co";
-//    public final String MAIL_TEST = "javiercamilo75@gmail.com";
+//    public final String MAIL_TEST = "yriascos@activos.com.co";
+    public final String MAIL_TEST = "cgonzalez@activos.com.co";
 
     public Chat initialChatIfNull(String chatId){
         chatSessionManager.updateChatActivity(chatId,null);
@@ -480,9 +481,9 @@ public class ActionsOracleServices {
 
                         if (file == null) return error;
                         file = jasperService.protectPdfWithPassword(file, chat.getDocument());
-                        mailServices.sendMailCertificates(
-                                chat.getNames(), "Laboral", MAIL_TEST, file, "CertificadoLaboral.pdf"
-                        ).subscribe();
+//                        mailServices.sendMailCertificates(
+//                                chat.getNames(), "Laboral", MAIL_TEST, file, "CertificadoLaboral.pdf"
+//                        ).subscribe();
                     }
                     return null;
                 case 528:
@@ -499,9 +500,9 @@ public class ActionsOracleServices {
                             return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), optionsDocument, action);
                         filePay = jasperService.protectPdfWithPassword(filePay, chat.getDocument());
 
-                        mailServices.sendMailCertificates(
-                                chat.getNames(), "de pago", MAIL_TEST, filePay, "CertificacionPago.pdf"
-                        ).subscribe();
+//                        mailServices.sendMailCertificates(
+//                                chat.getNames(), "de pago", MAIL_TEST, filePay, "CertificacionPago.pdf"
+//                        ).subscribe();
                     }
 
                     return null;

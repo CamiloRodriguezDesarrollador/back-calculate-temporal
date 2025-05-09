@@ -37,6 +37,7 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
 
     public String eplNd = "39655785";
     public String tdcTdEpl = "CC";
+    public Long contract = 597706L;
     public String detail = "597706-860090915-NI";
 
     @BeforeEach
@@ -430,6 +431,61 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
         assertNotEquals(resp.getActionType(),"error");
 
     }
+
+    @Test
+    public void getCertifiedPayDetail() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Chat chat = new Chat();
+        Map<String, String> chatMessage = new HashMap<>();
+        chat.setChatId(String.valueOf(UUID.randomUUID()));
+        Chat chatMockup = actionsOracleServices.initialChatIfNull(chat.getChatId());
+        chatMockup.setChatStart(new Date());
+        chatMockup.setChatDateAuthorized(new Date());
+        chatMockup.setChatAuthenticated(true);
+
+        ContentMessage mockMessage = new ContentMessage();
+        mockMessage.setActionId(528);
+        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
+        chatMockup.setDocument(eplNd);
+        chatMockup.setTypeDocument(tdcTdEpl);
+        chatMockup.setCtoNumber(contract);
+        chatMessage.put("detail", detail);
+        chatMessage.put("chatId", chat.getChatId());
+        mockMessage.setChatMessage(chatMessage);
+
+        ContentResponse resp = (ContentResponse) methodAction.invoke(actionsOracleServices, mockMessage.getChatMessage(), action);
+        assertNotNull(resp);
+        assertNotEquals(resp.getActionType(),"error");
+
+    }
+
+    @Test
+    public void getCertifiedDian() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Chat chat = new Chat();
+        Map<String, String> chatMessage = new HashMap<>();
+        chat.setChatId(String.valueOf(UUID.randomUUID()));
+        Chat chatMockup = actionsOracleServices.initialChatIfNull(chat.getChatId());
+        chatMockup.setChatStart(new Date());
+        chatMockup.setChatDateAuthorized(new Date());
+        chatMockup.setChatAuthenticated(true);
+
+        ContentMessage mockMessage = new ContentMessage();
+        mockMessage.setActionId(505);
+        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
+        chatMockup.setDocument(eplNd);
+        chatMockup.setTypeDocument(tdcTdEpl);
+        chatMessage.put("detail", detail);
+        chatMessage.put("chatId", chat.getChatId());
+        mockMessage.setChatMessage(chatMessage);
+
+        ContentResponse resp = (ContentResponse) methodAction.invoke(actionsOracleServices, mockMessage.getChatMessage(), action);
+        assertNotNull(resp);
+        assertNotEquals(resp.getActionType(),"error");
+
+    }
+
+
 
 }
 
