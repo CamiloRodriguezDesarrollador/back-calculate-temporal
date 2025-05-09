@@ -145,9 +145,10 @@ public class JasperService {
                 try{
                     JasperPrint jasperPrint = JasperFillManager.fillReport(cachedReportPay, hm, ds);
                     jpF.add(jasperPrint);
-                }catch (Exception e){
+                }catch (Throwable e){
                     System.out.println("Esrte es errroororororor");
                     System.out.println(e.getMessage());
+                    e.printStackTrace();
                 }
 
                 System.out.println("pasa");
