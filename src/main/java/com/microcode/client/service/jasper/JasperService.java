@@ -38,6 +38,8 @@ public class JasperService {
 
             InputStream filePay = new ClassPathResource("templates/ComprobanteDePago.jasper").getInputStream();
             certPayReportInitial = (JasperReport) JRLoader.loadObject(filePay);
+
+            System.out.println("coorectos");
         } catch (IOException e) {
             System.out.println("Error aca: " + e.getMessage());
             System.out.println(e.getMessage());
@@ -139,10 +141,16 @@ public class JasperService {
                 System.out.println("Llega acaasadas");
                 System.out.println(cachedReportPay);
                 System.out.println("Llega acaasadsadassaa");
-                JasperPrint jasperPrint = JasperFillManager.fillReport(cachedReportPay, hm, ds);
-                jpF.add(jasperPrint);
-                System.out.println(jasperPrint);
 
+                try{
+                    JasperPrint jasperPrint = JasperFillManager.fillReport(cachedReportPay, hm, ds);
+                    jpF.add(jasperPrint);
+                }catch (Exception e){
+                    System.out.println("Esrte es errroororororor");
+                    System.out.println(e.getMessage());
+                }
+
+                System.out.println("pasa");
             }
 
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
