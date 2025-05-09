@@ -245,9 +245,12 @@ public class CertificatesService {
 
             query.execute();
 
-            String response = "";
+            String response;
             response = ((String) query.getOutputParameterValue("vcSalida"));
             String error = ((String) query.getOutputParameterValue("vcerror"));
+
+            System.out.println(response);
+            System.out.println(error);
 
             if(error != null) return null;
             return response;

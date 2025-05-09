@@ -60,8 +60,6 @@ public class ChatWebSocket {
 
         }
         catch (Exception e){
-            System.out.println("eerror acsassasaaa");
-
             System.out.println(e.getMessage());
             ContentResponse responseWrap;
             Chat chat = chatSessionManager.getChatById(chatId);

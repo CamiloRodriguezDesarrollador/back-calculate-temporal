@@ -22,6 +22,7 @@ public class HelperService {
     }
 
     public boolean isPrincipal(Long empNdFil){
+        if(empNdFil == null)return false;
         List<Long> emp = List.of(830057687L, 860090915L, 800148972L, 800165661L, 800141699L);
         return emp.contains(empNdFil);
     }

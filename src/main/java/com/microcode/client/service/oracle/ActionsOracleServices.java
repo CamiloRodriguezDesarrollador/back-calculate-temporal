@@ -125,7 +125,6 @@ public class ActionsOracleServices {
                 chat.setEmpNdFil(contract.getEmpNdFil());
                 chat.setTdcTdFil(contract.getTdcTdFil());
                 chat.setCtoNumber(contract.getCtoNumero());
-
             }
 
             chatSessionManager.setChatById( chatId, chat );
@@ -464,9 +463,9 @@ public class ActionsOracleServices {
             switch (action.getActionId()) {
                 case 502:
                     if (helperService.isPrincipal(chat.getEmpNdFil())) {
-                        action.setActionRespOkFile(null);
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
                     } else {
+                        System.out.println(detail);
                         String[] part = detail.split("-");
                         Long contract = Long.parseLong(part[0]);
                         Long empNd = Long.parseLong(part[1]);
@@ -480,7 +479,7 @@ public class ActionsOracleServices {
                                 contract
                         );
 
-
+                        System.out.println(file);
                         if (file == null) return error;
                         file = jasperService.protectPdfWithPassword(file, chat.getDocument());
                         mailServices.sendMailCertificates(
@@ -490,7 +489,6 @@ public class ActionsOracleServices {
                     return null;
                 case 528:
                     if (helperService.isPrincipal(chat.getEmpNdFil())) {
-                        action.setActionRespOkFile(null);
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
                     } else {
                         byte[] filePay = jasperService.getCertificatePay(
@@ -510,8 +508,8 @@ public class ActionsOracleServices {
 
                     return null;
                 case 505:
+                    System.out.println(chat.getEmpNdFil());
                     if (helperService.isPrincipal(chat.getEmpNdFil())) {
-                        action.setActionRespOkFile(null);
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
                     }else{
                     String url = certificatesService.getDataCertificatedDian(
@@ -522,6 +520,7 @@ public class ActionsOracleServices {
                             helperService.getDateCertifiedDianStartDate(),
                             helperService.getDateCertifiedDianEndDate()
                     );
+                        System.out.println(url);
 
                     if (url == null)
                         return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), optionsDocument, action);
@@ -569,8 +568,6 @@ public class ActionsOracleServices {
             }
             return null;
         }catch (Exception e){
-            System.out.println("eerror acsasaa");
-
             System.out.println(e.getMessage());
             return error;
         }

@@ -54,11 +54,13 @@ public class JasperService {
 
     public byte[] getCertificateJob(Long empNd, String tdcTd, Long ctoNumber) {
         try {
+            System.out.println("llega aca sasdas");
+
             JasperReport cachedReportJob = certJobReportInitial;
 
             TypeNovCompany typ = typeNovServices.findByIds(empNd, tdcTd, 10L);
             CertificateJob cert = certificatesService.getDataCertificatedJob(typ.getTneCodigo(), ctoNumber, "N", "QUIEN INTERESE");
-
+            System.out.println("llega aca");
             Map<String, Object> hm = new HashMap<>();
             hm.put("P_NOM_EMPRESA_PPAL", cert.getNombreEmpresaPrincipal());
             hm.put("P_ND_EMPRESA_PPAL", cert.getEmpresaNd());
@@ -76,6 +78,8 @@ public class JasperService {
             hm.put("P_TEXTO_NOTA", cert.getTextoNota());
             hm.put("P_TEXTO_TITULO", cert.getTextoTitulo());
             hm.put("P_TEXTO_ATTE", cert.getTextoAtte());
+
+            System.out.println("Certificado: " + cert);
 
             JasperPrint jasperPrint = JasperFillManager.fillReport(
                     cachedReportJob,
