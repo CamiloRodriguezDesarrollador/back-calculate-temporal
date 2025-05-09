@@ -208,9 +208,6 @@ public class CertificatesService {
                         pa.setTrpNombre((String) row.get("TPR_NOMBRE"));
                         cert.getTablaAhorroPrestamo().add(pa);
                     }
-
-                    System.out.println(cert.getTablaPago());
-
                 } catch (Exception e) {
                     System.out.println(e.getMessage());
                 }

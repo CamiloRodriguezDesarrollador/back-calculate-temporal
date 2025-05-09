@@ -5,6 +5,7 @@ import com.microcode.client.entity.oracle.CertificatePay;
 import com.microcode.client.entity.oracle.TypeNovCompany;
 import com.microcode.client.service.oracle.CertificatesService;
 import com.microcode.client.service.oracle.TypeNovServices;
+import jakarta.annotation.PostConstruct;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
@@ -20,23 +21,33 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.util.ResourceUtils;
-
 @Service
 public class JasperService {
 
     private final CertificatesService certificatesService;
     private final TypeNovServices typeNovServices;
+    private JasperReport certJobReportInitial;
+    private JasperReport certPayReportInitial;
+
+
+    @PostConstruct
+    public void init() throws IOException, JRException {
+        InputStream fileJob = new ClassPathResource("templates/CertificacionLaboral.jasper").getInputStream();
+        certJobReportInitial = (JasperReport) JRLoader.loadObject(fileJob);
+
+        InputStream filePay = new ClassPathResource("templates/ComprobanteDePago.jasper").getInputStream();
+        certPayReportInitial = (JasperReport) JRLoader.loadObject(filePay);
+    }
 
     public JasperService(CertificatesService certificatesService, TypeNovServices typeNovServices) {
         this.certificatesService = certificatesService;
         this.typeNovServices = typeNovServices;
     }
 
+
     public byte[] getCertificateJob(Long empNd, String tdcTd, Long ctoNumber) {
         try {
-            InputStream file = new ClassPathResource("templates/CertificacionLaboral.jasper").getInputStream();
-            JasperReport cachedReportJob = (JasperReport) JRLoader.loadObject(file);
+            JasperReport cachedReportJob = certJobReportInitial;
 
             TypeNovCompany typ = typeNovServices.findByIds(empNd, tdcTd, 10L);
             CertificateJob cert = certificatesService.getDataCertificatedJob(typ.getTneCodigo(), ctoNumber, "N", "QUIEN INTERESE");
@@ -73,16 +84,15 @@ public class JasperService {
     }
 
     public byte[] getCertificatePay(Long empNd, String tdcTd, Long ctoNumber, String period) {
-
         try{
-            InputStream file = new ClassPathResource("classpath:templates/ComprobanteDePago.jasper").getInputStream();
-            JasperReport cachedReportJob = (JasperReport) JRLoader.loadObject(file);
+            JasperReport cachedReportPay = certPayReportInitial;
 
             TypeNovCompany typ = typeNovServices.findByIds(empNd, tdcTd, 11L);
 
             List<Long> rads =certificatesService.getDataNumbersRads(
                     ctoNumber,typ.getTneCodigo(),period
             );
+
 
             List<JasperPrint> jpF = new ArrayList<>();
             if(rads == null || rads.isEmpty()) return null;
@@ -115,12 +125,12 @@ public class JasperService {
                 hm.put("P_PRESTAMOS", cert.getTablaAhorroPrestamo() != null ? cert.getTablaAhorroPrestamo() : "");
                 hm.put("P_NO_CONTRATO", ctoNumber != null ? ctoNumber : "");
 
-                hm.put("P_RUTA_REPORTES","templates/");
+                hm.put("P_RUTA_REPORTES", "templates/");
                 hm.put("P_RUTA_SEPARADOR_REP","");
 
 
                 JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(cert.getTablaPago());
-                JasperPrint jasperPrint = JasperFillManager.fillReport(cachedReportJob, hm, ds);
+                JasperPrint jasperPrint = JasperFillManager.fillReport(cachedReportPay, hm, ds);
                 jpF.add(jasperPrint);
 
             }

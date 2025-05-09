@@ -36,11 +36,11 @@ public class ChatWebSocket {
                                     ContentMessage message,
                                     SimpMessageHeaderAccessor headerAccessor)
             {
+
         Action action = new Action();
         try{
 
 //            Thread.sleep(5000);
-
             String clientIp = (String) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("clientIp");
 
             if (message == null || message.getActionId() == null) return ActionsOracleServices.wrapMessage(ActionsOracleServices.responseWithOptionsParam(error,action));
@@ -49,6 +49,7 @@ public class ChatWebSocket {
             registerChatServices.createForMessage(chatId,messageUnwrapped,clientIp);
 
             action = actionsOracleServices.getActionForId(messageUnwrapped.getActionId());
+
             Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
             messageUnwrapped.getChatMessage().put("chatId", chatId);
             ContentResponse resp = (ContentResponse) methodAction.invoke(actionsOracleServices, messageUnwrapped.getChatMessage(), action);
