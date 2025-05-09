@@ -465,7 +465,6 @@ public class ActionsOracleServices {
                     if (helperService.isPrincipal(chat.getEmpNdFil())) {
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
                     } else {
-                        System.out.println(detail);
                         String[] part = detail.split("-");
                         Long contract = Long.parseLong(part[0]);
                         Long empNd = Long.parseLong(part[1]);
@@ -479,7 +478,6 @@ public class ActionsOracleServices {
                                 contract
                         );
 
-                        System.out.println(file);
                         if (file == null) return error;
                         file = jasperService.protectPdfWithPassword(file, chat.getDocument());
                         mailServices.sendMailCertificates(
@@ -508,13 +506,13 @@ public class ActionsOracleServices {
 
                     return null;
                 case 505:
-                    System.out.println(chat.getEmpNdFil());
                     if (helperService.isPrincipal(chat.getEmpNdFil())) {
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
                     }else{
+                    Contract cont = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument());
                     String url = certificatesService.getDataCertificatedDian(
-                            chat.getTdcTd(),
-                            chat.getEmpNd(),
+                            cont.getTdcTd(),
+                            cont.getEmpNd(),
                             chat.getTypeDocument(),
                             Long.valueOf(chat.getDocument()),
                             helperService.getDateCertifiedDianStartDate(),

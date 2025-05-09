@@ -249,9 +249,6 @@ public class CertificatesService {
             response = ((String) query.getOutputParameterValue("vcSalida"));
             String error = ((String) query.getOutputParameterValue("vcerror"));
 
-            System.out.println(response);
-            System.out.println(error);
-
             if(error != null) return null;
             return response;
         }catch (Exception e ){

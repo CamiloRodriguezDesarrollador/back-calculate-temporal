@@ -39,5 +39,14 @@ public interface IContractDao extends CrudRepository<Contract, Long> {
     """)
     Contract findForContract(Long ctoNumber,Long empNd, String tdcTd );
 
+    @Query("""
+            SELECT p FROM Contract p
+            WHERE p.eplNd = :eplNd
+            AND p.tdcTdEpl = :tdcTd
+            ORDER BY p.ctoIng DESC
+            FETCH FIRST 1 ROWS ONLY
+    """)
+    Contract findForEplLast(Long eplNd, String tdcTd  );
+
 
 }

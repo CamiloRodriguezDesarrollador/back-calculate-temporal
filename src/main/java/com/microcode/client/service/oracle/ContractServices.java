@@ -28,4 +28,10 @@ public class ContractServices implements ContractServicesI {
     public Contract findForCtoNumber(Long ctoNumber,Long empNd, String tdcTd) {
         return ContractDao.findForContract(ctoNumber,empNd,tdcTd);
     }
+
+    @Override
+    public Contract findContractForEpl(Long eplNd, String tdcTd) {
+        return ContractDao.findForEplLast(eplNd,tdcTd);
+    }
+
 }
