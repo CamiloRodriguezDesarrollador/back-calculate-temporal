@@ -459,7 +459,7 @@ public class ActionsOracleServices {
         }
     }
 
-    public Object methodStandardAdditional(String detail, Action action, Chat chat) throws IOException {
+    public Object methodStandardAdditional(String detail, Action action, Chat chat) {
         try{
             switch (action.getActionId()) {
                 case 502:
@@ -481,9 +481,9 @@ public class ActionsOracleServices {
 
                         if (file == null) return error;
                         file = jasperService.protectPdfWithPassword(file, chat.getDocument());
-//                        mailServices.sendMailCertificates(
-//                                chat.getNames(), "Laboral", MAIL_TEST, file, "CertificadoLaboral.pdf"
-//                        ).subscribe();
+                        mailServices.sendMailCertificates(
+                                chat.getNames(), "Laboral", MAIL_TEST, file, "CertificadoLaboral.pdf"
+                        ).subscribe();
                     }
                     return null;
                 case 528:
@@ -500,9 +500,9 @@ public class ActionsOracleServices {
                             return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), optionsDocument, action);
                         filePay = jasperService.protectPdfWithPassword(filePay, chat.getDocument());
 
-//                        mailServices.sendMailCertificates(
-//                                chat.getNames(), "de pago", MAIL_TEST, filePay, "CertificacionPago.pdf"
-//                        ).subscribe();
+                        mailServices.sendMailCertificates(
+                                chat.getNames(), "de pago", MAIL_TEST, filePay, "CertificacionPago.pdf"
+                        ).subscribe();
                     }
 
                     return null;
