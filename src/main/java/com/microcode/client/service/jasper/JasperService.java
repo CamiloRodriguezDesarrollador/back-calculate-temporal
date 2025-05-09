@@ -32,11 +32,16 @@ public class JasperService {
 
     @PostConstruct
     public void init() throws IOException, JRException {
-        InputStream fileJob = new ClassPathResource("templates/CertificacionLaboral.jasper").getInputStream();
-        certJobReportInitial = (JasperReport) JRLoader.loadObject(fileJob);
+        try{
+            InputStream fileJob = new ClassPathResource("templates/CertificacionLaboral.jasper").getInputStream();
+            certJobReportInitial = (JasperReport) JRLoader.loadObject(fileJob);
 
-        InputStream filePay = new ClassPathResource("templates/ComprobanteDePago.jasper").getInputStream();
-        certPayReportInitial = (JasperReport) JRLoader.loadObject(filePay);
+            InputStream filePay = new ClassPathResource("templates/ComprobanteDePago.jasper").getInputStream();
+            certPayReportInitial = (JasperReport) JRLoader.loadObject(filePay);
+        } catch (IOException e) {
+            System.out.println("Error aca: " + e.getMessage());
+            System.out.println(e.getMessage());
+        }
     }
 
     public JasperService(CertificatesService certificatesService, TypeNovServices typeNovServices) {
@@ -131,6 +136,9 @@ public class JasperService {
 
 
                 JRBeanCollectionDataSource ds = new JRBeanCollectionDataSource(cert.getTablaPago());
+                System.out.println("Llega acaasadas");
+                System.out.println(cachedReportPay);
+                System.out.println("Llega acaasadsadassaa");
                 JasperPrint jasperPrint = JasperFillManager.fillReport(cachedReportPay, hm, ds);
                 jpF.add(jasperPrint);
                 System.out.println(jasperPrint);
