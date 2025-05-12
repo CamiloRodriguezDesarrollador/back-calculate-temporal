@@ -19,10 +19,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -63,6 +61,7 @@ public class ActionsOracleServices {
     public static ContentResponse noAction;
     public static ContentResponse timeOut;
     public static ContentResponse error;
+    public static ContentResponse withoutContract;
     public static ContentResponse maxAttempts;
 
 
@@ -75,8 +74,8 @@ public class ActionsOracleServices {
 
     //    Respuestas llamadas desde actions
 
-    public final String MAIL_TEST = "yriascos@activos.com.co";
-//    public final String MAIL_TEST = "cgonzalez@activos.com.co";
+//    public final String MAIL_TEST = "yriascos@activos.com.co";
+    public final String MAIL_TEST = "cgonzalez@activos.com.co";
 
     public Chat initialChatIfNull(String chatId){
         chatSessionManager.updateChatActivity(chatId,null);
@@ -430,6 +429,8 @@ public class ActionsOracleServices {
             ContentResponse resp = this.validateInitial(chat);
             if (resp != null) return resp;
 
+            if(!verifiedRequirementContractActive(chat,action)) return withoutContract;
+
            Object validationAdditional = methodStandardAdditional(detail, action,chat);
 
            if(validationAdditional != null){
@@ -548,13 +549,8 @@ public class ActionsOracleServices {
                     return String.format(action.getActionRespOkMessage(),nameCompany,mailSend);
 
                 case 524 :
-                    if(chat.getEmpNdFil() == null)
-                        return ContentResponse.buildContentResponseFail(
-                                String.format(action.getActionRespFailMessage()),
-                                optionsInca,
-                                action
-                        );
                     String responsible = null;
+                    System.out.println(chat.getEmpNdFil());
                     if(helperService.isPrincipal(chat.getEmpNdFil())) {
                         action.setActionRespOkFile(null);
                         action.setActionRespOkMessage("<p>Genial !, los trabajadores internos deberán acceder al sitio del trabajador, por favor confirmame si tienes otro requerimiento 👇.</p>");
@@ -701,6 +697,10 @@ public class ActionsOracleServices {
         return responseClone;
     }
 
+    public boolean verifiedRequirementContractActive(Chat chat, Action action){
+        if(action.getActionCtoActive() == null) return true;
+        return !action.getActionCtoActive().equals("A") || chat.getEmpNdFil() != null;
+    }
 
 
 }

@@ -67,6 +67,9 @@ public class Action implements Serializable {
     @Column(name = "ACT_STATUS", length = 10, nullable = false)
     private String actionStatus;
 
+    @Column(name = "ACT_CTO_ACTIVE", length = 10, nullable = false)
+    private String actionCtoActive;
+
     @Column(name = "AUD_DATE" ,length = 10)
     @Temporal(TemporalType.TIMESTAMP)
     private Date audDate;

@@ -83,6 +83,7 @@ public class ActionServices implements ActionServicesI {
         ActionsOracleServices.error = buildResponse(actions, "error", optionsUnit);
         ActionsOracleServices.quantityMax = buildResponse(actions, "quantityMax", optionsUnit);
         ActionsOracleServices.maxAttempts = buildResponse(actions, "maxAttempts", null);
+        ActionsOracleServices.withoutContract = buildResponse(actions, "withoutContract", optionsUnit);
 
     }
 
