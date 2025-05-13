@@ -29,19 +29,19 @@ public class ChatRestController {
 
     @PostMapping("/jasper")
     public CertificatePay getJasper(@RequestParam Long eplNd ) throws JRException, MalformedURLException, SQLException {
-//        String jrxmlPath = "src/main/resources/templates/ComprobanteDePago.jrxml";
-//        String jasperPath = "src/main/resources/templates/ComprobanteDePago.jasper";
-//        JasperCompileManager.compileReportToFile(jrxmlPath, jasperPath);
-//        System.out.println("Reporte compilado con éxito.");
+        String jrxmlPath = "src/main/resources/templates/ComprobanteDePago.jrxml";
+        String jasperPath = "src/main/resources/templates/ComprobanteDePago.jasper";
+        JasperCompileManager.compileReportToFile(jrxmlPath, jasperPath);
+        System.out.println("Reporte compilado con éxito.");
 
 //        String jrxmlPath3 = "src/main/resources/templates/ComprobanteDePago.jrxml";
 //        String jasperPath3 = "src/main/resources/templates/ComprobanteDePago.jasper";
 //        JasperCompileManager.compileReportToFile(jrxmlPath3, jasperPath3);
 
-//        String jrxmlPath2 = "src/main/resources/templates/ComprobanteDePagoSubRep1.jrxml";
-//        String jasperPath2 = "src/main/resources/templates/ComprobanteDePagoSubRep1.jasper";
-//        JasperCompileManager.compileReportToFile(jrxmlPath2, jasperPath2);
-//        System.out.println("Reporte compilado con éxito.");
+        String jrxmlPath2 = "src/main/resources/templates/ComprobanteDePagoSubRep1.jrxml";
+        String jasperPath2 = "src/main/resources/templates/ComprobanteDePagoSubRep1.jasper";
+        JasperCompileManager.compileReportToFile(jrxmlPath2, jasperPath2);
+        System.out.println("Reporte compilado con éxito.");
 
 
 //        System.out.println("Reporte compilado con éxito.");
