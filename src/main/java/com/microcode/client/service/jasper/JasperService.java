@@ -101,12 +101,14 @@ public class JasperService {
 
             List<JasperPrint> jpF = new ArrayList<>();
             if(rads == null || rads.isEmpty()) return null;
+            System.out.println(typ);
 
             for(Long rad : rads){
                 CertificatePay cert = certificatesService.getDataCertificatedPay(
                         typ.getTneCodigo(),ctoNumber,period,rad
                 );
 
+                System.out.println(cert);
                 if(cert == null) return null;
 
                 Map<String, Object> hm = new HashMap<>();

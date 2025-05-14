@@ -148,12 +148,12 @@ public class ActionsOracleServices {
             chat.setChatStart(new Date());
 
             if (isMailCorrect.equals("Y")) {
-//                String code = "123456";
-                String code = helperService.generateCode();
+                String code = "123456";
+//                String code = helperService.generateCode();
                 chat.setChatCode(code);
                 chat.setChatAttempts(1);
                 chat.setChatDateCode(new Date());
-                mailServices.sendMailVerified(MAIL_TEST,code);
+//                mailServices.sendMailVerified(MAIL_TEST,code);
 //                mailServices.sendMailVerified(chat.getChatMail(),code);
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action);
             }
@@ -277,7 +277,7 @@ public class ActionsOracleServices {
             ContentResponse resp = this.validateInitial(chat);
             if(resp != null) return resp;
 
-            Contract contract = contractServices.findContractActive(Long.valueOf(chat.getDocument()), chat.getTypeDocument());
+            Contract contract = contractServices.findContractForEpl(Long.valueOf((chat.getDocument())), chat.getTypeDocument());
 
             if(contract == null )
                 return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),optionsDocument, action);
@@ -494,10 +494,12 @@ public class ActionsOracleServices {
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
                         return null;
                     } else {
+                        Contract cont = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument());
+
                         byte[] filePay = jasperService.getCertificatePay(
-                                chat.getEmpNd(),
-                                chat.getTdcTd(),
-                                chat.getCtoNumber(),
+                                cont.getEmpNd(),
+                                cont.getTdcTd(),
+                                cont.getCtoNumero(),
                                 detail
                         );
                         if (filePay == null)
