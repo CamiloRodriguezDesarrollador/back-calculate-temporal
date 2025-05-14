@@ -74,8 +74,8 @@ public class ActionsOracleServices {
 
     //    Respuestas llamadas desde actions
 
-    public final String MAIL_TEST = "yriascos@activos.com.co";
-//    public final String MAIL_TEST = "cgonzalez@activos.com.co";
+//    public final String MAIL_TEST = "yriascos@activos.com.co";
+    public final String MAIL_TEST = "cgonzalez@activos.com.co";
 
     public Chat initialChatIfNull(String chatId){
         chatSessionManager.updateChatActivity(chatId,null);
@@ -464,8 +464,10 @@ public class ActionsOracleServices {
         try{
             switch (action.getActionId()) {
                 case 502:
+                    System.out.println(chat.getEmpNdFil());
                     if (helperService.isPrincipal(chat.getEmpNdFil())) {
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
+                        return null;
                     } else {
                         String[] part = detail.split("-");
                         Long contract = Long.parseLong(part[0]);
@@ -490,6 +492,7 @@ public class ActionsOracleServices {
                 case 528:
                     if (helperService.isPrincipal(chat.getEmpNdFil())) {
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
+                        return null;
                     } else {
                         byte[] filePay = jasperService.getCertificatePay(
                                 chat.getEmpNd(),
@@ -510,6 +513,7 @@ public class ActionsOracleServices {
                 case 505:
                     if (helperService.isPrincipal(chat.getEmpNdFil())) {
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
+                        return null;
                     }else{
                     Contract cont = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument());
                     String url = certificatesService.getDataCertificatedDian(

@@ -76,7 +76,6 @@ public class JasperService {
             hm.put("P_TEXTO_TITULO", cert.getTextoTitulo());
             hm.put("P_TEXTO_ATTE", cert.getTextoAtte());
 
-            System.out.println(hm);
             JasperPrint jasperPrint = JasperFillManager.fillReport(
                     cachedReportJob,
                     hm,
