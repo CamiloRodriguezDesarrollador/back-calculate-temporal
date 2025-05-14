@@ -119,7 +119,6 @@ public class ActionsOracleServices {
             chat.setTypeDocument(typeDocument);
             chat.setChatMail(employee.getEmail());
             chat.setChatAuthenticated(false);
-            System.out.println(contract);
             if (contract != null) {
                 chat.setEmpNd(contract.getEmpNd());
                 chat.setTdcTd(contract.getTdcTd());
@@ -573,7 +572,9 @@ public class ActionsOracleServices {
                     System.out.println(chat.getEmpNdFil());
                     if(helperService.isPrincipal(chat.getEmpNdFil())) {
                         action.setActionRespOkFile(null);
-                        action.setActionRespOkMessage("<p>Genial !, los trabajadores internos deberán acceder al sitio del trabajador, por favor confirmame si tienes otro requerimiento 👇.</p>");
+                        String urlSite = helperService.getUrlForPrincipal(chat.getEmpNd());
+                        String message = "<p>Genial !, los trabajadores internos deberán acceder al <a href='%s' target='_blank'> sitio del trabajador <a>, por favor confirmame si tienes otro requerimiento 👇.</p>";
+                        action.setActionRespOkMessage(String.format(message,urlSite));
                     }else{
                         responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
                         if(responsible == null) responsible = "auxincapacidades3@activos.com.co";
@@ -581,6 +582,8 @@ public class ActionsOracleServices {
                     return String.format(action.getActionRespOkMessage(),responsible);
                 case 533 :
                 case 507 :
+                case 521 :
+                case 522 :
                     String mailAttAfp = helperService.getEmailEpsPrincipal(chat.getEmpNd(),"AFP");
                     return String.format(action.getActionRespOkMessage(),mailAttAfp);
                 case 532 :

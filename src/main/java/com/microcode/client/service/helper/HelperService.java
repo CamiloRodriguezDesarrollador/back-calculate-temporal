@@ -177,4 +177,10 @@ public class HelperService {
         else return "";
     }
 
+    public String getUrlForPrincipal(Long empNd){
+        if(empNd == 830057687L)return "https://apps.genialw.com/SitioTrabajador/index5.jsp";
+        if(empNd == 800148972L)return "https://apps.genialw.com/SitioTrabajador/index3.jsp";
+        else return "https://apps.genialw.com/SitioTrabajador/index1.jsp";
+    }
+
 }
