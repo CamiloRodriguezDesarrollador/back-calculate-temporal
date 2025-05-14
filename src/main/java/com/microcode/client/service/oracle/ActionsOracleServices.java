@@ -570,8 +570,7 @@ public class ActionsOracleServices {
                         action.setActionRespOkFile(null);
                         String urlSite = helperService.getUrlForPrincipal(chat.getEmpNd());
                         String message = "<p>Genial!, los trabajadores internos deberán acceder al <a href='%s' target='_blank'> sitio del trabajador <a>, por favor confirmame si tienes otro requerimiento 👇.</p>";
-                        action.setActionRespOkMessage(String.format(message,urlSite));
-                        return null;
+                        return String.format(message,urlSite);
                     }else{
                         responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
                         if(responsible == null) responsible = "auxincapacidades3@activos.com.co";
