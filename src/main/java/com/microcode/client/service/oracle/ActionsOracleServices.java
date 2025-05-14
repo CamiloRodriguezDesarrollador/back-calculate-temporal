@@ -119,6 +119,7 @@ public class ActionsOracleServices {
             chat.setTypeDocument(typeDocument);
             chat.setChatMail(employee.getEmail());
             chat.setChatAuthenticated(false);
+            System.out.println(contract);
             if (contract != null) {
                 chat.setEmpNd(contract.getEmpNd());
                 chat.setTdcTd(contract.getTdcTd());
@@ -497,6 +498,7 @@ public class ActionsOracleServices {
                         ).subscribe();
                     }
                     return null;
+
                 case 528:
                     if (helperService.isPrincipal(chat.getEmpNdFil())) {
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
@@ -522,6 +524,7 @@ public class ActionsOracleServices {
                     System.out.println("entsasara aca");
 
                     return null;
+
                 case 505:
                     if (helperService.isPrincipal(chat.getEmpNdFil())) {
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
@@ -543,6 +546,7 @@ public class ActionsOracleServices {
                     action.setActionRespOkFile(url);
                      }
                     return null;
+
                 case 529:
                     Company comp = entitiesServices.findForDataEpl(
                             chat.getEmpNd(), chat.getTdcTd(), chat.getCtoNumber(), "CCF"
@@ -575,6 +579,13 @@ public class ActionsOracleServices {
                         if(responsible == null) responsible = "auxincapacidades3@activos.com.co";
                     }
                     return String.format(action.getActionRespOkMessage(),responsible);
+                case 533 :
+                case 507 :
+                    String mailAttAfp = helperService.getEmailEpsPrincipal(chat.getEmpNd(),"AFP");
+                    return String.format(action.getActionRespOkMessage(),mailAttAfp);
+                case 532 :
+                    String mailAttEps = helperService.getEmailEpsPrincipal(chat.getEmpNd(),"EPS");
+                    return String.format(action.getActionRespOkMessage(),mailAttEps);
 
             }
             return null;

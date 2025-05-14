@@ -8,17 +8,17 @@ import org.springframework.data.repository.CrudRepository;
 public interface IResponsibleDao extends CrudRepository<Responsible, Long> {
 
     @Query(value = """
-        SELECT a.rinMail
+        SELECT LOWER(a.rinMail)
         FROM Responsible a
         LEFT JOIN CompanyAgreement b
         ON a.empAcuCodigo = b.empAcuCodigo
-        WHERE a.tcaCodigo = 11 
+        WHERE a.tcaCodigo = 11
         AND b.tdcTdFil = :tdcTdFil
         AND b.empNdFil = :empNdFil
-        AND a.rinMail NOT LIKE 'sat%@activos.com.co'
-        AND a.rinMail NOT LIKE 'asesorsat%@activos.com.co'
-        AND a.rinMail NOT LIKE 'coordinador%@activos.com.co'
-        AND a.rinMail NOT IN(
+        AND LOWER(a.rinMail) NOT LIKE 'sat%@activos.com.co'
+        AND LOWER(a.rinMail) NOT LIKE 'asesorsat%@activos.com.co'
+        AND LOWER(a.rinMail)NOT LIKE 'coordinador%@activos.com.co'
+        AND LOWER(a.rinMail) NOT IN(
             'lidersac02@activos.com.co',
             'ipanemasatbarley@activos.com.co'
         )

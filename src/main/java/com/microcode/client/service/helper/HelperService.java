@@ -162,4 +162,19 @@ public class HelperService {
         return nitToEmail.getOrDefault(nitInput, "por favor revisa con tu empresa el correo al cual enviar.");
     }
 
+    public String getEmailEpsPrincipal(Long empNd, String type){
+        System.out.println(empNd);
+        if(type.equals("AFP")){
+            if(empNd == 830057687L)return "asesorafp@atecno.com.co";
+            if(empNd == 800148972L)return "asesorafp@serviola.com.co";
+            return "asesorafp@activos.com.co";
+        }
+        if(type.equals("EPS")){
+            if(empNd == 830057687L)return "atencioneps@atecno.com.co";
+            if(empNd == 800148972L)return "atencioneps@serviola.com.co";
+            return "atencioneps@activos.com.co";
+        }
+        else return "";
+    }
+
 }
