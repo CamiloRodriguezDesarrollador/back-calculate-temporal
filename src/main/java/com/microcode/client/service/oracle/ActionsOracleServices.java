@@ -437,17 +437,14 @@ public class ActionsOracleServices {
                if(validationAdditional instanceof String){
 
                    messageOk = (String) validationAdditional;
-                   System.out.println("entsasara acasdasaasas");
                    System.out.println(messageOk);
 
                }
                if(validationAdditional instanceof ContentResponse){
-                   System.out.println("entsasara acasdasaaasdassas");
 
                    return (ContentResponse) validationAdditional;
                }
            }
-            System.out.println("entsasara acasdasa");
 
             quantityChatServices.createForAction(
                     Integer.valueOf(action.getActionId().toString()),
@@ -455,7 +452,6 @@ public class ActionsOracleServices {
                     chat.getDocument(),
                     detail
             );
-            System.out.println("entsasara acasadassdasaaasdassas");
 
             return ContentResponse.buildContentResponseOk(
                     messageOk,
@@ -584,7 +580,8 @@ public class ActionsOracleServices {
                 case 507 :
                 case 521 :
                 case 522 :
-                    String mailAttAfp = helperService.getEmailEpsPrincipal(chat.getEmpNd(),"AFP");
+                    Contract cont = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument());
+                    String mailAttAfp = helperService.getEmailEpsPrincipal(cont.getEmpNd(),"AFP");
                     return String.format(action.getActionRespOkMessage(),mailAttAfp);
                 case 532 :
                     String mailAttEps = helperService.getEmailEpsPrincipal(chat.getEmpNd(),"EPS");
