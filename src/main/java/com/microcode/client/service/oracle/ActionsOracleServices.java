@@ -569,13 +569,14 @@ public class ActionsOracleServices {
                     if(helperService.isPrincipal(chat.getEmpNdFil())) {
                         action.setActionRespOkFile(null);
                         String urlSite = helperService.getUrlForPrincipal(chat.getEmpNd());
-                        String message = "<p>Genial !, los trabajadores internos deberán acceder al <a href='%s' target='_blank'> sitio del trabajador <a>, por favor confirmame si tienes otro requerimiento 👇.</p>";
+                        String message = "<p>Genial!, los trabajadores internos deberán acceder al <a href='%s' target='_blank'> sitio del trabajador <a>, por favor confirmame si tienes otro requerimiento 👇.</p>";
                         action.setActionRespOkMessage(String.format(message,urlSite));
+                        return null;
                     }else{
                         responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
                         if(responsible == null) responsible = "auxincapacidades3@activos.com.co";
+                        return String.format(action.getActionRespOkMessage(),responsible);
                     }
-                    return String.format(action.getActionRespOkMessage(),responsible);
                 case 533 :
                 case 507 :
                 case 521 :
