@@ -435,12 +435,19 @@ public class ActionsOracleServices {
 
            if(validationAdditional != null){
                if(validationAdditional instanceof String){
+
                    messageOk = (String) validationAdditional;
+                   System.out.println("entsasara acasdasaasas");
+                   System.out.println(messageOk);
+
                }
                if(validationAdditional instanceof ContentResponse){
+                   System.out.println("entsasara acasdasaaasdassas");
+
                    return (ContentResponse) validationAdditional;
                }
            }
+            System.out.println("entsasara acasdasa");
 
             quantityChatServices.createForAction(
                     Integer.valueOf(action.getActionId().toString()),
@@ -448,6 +455,7 @@ public class ActionsOracleServices {
                     chat.getDocument(),
                     detail
             );
+            System.out.println("entsasara acasadassdasaaasdassas");
 
             return ContentResponse.buildContentResponseOk(
                     messageOk,
@@ -494,6 +502,7 @@ public class ActionsOracleServices {
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
                         return null;
                     } else {
+                        System.out.println("entra aca");
                         Contract cont = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument());
 
                         byte[] filePay = jasperService.getCertificatePay(
@@ -510,6 +519,7 @@ public class ActionsOracleServices {
                                 chat.getNames(), "de pago", MAIL_TEST, filePay, "CertificacionPago.pdf"
                         ).subscribe();
                     }
+                    System.out.println("entsasara aca");
 
                     return null;
                 case 505:
