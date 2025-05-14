@@ -29,14 +29,14 @@ public class ChatRestController {
 
     @PostMapping("/jasper")
     public CertificatePay getJasper(@RequestParam Long eplNd ) throws JRException, MalformedURLException, SQLException {
-        String jrxmlPath = "src/main/resources/templates/ComprobanteDePago.jrxml";
-        String jasperPath = "src/main/resources/templates/ComprobanteDePago.jasper";
-        JasperCompileManager.compileReportToFile(jrxmlPath, jasperPath);
-        System.out.println("Reporte compilado con éxito.");
+//        String jrxmlPath = "src/main/resources/templates/ComprobanteDePago.jrxml";
+//        String jasperPath = "src/main/resources/templates/ComprobanteDePago.jasper";
+//        JasperCompileManager.compileReportToFile(jrxmlPath, jasperPath);
+//        System.out.println("Reporte compilado con éxito.");
 
-//        String jrxmlPath3 = "src/main/resources/templates/ComprobanteDePago.jrxml";
-//        String jasperPath3 = "src/main/resources/templates/ComprobanteDePago.jasper";
-//        JasperCompileManager.compileReportToFile(jrxmlPath3, jasperPath3);
+        String jrxmlPath3 = "src/main/resources/templates/ComprobanteDePago.jrxml";
+        String jasperPath3 = "src/main/resources/templates/ComprobanteDePago.jasper";
+        JasperCompileManager.compileReportToFile(jrxmlPath3, jasperPath3);
 
         String jrxmlPath2 = "src/main/resources/templates/ComprobanteDePagoSubRep1.jrxml";
         String jasperPath2 = "src/main/resources/templates/ComprobanteDePagoSubRep1.jasper";
@@ -46,9 +46,9 @@ public class ChatRestController {
 
 //        System.out.println("Reporte compilado con éxito.");
 
-//        String jrxmlPath3 = "src/main/resources/templates/CertificacionLaboral.jrxml";
-//        String jasperPath3 = "src/main/resources/templates/CertificacionLaboral.jasper";
-//        JasperCompileManager.compileReportToFile(jrxmlPath3, jasperPath3);
+        String jrxmlPath4 = "src/main/resources/templates/CertificacionLaboral.jrxml";
+        String jasperPath4 = "src/main/resources/templates/CertificacionLaboral.jasper";
+        JasperCompileManager.compileReportToFile(jrxmlPath4, jasperPath4);
 
 
 //        certificatesService.getDataNumbersRads(1286413L,5L,"01/04/2025 - 15/04/2025");
