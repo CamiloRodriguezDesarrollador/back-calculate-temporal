@@ -415,8 +415,9 @@ public class ActionsOracleServices {
         }
     }
 
-    private ContentResponse methodStandard(Map<String,String> inputs, Action action, List<Option> options) {
+    private ContentResponse methodStandard(Map<String,String> inputs, Action actionOriginal, List<Option> options) {
         try {
+            Action action = actionOriginal.clone();
             String detail = inputs.get("detail");
             String chatId = inputs.get("chatId");
             Chat chat = chatSessionManager.getChatById(chatId);
@@ -564,18 +565,22 @@ public class ActionsOracleServices {
                     return String.format(action.getActionRespOkMessage(),nameCompany,mailSend);
 
                 case 524 :
-                    String responsible = null;
-                    System.out.println(chat.getEmpNdFil());
+                    System.out.println(action.getActionRespOkFile());
                     if(helperService.isPrincipal(chat.getEmpNdFil())) {
                         action.setActionRespOkFile(null);
                         String urlSite = helperService.getUrlForPrincipal(chat.getEmpNd());
                         String message = "<p>Genial!, los trabajadores internos deberán acceder al <a href='%s' target='_blank'> sitio del trabajador <a>, por favor confirmame si tienes otro requerimiento 👇.</p>";
+                        System.out.println(action.getActionRespOkFile());
                         return String.format(message,urlSite);
                     }else{
+                        String responsible;
+//                        action.setActionRespOkFile(action.getActionRespOkFile());
                         responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
                         if(responsible == null) responsible = "auxincapacidades3@activos.com.co";
+                        System.out.println(action.getActionRespOkFile());
                         return String.format(action.getActionRespOkMessage(),responsible);
                     }
+
                 case 533 :
                 case 507 :
                 case 521 :

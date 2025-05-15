@@ -14,7 +14,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class Action implements Serializable {
+public class Action implements Serializable, Cloneable {
 
 
     @Id
@@ -86,5 +86,12 @@ public class Action implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-
+    @Override
+    public Action clone() {
+        try {
+            return (Action) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
