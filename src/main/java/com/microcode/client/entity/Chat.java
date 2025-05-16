@@ -3,6 +3,7 @@ package com.microcode.client.entity;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,6 +27,7 @@ public class Chat {
     private Long ctoNumber;
     private String tdcTd;
     private Long empNd;
+    private List<Long> principalRequest;
 
 
     public Chat() {

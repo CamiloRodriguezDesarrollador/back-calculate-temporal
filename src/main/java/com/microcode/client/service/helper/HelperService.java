@@ -183,4 +183,18 @@ public class HelperService {
         else return "https://apps.genialw.com/SitioTrabajador/index1.jsp";
     }
 
+    public List<Long> definePrincipalForCode(Integer companyId){
+        if(companyId == 2) return List.of(800148972L);
+        if(companyId == 3) return List.of(830057687L);
+        return List.of(860090915L);
+//        800141699
+//        800165661
+    }
+
+    public Long defineUniquePrincipalForAuthorized(List<Long> authorized){
+        if(authorized.contains(800148972L)) return 800148972L;
+        if(authorized.contains(830057687L)) return 830057687L;
+        return 860090915L;
+    }
+
 }

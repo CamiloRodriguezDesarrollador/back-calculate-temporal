@@ -14,40 +14,43 @@ public interface IContractDao extends CrudRepository<Contract, Long> {
             SELECT p FROM Contract p
             WHERE p.eplNd = :eplNd AND p.tdcTdEpl = :tdcTd
             AND p.ectSigla IN ("ACT","RET","PRL")
-            AND p.empNd IN (830057687L, 860090915L, 800148972L, 800165661L, 800141699L)
+            AND p.empNd IN (:principalRequest)
             ORDER BY p.ctoIng DESC
             FETCH FIRST 2 ROWS ONLY
     """)
-    List<Contract> findByEplNdAndTdcTdEpl(Long eplNd, String tdcTd);
+    List<Contract> findByEplNdAndTdcTdEpl(Long eplNd, String tdcTd, List<Long> principalRequest);
 
     @Query("""
             SELECT p FROM Contract p
             WHERE p.eplNd = :eplNd
             AND p.tdcTdEpl = :tdcTd
             AND p.ectSigla = 'ACT'
+            AND p.empNd IN (:principalRequest)
             ORDER BY p.ctoIng DESC
             FETCH FIRST 1 ROWS ONLY
     """)
-    Contract findContractActive(Long eplNd, String tdcTd);
+    Contract findContractActive(Long eplNd, String tdcTd, List<Long> principalRequest);
 
     @Query("""
             SELECT p FROM Contract p
             WHERE p.ctoNumero = :ctoNumber
             AND  p.empNd = :empNd
             AND p.tdcTd = :tdcTd
+            AND p.empNd IN (:principalRequest)
             ORDER BY p.ctoIng DESC
             FETCH FIRST 1 ROWS ONLY
     """)
-    Contract findForContract(Long ctoNumber,Long empNd, String tdcTd );
+    Contract findForContract(Long ctoNumber,Long empNd, String tdcTd, List<Long> principalRequest );
 
     @Query("""
             SELECT p FROM Contract p
             WHERE p.eplNd = :eplNd
             AND p.tdcTdEpl = :tdcTd
+            AND p.empNd IN (:principalRequest)
             ORDER BY p.ctoIng DESC
             FETCH FIRST 1 ROWS ONLY
     """)
-    Contract findForEplLast(Long eplNd, String tdcTd  );
+    Contract findForEplLast(Long eplNd, String tdcTd , List<Long> principalRequest );
 
 
 }

@@ -89,6 +89,9 @@ public class ChatSessionManager {
             if (partialChat.getEmpNd() != null)
                 existingChat.setEmpNd(partialChat.getEmpNd());
 
+            if (partialChat.getPrincipalRequest() != null)
+                existingChat.setPrincipalRequest(partialChat.getPrincipalRequest());
+
             return existingChat;
         });
     }
@@ -153,26 +156,6 @@ public class ChatSessionManager {
         return new QuantityResponse(dateLast,isOver);
     }
 
-    public QuantityResponse validityQuantityRequest(Chat chat, String detail ) {
-
-        Date endDate = new Date();
-        Date startDate = new Date();
-        LocalDate endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate startLocalDate = startDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-        List<QuantityChat> quantityChats = quantityChatServices.findQuantityForDocument(
-                chat.getTypeDocument(), chat.getDocument(), startDate, endDate, detail
-        );
-
-        LocalDate dateLast = quantityChats.get(0).getAudDate().toInstant()
-                .atZone(ZoneId.systemDefault())
-                .toLocalDate()
-                .plusDays(0);
-
-        Boolean isOver = quantityChats.size() >= 50;
-
-        return new QuantityResponse(dateLast,isOver);
-    }
 
     @Scheduled(fixedRate = 600000) // 600000ms = 10 minutos
     public void validateInactiveChats(){

@@ -1,5 +1,7 @@
 package com.microcode.client.service.oracle;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microcode.client.clients.MailServices;
 import com.microcode.client.entity.QuantityResponse;
 import com.microcode.client.entity.mysql.Action;
@@ -74,8 +76,8 @@ public class ActionsOracleServices {
 
     //    Respuestas llamadas desde actions
 
-    public final String MAIL_TEST = "yriascos@activos.com.co";
-//    public final String MAIL_TEST = "cgonzalez@activos.com.co";
+//    public final String MAIL_TEST = "yriascos@activos.com.co";
+    public final String MAIL_TEST = "cgonzalez@activos.com.co";
 
     public Chat initialChatIfNull(String chatId){
         chatSessionManager.updateChatActivity(chatId,null);
@@ -87,6 +89,11 @@ public class ActionsOracleServices {
             String typeDocument = inputs.get("typeDocument");
             String document = inputs.get("document");
             String chatId = inputs.get("chatId");
+            String principalRequest = inputs.get("principalRequest");
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<Long> idsPrincipal = objectMapper.readValue(principalRequest, new TypeReference<>() {});
+
             Chat chat;
 
             chat = chatSessionManager.getChatById(chatId);
@@ -100,7 +107,7 @@ public class ActionsOracleServices {
             Employee employee = employeeService.findByIds(docSearch,typeDocument);
             if (employee == null)
                 return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), typeDocument, document),null, action);
-            List<Contract> contracts = contractServices.findByIds(employee.getEplNd(), employee.getTdcTd());
+            List<Contract> contracts = contractServices.findByIds(employee.getEplNd(), employee.getTdcTd(),idsPrincipal);
 
             if(contracts == null || contracts.isEmpty())
                 return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), typeDocument, document),null, action);
@@ -110,7 +117,7 @@ public class ActionsOracleServices {
             if(employee.getEmpLastName() == null && employee.getEmplName() == null )
                 return ContentResponse.buildNotMail(null);
 
-            Contract contract = contractServices.findContractActive(employee.getEplNd() ,employee.getTdcTd());
+            Contract contract = contractServices.findContractActive(employee.getEplNd() ,employee.getTdcTd(),idsPrincipal);
 
             String firstName = employee.getEmplName() != null ? employee.getEmplName() : "";
             String lastName = employee.getEmpLastName() != null ? employee.getEmpLastName() : "";
@@ -119,6 +126,7 @@ public class ActionsOracleServices {
             chat.setTypeDocument(typeDocument);
             chat.setChatMail(employee.getEmail());
             chat.setChatAuthenticated(false);
+            chat.setPrincipalRequest(idsPrincipal);
             if (contract != null) {
                 chat.setEmpNd(contract.getEmpNd());
                 chat.setTdcTd(contract.getTdcTd());
@@ -126,6 +134,7 @@ public class ActionsOracleServices {
                 chat.setTdcTdFil(contract.getTdcTdFil());
                 chat.setCtoNumber(contract.getCtoNumero());
             }
+            System.out.println(chat.getPrincipalRequest());
 
             chatSessionManager.setChatById( chatId, chat );
 
@@ -148,13 +157,13 @@ public class ActionsOracleServices {
             chat.setChatStart(new Date());
 
             if (isMailCorrect.equals("Y")) {
-//                String code = "123456";
-                String code = helperService.generateCode();
+                String code = "123456";
+//                String code = helperService.generateCode();
                 chat.setChatCode(code);
                 chat.setChatAttempts(1);
                 chat.setChatDateCode(new Date());
-                mailServices.sendMailVerified(MAIL_TEST,code);
-//                mailServices.sendMailVerified(chat.getChatMail(),code);
+//                mailServices.sendMailVerified(MAIL_TEST,code,chat.getPrincipalRequest());
+//                mailServices.sendMailVerified(chat.getChatMail(),code,chat.getPrincipalRequest());
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action);
             }
 
@@ -228,7 +237,7 @@ public class ActionsOracleServices {
             ContentResponse resp = this.validateInitial(chat);
             if(resp != null) return resp;
 
-            List<Contract> contracts = contractServices.findByIds(Long.valueOf(chat.getDocument()), chat.getTypeDocument());
+            List<Contract> contracts = contractServices.findByIds(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
 
             if(contracts == null || contracts.isEmpty())
                 return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),optionsDocument, action);
@@ -277,7 +286,7 @@ public class ActionsOracleServices {
             ContentResponse resp = this.validateInitial(chat);
             if(resp != null) return resp;
 
-            Contract contract = contractServices.findContractForEpl(Long.valueOf((chat.getDocument())), chat.getTypeDocument());
+            Contract contract = contractServices.findContractForEpl(Long.valueOf((chat.getDocument())), chat.getTypeDocument(), chat.getPrincipalRequest());
 
             if(contract == null )
                 return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),optionsDocument, action);
@@ -470,29 +479,29 @@ public class ActionsOracleServices {
             switch (action.getActionId()) {
                 case 502:
                     System.out.println(chat.getEmpNdFil());
-                    if (helperService.isPrincipal(chat.getEmpNdFil())) {
-                        action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
-                        return null;
-                    } else {
+//                    if (helperService.isPrincipal(chat.getEmpNdFil())) {
+//                        action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
+//                        return null;
+//                    } else {
                         String[] part = detail.split("-");
                         Long contract = Long.parseLong(part[0]);
                         Long empNd = Long.parseLong(part[1]);
                         String tdcTd = part[2];
 
-                        Contract cont = contractServices.findForCtoNumber(contract, empNd, tdcTd);
+                        Contract contJob = contractServices.findForCtoNumber(contract, empNd, tdcTd, chat.getPrincipalRequest());
 
                         byte[] file = jasperService.getCertificateJob(
-                                cont.getEmpNd(),
-                                cont.getTdcTd(),
+                                contJob.getEmpNd(),
+                                contJob.getTdcTd(),
                                 contract
                         );
 
                         if (file == null) return error;
                         file = jasperService.protectPdfWithPassword(file, chat.getDocument());
                         mailServices.sendMailCertificates(
-                                chat.getNames(), "Laboral", MAIL_TEST, file, "CertificadoLaboral.pdf"
+                                chat.getNames(), "Laboral", MAIL_TEST, file, "CertificadoLaboral.pdf",chat.getPrincipalRequest()
                         ).subscribe();
-                    }
+//                    }
                     return null;
 
                 case 528:
@@ -501,12 +510,12 @@ public class ActionsOracleServices {
                         return null;
                     } else {
                         System.out.println("entra aca");
-                        Contract cont = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument());
+                        Contract contPay = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
 
                         byte[] filePay = jasperService.getCertificatePay(
-                                cont.getEmpNd(),
-                                cont.getTdcTd(),
-                                cont.getCtoNumero(),
+                                contPay.getEmpNd(),
+                                contPay.getTdcTd(),
+                                contPay.getCtoNumero(),
                                 detail
                         );
                         if (filePay == null)
@@ -514,7 +523,7 @@ public class ActionsOracleServices {
                         filePay = jasperService.protectPdfWithPassword(filePay, chat.getDocument());
 
                         mailServices.sendMailCertificates(
-                                chat.getNames(), "de pago", MAIL_TEST, filePay, "CertificacionPago.pdf"
+                                chat.getNames(), "de pago", MAIL_TEST, filePay, "CertificacionPago.pdf",chat.getPrincipalRequest()
                         ).subscribe();
                     }
                     System.out.println("entsasara aca");
@@ -526,7 +535,8 @@ public class ActionsOracleServices {
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
                         return null;
                     }else{
-                    Contract cont = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument());
+                    Contract cont = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
+                    if(cont == null) return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), optionsDocument, action);
                     String url = certificatesService.getDataCertificatedDian(
                             cont.getTdcTd(),
                             cont.getEmpNd(),
@@ -535,7 +545,7 @@ public class ActionsOracleServices {
                             helperService.getDateCertifiedDianStartDate(),
                             helperService.getDateCertifiedDianEndDate()
                     );
-                        System.out.println(url);
+                    System.out.println(url);
 
                     if (url == null)
                         return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), optionsDocument, action);
@@ -558,7 +568,7 @@ public class ActionsOracleServices {
                     String fileDeclaration = "https://storage.googleapis.com/bucket_apps_public/CCF/Declaraciones/"+comp.getEmpNd()+ ".pdf";
                     String fileVideo = "https://storage.googleapis.com/bucket_apps_public/CCF/instructivo.mp4";
                     mailServices.sendMailInformationCCF(
-                            chat.getNames(),MAIL_TEST,nameCompany,fileRequirements,fileDeclaration,fileVideo
+                            chat.getNames(),MAIL_TEST,nameCompany,fileRequirements,fileDeclaration,fileVideo,chat.getPrincipalRequest()
                     ).subscribe();
 
                     String mailSend = helperService.getEmailByNit(comp.getEmpNd().toString());
@@ -585,7 +595,7 @@ public class ActionsOracleServices {
                 case 507 :
                 case 521 :
                 case 522 :
-                    Contract cont = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument());
+                    Contract cont = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
                     String mailAttAfp = helperService.getEmailEpsPrincipal(cont.getEmpNd(),"AFP");
                     return String.format(action.getActionRespOkMessage(),mailAttAfp);
                 case 532 :

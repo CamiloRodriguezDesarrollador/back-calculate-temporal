@@ -1,5 +1,6 @@
 package com.microcode.client.clients;
 
+import com.microcode.client.service.helper.HelperService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.io.IOException;
+import java.util.List;
 
 @Service
 public class MailServices {
@@ -18,16 +20,22 @@ public class MailServices {
     public String urlMail;
 
     public WebClient webClient;
+    public HelperService helperService;
 
     public MailServices() {
         this.webClient = WebClient.builder()
                 .build();
+        this.helperService = new HelperService();
     }
 
-    public void sendMailVerified(String emailTo, String code) {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+    public void sendMailVerified(String emailTo, String code, List<Long>  authorized) {
+
+        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
         params.add("emailTo", emailTo);
         params.add("code", code);
+
+        Long principalAuthorized = helperService.defineUniquePrincipalForAuthorized(authorized);
+        params.add("principalAuthorized", principalAuthorized);
         try{
             this.webClient.post()
                     .uri(urlMail + "/sendMailVerified")
@@ -40,12 +48,16 @@ public class MailServices {
         }
     }
 
-    public Mono<String> sendMailCertificates(String employeeName,String typeCertificate, String emailTo, byte[] fileBytes, String filename) throws IOException {
+    public Mono<String> sendMailCertificates(String employeeName,String typeCertificate, String emailTo, byte[] fileBytes, String filename,
+                                             List<Long> authorized) throws IOException {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("typeCertificate", typeCertificate);
         body.add("employeeName", employeeName);
         body.add("sendMailCertificates", employeeName);
         body.add("emailTo", emailTo);
+
+        Long principalAuthorized = helperService.defineUniquePrincipalForAuthorized(authorized);
+        body.add("principalAuthorized", principalAuthorized);
 
         if (fileBytes == null || fileBytes.length == 0) return Mono.empty();
 
@@ -65,14 +77,18 @@ public class MailServices {
     }
 
     public Mono<String> sendMailInformationCCF(String employeeName, String emailTo,String companyName,
-                                         String fileRequirements, String fileDeclaration, String fileVideo) {
-        MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+                                         String fileRequirements, String fileDeclaration, String fileVideo,
+                                               List<Long>  authorized) {
+        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
         params.add("employeeName", employeeName);
         params.add("emailTo", emailTo);
         params.add("companyName", companyName);
         params.add("fileRequirements", fileRequirements);
         params.add("fileDeclaration", fileDeclaration);
         params.add("fileVideo", fileVideo);
+        Long principalAuthorized = helperService.defineUniquePrincipalForAuthorized(authorized);
+        params.add("principalAuthorized", principalAuthorized);
+
         try{
             return this.webClient.post()
                     .uri(urlMail +"/sendMailInformationCCF")
@@ -84,27 +100,6 @@ public class MailServices {
             return null;
         }
     }
-
-
-//    public Mono<String> sendMailCertificateJob(String employeeName, String emailTo, MultipartFile file) throws IOException {
-//        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-//        body.add("employeeName", employeeName);
-//        body.add("emailTo", emailTo);
-//        if (file == null) return Mono.empty();
-//        body.add("file", new ByteArrayResource(file.getBytes()) {
-//            @Override
-//            public String getFilename() {
-//                return file.getOriginalFilename();
-//            }
-//        });
-//
-//        return this.webClient.post()
-//                .uri(urlMail + "/sendMailCertificateJob")
-//                .bodyValue(body)
-//                .retrieve()
-//                .bodyToMono(String.class)
-//                .onErrorResume(RestClientException.class, ex -> Mono.empty());
-//    }
 
 
     public void ping() {

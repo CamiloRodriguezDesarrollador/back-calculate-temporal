@@ -15,23 +15,23 @@ public class ContractServices implements ContractServicesI {
 
 
     @Override
-    public List<Contract> findByIds(Long eplNd, String tdcTd) {
-        return ContractDao.findByEplNdAndTdcTdEpl(eplNd,tdcTd);
+    public List<Contract> findByIds(Long eplNd, String tdcTd, List<Long> principalRequest) {
+        return ContractDao.findByEplNdAndTdcTdEpl(eplNd,tdcTd,principalRequest);
     }
 
     @Override
-    public Contract findContractActive(Long eplNd, String tdcTd) {
-        return ContractDao.findContractActive(eplNd,tdcTd);
+    public Contract findContractActive(Long eplNd, String tdcTd, List<Long> principalRequest) {
+        return ContractDao.findContractActive(eplNd,tdcTd,principalRequest);
     }
 
     @Override
-    public Contract findForCtoNumber(Long ctoNumber,Long empNd, String tdcTd) {
-        return ContractDao.findForContract(ctoNumber,empNd,tdcTd);
+    public Contract findForCtoNumber(Long ctoNumber,Long empNd, String tdcTd, List<Long> principalRequest) {
+        return ContractDao.findForContract(ctoNumber,empNd,tdcTd,principalRequest);
     }
 
     @Override
-    public Contract findContractForEpl(Long eplNd, String tdcTd) {
-        return ContractDao.findForEplLast(eplNd,tdcTd);
+    public Contract findContractForEpl(Long eplNd, String tdcTd, List<Long> principalRequest) {
+        return ContractDao.findForEplLast(eplNd,tdcTd,principalRequest);
     }
 
 }

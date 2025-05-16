@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface ContractServicesI {
 
-    List<Contract> findByIds(Long eplNd, String tdcTd);
-    Contract findContractActive(Long eplNd, String tdcTd);
-    Contract findContractForEpl(Long eplNd, String tdcTd);
-    Contract findForCtoNumber(Long ctoNumber,Long empNd, String tdcTd);
+    List<Contract> findByIds(Long eplNd, String tdcTd, List<Long> principalRequest);
+    Contract findContractActive(Long eplNd, String tdcTd, List<Long> principalRequest);
+    Contract findContractForEpl(Long eplNd, String tdcTd, List<Long> principalRequest);
+    Contract findForCtoNumber(Long ctoNumber,Long empNd, String tdcTd, List<Long> principalRequest);
 
 }

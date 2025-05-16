@@ -3,6 +3,7 @@ package com.microcode.client.controller;
 import com.microcode.client.service.ChatSessionManager;
 import com.microcode.client.entity.*;
 import com.microcode.client.entity.mysql.Action;
+import com.microcode.client.service.helper.HelperService;
 import com.microcode.client.service.mysql.RegisterChatServices;
 import com.microcode.client.service.mysql.Salt;
 import com.microcode.client.service.oracle.ActionsOracleServices;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -26,19 +28,22 @@ import static com.microcode.client.service.oracle.ActionsOracleServices.*;
 @Component
 public class ChatWebSocket {
 
+    private final HelperService helperService;
     private ChatSessionManager chatSessionManager;
     private final RegisterChatServices registerChatServices;
     private final ActionsOracleServices actionsOracleServices;
 
-    @MessageMapping("/chat/{chatId}")
+    @MessageMapping("/chat/{chatId}/{companyId}")
     @SendTo("/api/chat/company/chat/{chatId}")
     public ContentResponse greeting(@DestinationVariable String chatId,
+                                    @DestinationVariable Integer companyId,
                                     ContentMessage message,
                                     SimpMessageHeaderAccessor headerAccessor)
             {
 
         Action action = new Action();
         try{
+            List<Long> principalRequest = helperService.definePrincipalForCode(companyId);
 
 //            Thread.sleep(5000);
             String clientIp = (String) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("clientIp");
@@ -52,6 +57,7 @@ public class ChatWebSocket {
 
             Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
             messageUnwrapped.getChatMessage().put("chatId", chatId);
+            messageUnwrapped.getChatMessage().put("principalRequest", principalRequest.toString());
             ContentResponse resp = (ContentResponse) methodAction.invoke(actionsOracleServices, messageUnwrapped.getChatMessage(), action);
             registerChatServices.createForResponse(chatId,resp,clientIp);
             ContentResponse responseWrap = ContentResponse.cloneContentResponse(resp);
