@@ -76,8 +76,8 @@ public class ActionsOracleServices {
 
     //    Respuestas llamadas desde actions
 
-//    public final String MAIL_TEST = "yriascos@activos.com.co";
-    public final String MAIL_TEST = "cgonzalez@activos.com.co";
+    public final String MAIL_TEST = "yriascos@activos.com.co";
+//    public final String MAIL_TEST = "cgonzalez@activos.com.co";
 
     public Chat initialChatIfNull(String chatId){
         chatSessionManager.updateChatActivity(chatId,null);
@@ -157,12 +157,12 @@ public class ActionsOracleServices {
             chat.setChatStart(new Date());
 
             if (isMailCorrect.equals("Y")) {
-                String code = "123456";
-//                String code = helperService.generateCode();
+//                String code = "123456";
+                String code = helperService.generateCode();
                 chat.setChatCode(code);
                 chat.setChatAttempts(1);
                 chat.setChatDateCode(new Date());
-//                mailServices.sendMailVerified(MAIL_TEST,code,chat.getPrincipalRequest());
+                mailServices.sendMailVerified(MAIL_TEST,code,chat.getPrincipalRequest());
 //                mailServices.sendMailVerified(chat.getChatMail(),code,chat.getPrincipalRequest());
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action);
             }
@@ -479,10 +479,10 @@ public class ActionsOracleServices {
             switch (action.getActionId()) {
                 case 502:
                     System.out.println(chat.getEmpNdFil());
-//                    if (helperService.isPrincipal(chat.getEmpNdFil())) {
-//                        action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
-//                        return null;
-//                    } else {
+                    if (helperService.isPrincipal(chat.getEmpNdFil())) {
+                        action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
+                        return null;
+                    } else {
                         String[] part = detail.split("-");
                         Long contract = Long.parseLong(part[0]);
                         Long empNd = Long.parseLong(part[1]);
@@ -501,7 +501,7 @@ public class ActionsOracleServices {
                         mailServices.sendMailCertificates(
                                 chat.getNames(), "Laboral", MAIL_TEST, file, "CertificadoLaboral.pdf",chat.getPrincipalRequest()
                         ).subscribe();
-//                    }
+                    }
                     return null;
 
                 case 528:
