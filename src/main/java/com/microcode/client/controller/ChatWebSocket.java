@@ -4,6 +4,7 @@ import com.microcode.client.service.chat.ChatSessionManager;
 import com.microcode.client.entity.*;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.service.helper.HelperService;
+import com.microcode.client.service.mysql.ActionServices;
 import com.microcode.client.service.mysql.RegisterChatServices;
 import com.microcode.client.service.mysql.Salt;
 import com.microcode.client.service.oracle.ActionsOracleServices;
@@ -28,6 +29,7 @@ import static com.microcode.client.service.oracle.ActionsOracleServices.*;
 public class ChatWebSocket {
 
     private final HelperService helperService;
+    private final ActionServices actionServices;
     private ChatSessionManager chatSessionManager;
     private final RegisterChatServices registerChatServices;
     private final ActionsOracleServices actionsOracleServices;
@@ -39,7 +41,6 @@ public class ChatWebSocket {
                                     ContentMessage message,
                                     SimpMessageHeaderAccessor headerAccessor)
             {
-        System.out.println(message.getActionId());
         Action action = new Action();
         try{
             List<Long> principalRequest = helperService.definePrincipalForCode(companyId);
@@ -47,12 +48,12 @@ public class ChatWebSocket {
 //            Thread.sleep(5000);
             String clientIp = (String) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("clientIp");
 
-            if (message == null || message.getActionId() == null) return ActionsOracleServices.wrapMessage(ActionsOracleServices.responseWithOptionsParam(error,action));
+            if (message == null || message.getActionId() == null) return Salt.wrapContentResponde(ActionsOracleServices.responseWithOptionsParam(error,action));
             ContentMessage messageUnwrapped = Salt.unwrapContentMessage(message);
             chatSessionManager.updateChatActivity(chatId, messageUnwrapped);
             registerChatServices.createForMessage(chatId,messageUnwrapped,clientIp);
 
-            action = actionsOracleServices.getActionForId(messageUnwrapped.getActionId());
+            action =  actionServices.getActionForId(messageUnwrapped.getActionId());
             Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
             messageUnwrapped.getChatMessage().put("chatId", chatId);
             messageUnwrapped.getChatMessage().put("principalRequest", principalRequest.toString());
@@ -70,7 +71,7 @@ public class ChatWebSocket {
             if (chat == null) responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.unauthorized);
             else if(chat.getChatAuthenticated() == null || !chat.getChatAuthenticated()) responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.unauthorized);
             else responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.responseWithOptionsParam(notFound,action));
-            return ActionsOracleServices.wrapMessage(responseWrap);
+            return Salt.wrapContentResponde(responseWrap);
         }
 
     }

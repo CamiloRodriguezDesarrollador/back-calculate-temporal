@@ -6,6 +6,7 @@ import com.microcode.client.entity.*;
 import com.microcode.client.service.chat.ConsumeChatService;
 import com.microcode.client.service.mysql.Salt;
 import com.microcode.client.service.oracle.ActionsOracleServices;
+import com.microcode.client.service.oracle.OptionsManageService;
 import lombok.AllArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -34,7 +35,7 @@ public class ChatRestController {
     @PostMapping("/sendMessageChatId")
     public void sendMessage(@RequestParam String chatId,@RequestParam String message,@RequestParam String requestType) {
         ContentResponse contentResponse = new ContentResponse();
-        contentResponse.setOptions(ActionsOracleServices.optionsBasic);
+        contentResponse.setOptions(OptionsManageService.optionsBasic);
         contentResponse.setActionMessage(message);
         contentResponse.setActionRequest(requestType);
         consumeChatService.sendMessageToChat(chatId, contentResponse);

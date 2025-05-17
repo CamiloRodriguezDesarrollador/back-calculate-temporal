@@ -166,7 +166,6 @@ public class HelperService {
     }
 
     public String getEmailEpsPrincipal(Long empNd, String type){
-        System.out.println(empNd);
         if(type.equals("AFP")){
             if(empNd == 830057687L)return "asesorafp@atecno.com.co";
             if(empNd == 800148972L)return "asesorafp@serviola.com.co";
@@ -190,8 +189,6 @@ public class HelperService {
         if(companyId == 2) return List.of(800148972L);
         if(companyId == 3) return List.of(830057687L);
         return List.of(860090915L);
-//        800141699
-//        800165661
     }
 
     public Long defineUniquePrincipalForAuthorized(List<Long> authorized){

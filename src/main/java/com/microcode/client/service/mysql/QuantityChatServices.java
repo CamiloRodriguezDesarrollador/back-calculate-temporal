@@ -1,6 +1,7 @@
 package com.microcode.client.service.mysql;
 
 import com.microcode.client.dao.mysql.IQuantityChatDao;
+import com.microcode.client.entity.Chat;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.entity.mysql.QuantityChat;
 import lombok.AllArgsConstructor;
@@ -59,5 +60,22 @@ public class QuantityChatServices implements QuantityChatServicesI {
         quantityChat.setActionDetail(detail);
         this.create(quantityChat);
     }
+
+    public void createQuantityForAction(Action action, Chat chat, String detail){
+        if(action.getActionQuantity() != null && action.getActionDaysQuantity() != null){
+            createForAction(
+                    Integer.valueOf(action.getActionId().toString()),
+                    chat.getTypeDocument(),
+                    chat.getDocument(),
+                    detail
+            );
+        }
+    }
+
+
+
+
+
+
 
 }

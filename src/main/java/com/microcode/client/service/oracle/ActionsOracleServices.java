@@ -17,7 +17,6 @@ import com.microcode.client.service.helper.HelperService;
 import com.microcode.client.service.jasper.JasperService;
 import com.microcode.client.service.mysql.ActionServices;
 import com.microcode.client.service.mysql.QuantityChatServices;
-import com.microcode.client.service.mysql.Salt;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -43,21 +42,7 @@ public class ActionsOracleServices {
     private final EntitiesServices entitiesServices;
     private final CertificatesService certificatesService;
     private final HelperService helperService;
-
     private final ActionServices actionServices;
-    public static List<Action> actionsPrincipal;
-    public static List<Option> optionsBasic;
-    public static List<Option> optionsEps;
-    public static List<Option> optionsBienestar;
-    public static List<Option> Bienestar;
-    public static List<Option> optionsPrincipal;
-    public static List<Option> optionsDocument;
-    public static List<Option> optionsEntities;
-    public static List<Option> optionEndChat;
-    public static List<Option> optionsLiq;
-    public static List<Option> optionsPension;
-    public static List<Option> optionsInca;
-    public static List<Option> optionsCCF;
 
     public static ContentResponse unauthorized;
     public static ContentResponse notFound;
@@ -71,15 +56,10 @@ public class ActionsOracleServices {
     private final HistNovServices histNovServices;
     private final ConsumeChatService consumeChatService;
 
-
-    //    Inicializar opciones
-
     @PostConstruct
     public void init() {
         actionServices.updateTypesChat();
     }
-
-    //    Respuestas llamadas desde actions
 
     public final String MAIL_TEST = "yriascos@activos.com.co";
 //    public final String MAIL_TEST = "cgonzalez@activos.com.co";
@@ -140,7 +120,6 @@ public class ActionsOracleServices {
                 chat.setCtoNumber(contract.getCtoNumero());
                 chat.setPerSigla(contract.getPerSigla());
             }
-            System.out.println(chat.getPrincipalRequest());
 
             chatSessionManager.setChatById( chatId, chat );
 
@@ -194,7 +173,6 @@ public class ActionsOracleServices {
 
                 try{
                     Chat chatLast = chatSessionManager.getAuthorizedChatByDocumentAndType(chat.getDocument(),chat.getTypeDocument());
-                    System.out.println(chatLast);
                     if(chatLast != null) {
                         chatLast.setChatAuthenticated(false);
                         chatLast.setChatDateAuthorized(null);
@@ -206,7 +184,7 @@ public class ActionsOracleServices {
                 chat.setChatAuthenticated(true);
                 chat.setChatDateAuthorized(new Date());
                 chatSessionManager.setChatById( chatId, chat );
-                return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), chat.getNames()),optionsPrincipal, action);
+                return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), chat.getNames()),OptionsManageService.optionsPrincipal, action);
 
             }
 
@@ -222,33 +200,6 @@ public class ActionsOracleServices {
 
     }
 
-    public ContentResponse getOptions(Map<String,String> inputs, Action action) {
-        String chatId = inputs.get("chatId");
-        Chat chat = chatSessionManager.getChatById(chatId);
-        ContentResponse resp = this.validateInitial(chat);
-        if(resp != null) return resp;
-
-        try{
-            String option = action.getActionTypeCall();
-
-            List<Option> options = switch (option) {
-                case "principal" -> optionsPrincipal;
-                case "documents" -> optionsDocument;
-                case "eps" -> optionsEps;
-                case "bienestar" -> optionsBienestar;
-                case "entities" -> optionsEntities;
-                case "pension" -> optionsPension;
-                case "incapacidades" -> optionsInca;
-                case "ccf" -> optionsCCF;
-                default -> List.of();
-            };
-            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(),chat.getNames()),options, action);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return error;
-        }
-    }
-
     public ContentResponse getCertifiedJob(Map<String,String> inputs, Action action) {
         try {
             String chatId = inputs.get("chatId");
@@ -259,7 +210,7 @@ public class ActionsOracleServices {
             List<Contract> contracts = contractServices.findByIds(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
 
             if(contracts == null || contracts.isEmpty())
-                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),optionsDocument, action);
+                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),OptionsManageService.optionsDocument, action);
 
             List<Option> options = new ArrayList<>(List.of());
             List<String> labels = List.of("Último contrato", "Contrato Anterior");
@@ -276,7 +227,7 @@ public class ActionsOracleServices {
                 );
             }
 
-            Action actionBack = getActionForId(1004);
+            Action actionBack = actionServices.getActionForId(1004);
             options.add(
                     new Option(
                             actionBack.getActionRespOkAction(),
@@ -292,10 +243,6 @@ public class ActionsOracleServices {
             return error;
         }
 
-    }
-
-    public ContentResponse getCertifiedJobDetail(Map<String,String> inputs, Action action) {
-        return methodStandard(inputs, action, optionsBasic);
     }
 
     public ContentResponse getCertifiedPay(Map<String,String> inputs, Action action) {
@@ -312,7 +259,7 @@ public class ActionsOracleServices {
             );
 
             if(dates == null || dates.isEmpty())
-                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),optionsDocument, action);
+                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),OptionsManageService.optionsDocument, action);
             List<Option> options = new ArrayList<>(List.of());
             List<String> labels =
                     chat.getPerSigla().equals("M") ?
@@ -329,8 +276,7 @@ public class ActionsOracleServices {
                         )
                 );
             }
-
-            Action actionBack = getActionForId(1004);
+            Action actionBack = actionServices.getActionForId(1004);
             options.add(
                     new Option(
                             actionBack.getActionRespOkAction(),
@@ -348,110 +294,40 @@ public class ActionsOracleServices {
 
     }
 
-    public ContentResponse getCertifiedPayDetail(Map<String,String> inputs, Action action) {
-        return methodStandard(inputs, action, optionsBasic);
-    }
-
-    public ContentResponse getCertifiedDian(Map<String,String> inputs, Action action) {
-        return methodStandard(inputs, action, optionsBasic);
-    }
-
-    public ContentResponse getInformationEps(Map<String,String> inputs, Action action) {
-        return methodStandardRedirect(inputs,action,optionsEps);
-    }
-
-    public ContentResponse getDataIncludeEps(Map<String,String> inputs, Action action) {
-        return methodStandard(inputs, action, optionsBasic);
-    }
-
-    public ContentResponse getTransferEps(Map<String,String> inputs, Action action) {
-        return methodStandard(inputs, action, optionsBasic);
-    }
-
-    public ContentResponse getInformationBienestar(Map<String,String> inputs, Action action) {
-        return methodStandardRedirect(inputs,action,optionsBienestar);
-    }
-
-    public ContentResponse getDataPsychology(Map<String,String> inputs, Action action) {
-        return methodStandard(inputs, action, optionsBasic);
-    }
-
-    public ContentResponse getDataConCesan(Map<String,String> inputs, Action action) {
-        return methodStandard(inputs, action, optionsBasic);
-    }
-
-    public ContentResponse getInformationPension(Map<String,String> inputs, Action action) {
-        return methodStandardRedirect(inputs,action,optionsPension);
-    }
-
-    public ContentResponse getDataCesanAffiliation(Map<String,String> inputs, Action action) {
-        return methodStandard(inputs, action, optionsBasic);
-    }
-
-    public ContentResponse getIncAffiliation(Map<String,String> inputs, Action action) {
-        return methodStandard(inputs, action, optionsBasic);
-    }
-
-    public ContentResponse getInformationInca(Map<String,String> inputs, Action action) {
-        return methodStandardRedirect(inputs,action,optionsInca);
-    }
-
-    public ContentResponse getInformationCcf(Map<String,String> inputs, Action action) {
-        return methodStandardRedirect(inputs,action,optionsCCF);
-    }
-
-    public ContentResponse getDataInca(Map<String,String> inputs, Action action) {
-        return methodStandard(inputs, action, optionsBasic);
-    }
-
-    public ContentResponse getInfRetiredCesa(Map<String,String> inputs, Action action) {
-        return methodStandard(inputs,action,optionsBasic);
-    }
-
-    public ContentResponse getDocumentCesa(Map<String,String> inputs, Action action) {
-        return methodStandard(inputs,action,optionsBasic);
-    }
-
-    public ContentResponse getInformationCCF(Map<String,String> inputs, Action action) {
-        return methodStandardRedirect(inputs,action,optionsCCF);
-    }
-
-    public ContentResponse getDataRequirementsCcf(Map<String,String> inputs, Action action) {
-        return methodStandard(inputs, action, optionsBasic);
-    }
-
-    public ContentResponse requirementCcfPersonalizate(Map<String,String> inputs, Action action) {
-        return methodStandard(inputs, action, optionsBasic);
-    }
-
-    public ContentResponse requirementEpsPersonalizate(Map<String,String> inputs, Action action) {
-        return methodStandard(inputs, action, optionsBasic);
-    }
-
-    public ContentResponse requirementAfpPersonalizate(Map<String,String> inputs, Action action) {
-        return methodStandard(inputs, action, optionsBasic);
-    }
-
-    public ContentResponse getStatusLiq(Map<String,String> inputs, Action action) {
-        return methodStandard(inputs, action, optionsBasic);
-    }
-
-//   Metodo estandar
-
-    private ContentResponse methodStandardRedirect(Map<String,String> inputs, Action action, List<Option> options) {
+    public ContentResponse inactiveChat(Map<String,String> inputs, Action action) {
         try{
             String chatId = inputs.get("chatId");
             Chat chat = chatSessionManager.getChatById(chatId);
+            chat.setChatAuthenticated(false);
+            chatSessionManager.setChatById(chatId,chat);
+            return timeOut;
+        } catch (Exception e) {
+            return error;
+        }
+    }
+
+
+//   Metodo estandar
+
+    public ContentResponse methodStandardRedirect(Map<String,String> inputs, Action action) {
+        try{
+            String chatId = inputs.get("chatId");
+            Chat chat = chatSessionManager.getChatById(chatId);
+
             ContentResponse resp = this.validateInitial(chat);
             if(resp != null) return resp;
-            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), chat.getNames()),options, action);
+
+            return ContentResponse.buildContentResponseOk(
+                    String.format(action.getActionRespOkMessage(), chat.getNames()),
+                    OptionsManageService.getOptionsByActionWithName(action.getActionOption()),
+                    action);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return error;
         }
     }
 
-    private ContentResponse methodStandard(Map<String,String> inputs, Action actionOriginal, List<Option> options) {
+    public ContentResponse methodStandard(Map<String,String> inputs, Action actionOriginal) {
         try {
             Action action = actionOriginal.clone();
             String detail = inputs.get("detail");
@@ -466,33 +342,26 @@ public class ActionsOracleServices {
             ContentResponse resp = this.validateInitial(chat);
             if (resp != null) return resp;
 
-            if(!verifiedRequirementContractActive(chat,action)) return withoutContract;
+            if(!actionServices.verifiedRequirementContractActive(chat,action)) return withoutContract;
 
-           Object validationAdditional = methodStandardAdditional(detail, action,chat);
+            Object validationAdditional = methodStandardAdditional(detail, action,chat);
 
-           if(validationAdditional != null){
-               if(validationAdditional instanceof String){
+            if(validationAdditional != null){
+                if(validationAdditional instanceof String){
 
-                   messageOk = (String) validationAdditional;
-                   System.out.println(messageOk);
+                    messageOk = (String) validationAdditional;
+                }
+                if(validationAdditional instanceof ContentResponse){
 
-               }
-               if(validationAdditional instanceof ContentResponse){
+                    return (ContentResponse) validationAdditional;
+                }
+            }
 
-                   return (ContentResponse) validationAdditional;
-               }
-           }
-
-            quantityChatServices.createForAction(
-                    Integer.valueOf(action.getActionId().toString()),
-                    chat.getTypeDocument(),
-                    chat.getDocument(),
-                    detail
-            );
+            quantityChatServices.createQuantityForAction(action,chat,detail);
 
             return ContentResponse.buildContentResponseOk(
                     messageOk,
-                    options,
+                    OptionsManageService.getOptionsByActionWithName(action.getActionOption()),
                     action
             );
         } catch (Exception e) {
@@ -505,7 +374,6 @@ public class ActionsOracleServices {
         try{
             switch (action.getActionId()) {
                 case 502:
-                    System.out.println(chat.getEmpNdFil());
                     if (helperService.isPrincipal(chat.getEmpNdFil())) {
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
                         return null;
@@ -536,7 +404,6 @@ public class ActionsOracleServices {
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
                         return null;
                     } else {
-                        System.out.println("entra aca");
                         Contract contPay = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
 
                         byte[] filePay = jasperService.getCertificatePay(
@@ -546,15 +413,13 @@ public class ActionsOracleServices {
                                 detail
                         );
                         if (filePay == null)
-                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), optionsDocument, action);
+                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action);
                         filePay = jasperService.protectPdfWithPassword(filePay, chat.getDocument());
 
                         mailServices.sendMailCertificates(
                                 chat.getNames(), "de pago", MAIL_TEST, filePay, "CertificacionPago.pdf",chat.getPrincipalRequest()
                         ).subscribe();
                     }
-                    System.out.println("entsasara aca");
-
                     return null;
 
                 case 505:
@@ -562,21 +427,19 @@ public class ActionsOracleServices {
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
                         return null;
                     }else{
-                    Contract cont = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
-                    if(cont == null) return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), optionsDocument, action);
-                    String url = certificatesService.getDataCertificatedDian(
-                            cont.getTdcTd(),
-                            cont.getEmpNd(),
-                            chat.getTypeDocument(),
-                            Long.valueOf(chat.getDocument()),
-                            helperService.getDateCertifiedDianStartDate(),
-                            helperService.getDateCertifiedDianEndDate()
-                    );
-                    System.out.println(url);
-
-                    if (url == null)
-                        return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), optionsDocument, action);
-                    action.setActionRespOkFile(url);
+                        Contract cont = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
+                        if(cont == null) return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action);
+                        String url = certificatesService.getDataCertificatedDian(
+                                cont.getTdcTd(),
+                                cont.getEmpNd(),
+                                chat.getTypeDocument(),
+                                Long.valueOf(chat.getDocument()),
+                                helperService.getDateCertifiedDianStartDate(),
+                                helperService.getDateCertifiedDianEndDate()
+                        );
+                        if (url == null)
+                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action);
+                        action.setActionRespOkFile(url);
                      }
                     return null;
 
@@ -587,7 +450,7 @@ public class ActionsOracleServices {
 
                     if(comp == null || chat.getCtoNumber() == null) return ContentResponse.buildContentResponseFail(
                             String.format(action.getActionRespFailMessage()),
-                            optionsCCF,
+                            OptionsManageService.optionsCCF,
                             action
                     );
                     String nameCompany = comp.getEmpNombre();
@@ -602,19 +465,15 @@ public class ActionsOracleServices {
                     return String.format(action.getActionRespOkMessage(),nameCompany,mailSend);
 
                 case 524 :
-                    System.out.println(action.getActionRespOkFile());
                     if(helperService.isPrincipal(chat.getEmpNdFil())) {
                         action.setActionRespOkFile(null);
                         String urlSite = helperService.getUrlForPrincipal(chat.getEmpNd());
                         String message = "<p>Genial!, los trabajadores internos deberán acceder al <a href='%s' target='_blank'> sitio del trabajador<a>, por favor confirmame si tienes otro requerimiento 👇.</p>";
-                        System.out.println(action.getActionRespOkFile());
                         return String.format(message,urlSite);
                     }else{
                         String responsible;
-//                        action.setActionRespOkFile(action.getActionRespOkFile());
                         responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
                         if(responsible == null) responsible = "auxincapacidades3@activos.com.co";
-                        System.out.println(action.getActionRespOkFile());
                         return String.format(action.getActionRespOkMessage(),responsible);
                     }
 
@@ -647,46 +506,8 @@ public class ActionsOracleServices {
 
     }
 
-    public ContentResponse finalizedChat(Map<String,String> inputs, Action action) {
-        try{
-            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()),null, action);
-        } catch (Exception e) {
-            return error;
-        }
-    }
 
-    public ContentResponse closeChat(Map<String,String> inputs, Action action) {
-        try{
-            System.out.println("Llega aca");
-
-            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()),null, action);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return error;
-        }
-    }
-
-    public ContentResponse inactiveChat(Map<String,String> inputs, Action action) {
-        try{
-            String chatId = inputs.get("chatId");
-            Chat chat = chatSessionManager.getChatById(chatId);
-            chat.setChatAuthenticated(false);
-            chatSessionManager.setChatById(chatId,chat);
-            return timeOut;
-        } catch (Exception e) {
-            return error;
-        }
-    }
-
-    public ContentResponse moreOptions(Map<String,String> inputs, Action action) {
-        try{
-            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()),optionsPrincipal, action);
-        } catch (Exception e) {
-            return error;
-        }
-    }
-
-//    Validación Inicial
+//    Validations
 
     public ContentResponse validateInitial(Chat chat){
         if(chat == null || !chat.getChatAuthenticated() ) return unauthorized;
@@ -696,92 +517,26 @@ public class ActionsOracleServices {
     }
 
     public ContentResponse validateQuantityOver(Action action, Chat chat, String detail){
+        if(action.getActionQuantity() == null || action.getActionDaysQuantity() == null) return null;
         QuantityResponse quantityResponse = chatSessionManager.validityQuantityRequest(action,chat,detail);
         if(!quantityResponse.getIsOver()) return null;
-        ContentResponse responseClone = ContentResponse.cloneContentResponse(quantityMax);
-        responseClone.setActionMessage(String.format(quantityMax.getActionMessage(),quantityResponse.getDateOptionTrain()));
+        ContentResponse responseClone = ContentResponse.cloneContentResponse(ActionsOracleServices.quantityMax);
+        responseClone.setActionMessage(String.format(ActionsOracleServices.quantityMax.getActionMessage(),quantityResponse.getDateOptionTrain()));
         return responseClone;
-    }
-
-    // Actualización opciones
-
-    public static void updateActions(List<Action> actions) {
-        actionsPrincipal = actions;
-    }
-    public static void updateOptionsBasic(List<Option> options) {
-        optionsBasic = options;
-    }
-    public static void updateOptionsDocument(List<Option> options) {
-        optionsDocument = options;
-    }
-    public static void updateOptionsEps(List<Option> options) {
-        optionsEps = options;
-    }
-    public static void updateOptionsBienestar(List<Option> options) {
-        optionsBienestar = options;
-    }
-    public static void updateOptionsPension(List<Option> options) {
-        optionsPension = options;
-    }
-    public static void updateOptionsInca(List<Option> options) {
-        optionsInca = options;
-    }
-    public static void updateOptionsCcf(List<Option> options) {
-        optionsCCF = options;
-    }
-    public static void updateOptionEntities(List<Option> options) {
-        optionsEntities = options;
-    }
-    public static void updateOptionsLiq(List<Option> options) {
-        optionsLiq = options;
-    }
-    public static void updateOptionEndChat(List<Option> options) {
-        optionEndChat = options;
-    }
-    public static void updateOptionsPrincipal(List<Option> options) {
-        optionsPrincipal = options;
-    }
-
-
-    // Helps
-    public Action getActionForId(Integer actionId ){
-        return actionsPrincipal.stream()
-                .filter(e -> Objects.equals(e.getActionId(), actionId))
-                .findFirst()
-                .orElse(null);
-
-    }
-
-    public static ContentResponse wrapMessage(ContentResponse contentResponse){
-        contentResponse.setActionMessage(Salt.wrapMessage(contentResponse.getActionMessage()));
-        return contentResponse;
     }
 
     public static ContentResponse responseWithOptionsParam(ContentResponse response, Action action){
         ContentResponse responseClone = ContentResponse.cloneContentResponse(response);
-        if(action == null || action.getActionTypeCall() == null) {
-            responseClone.setOptions(optionsPrincipal);
+        if(action == null || action.getActionOptionError() == null) {
+            responseClone.setOptions(OptionsManageService.optionsPrincipal);
             return responseClone;
         }
-        List<Option> options = switch (action.getActionTypeCall()) {
-            case "documents" -> optionsDocument;
-            case "entities" -> optionsEntities;
-            case "bienestar" -> optionsBienestar;
-            case "eps" -> optionsEps;
-            case "pension" -> optionsPension;
-            case "incapacidades" -> optionsInca;
-            case "ccf" -> optionsCCF;
-            default -> optionsPrincipal;
-        };
-
+        List<Option> options =  OptionsManageService.getOptionsByActionWithName(action.getActionOptionError());
         responseClone.setOptions(options);
         return responseClone;
     }
 
-    public boolean verifiedRequirementContractActive(Chat chat, Action action){
-        if(action.getActionCtoActive() == null) return true;
-        return !action.getActionCtoActive().equals("A") || chat.getEmpNdFil() != null;
-    }
+
 
 
 }

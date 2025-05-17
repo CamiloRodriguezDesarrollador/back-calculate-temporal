@@ -1,10 +1,12 @@
 package com.microcode.client.service.mysql;
 
 import com.microcode.client.dao.mysql.IActionDao;
+import com.microcode.client.entity.Chat;
 import com.microcode.client.entity.ContentResponse;
 import com.microcode.client.entity.Option;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.service.oracle.ActionsOracleServices;
+import com.microcode.client.service.oracle.OptionsManageService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -57,24 +60,24 @@ public class ActionServices implements ActionServicesI {
 
     public void updateTypesChat(){
         List<Action> actions = actionDao.findByActionStatus("A");
-        ActionsOracleServices.updateActions(actions);
+        OptionsManageService.updateActions(actions);
 
-        updateOptionsByType(actions, "principal", ActionsOracleServices::updateOptionsPrincipal);
-        updateOptionsByType(actions, "principal", ActionsOracleServices::updateOptionsPrincipal);
-        updateOptionsByType(actions, "basic", ActionsOracleServices::updateOptionsBasic);
-        updateOptionsById(actions, ActionsOracleServices::updateOptionEndChat);
-        updateOptionsByType(actions, "documents", ActionsOracleServices::updateOptionsDocument);
-        updateOptionsByType(actions, "eps", ActionsOracleServices::updateOptionsEps);
-        updateOptionsByType(actions, "bienestar", ActionsOracleServices::updateOptionsBienestar);
-        updateOptionsByType(actions, "pension", ActionsOracleServices::updateOptionsPension);
-        updateOptionsByType(actions, "incapacidades", ActionsOracleServices::updateOptionsInca);
-        updateOptionsByType(actions, "ccf", ActionsOracleServices::updateOptionsCcf);
-        updateOptionsByType(actions, "liq", ActionsOracleServices::updateOptionsLiq);
-        updateOptionsByType(actions, "entities", ActionsOracleServices::updateOptionEntities);
+        updateOptionsByType(actions, "principal", OptionsManageService::updateOptionsPrincipal);
+        updateOptionsByType(actions, "principal", OptionsManageService::updateOptionsPrincipal);
+        updateOptionsByType(actions, "basic", OptionsManageService::updateOptionsBasic);
+        updateOptionsById(actions, OptionsManageService::updateOptionEndChat);
+        updateOptionsByType(actions, "documents", OptionsManageService::updateOptionsDocument);
+        updateOptionsByType(actions, "eps", OptionsManageService::updateOptionsEps);
+        updateOptionsByType(actions, "bienestar", OptionsManageService::updateOptionsBienestar);
+        updateOptionsByType(actions, "pension", OptionsManageService::updateOptionsPension);
+        updateOptionsByType(actions, "incapacidades", OptionsManageService::updateOptionsInca);
+        updateOptionsByType(actions, "ccf", OptionsManageService::updateOptionsCcf);
+        updateOptionsByType(actions, "liq", OptionsManageService::updateOptionsLiq);
+        updateOptionsByType(actions, "entities", OptionsManageService::updateOptionEntities);
 
         List<Option> optionsUnit = new ArrayList<>();
-        optionsUnit.addAll(ActionsOracleServices.optionsPrincipal);
-        optionsUnit.addAll(ActionsOracleServices.optionEndChat);
+        optionsUnit.addAll(OptionsManageService.optionsPrincipal);
+        optionsUnit.addAll(OptionsManageService.optionEndChat);
 
         ActionsOracleServices.unauthorized = buildResponse(actions, "unauthorized", null);
         ActionsOracleServices.notFound = buildResponse(actions, "notFound", optionsUnit);
@@ -121,5 +124,17 @@ public class ActionServices implements ActionServicesI {
         updater.accept(options);
     }
 
+    public Action getActionForId(Integer actionId ){
+        return OptionsManageService.actionsPrincipal.stream()
+                .filter(e -> Objects.equals(e.getActionId(), actionId))
+                .findFirst()
+                .orElse(null);
+
+    }
+
+    public boolean verifiedRequirementContractActive(Chat chat, Action action){
+        if(action.getActionCtoActive() == null) return true;
+        return !action.getActionCtoActive().equals("A") || chat.getEmpNdFil() != null;
+    }
 
 }

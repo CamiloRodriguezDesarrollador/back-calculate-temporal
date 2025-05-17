@@ -4,6 +4,7 @@ import com.microcode.client.entity.Chat;
 import com.microcode.client.entity.ContentMessage;
 import com.microcode.client.entity.ContentResponse;
 import com.microcode.client.entity.mysql.Action;
+import com.microcode.client.service.mysql.ActionServices;
 import com.microcode.client.service.oracle.ActionsOracleServices;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
@@ -35,6 +36,9 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
     @Autowired
     private ActionsOracleServices actionsOracleServices;
 
+    @Autowired
+    private ActionServices actionServices;
+
     public String eplNd = "39655785";
     public String tdcTdEpl = "CC";
     public Long contract = 597706L;
@@ -65,7 +69,7 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
         chat.setChatId(String.valueOf(UUID.randomUUID()));
         ContentMessage mockMessage = new ContentMessage();
         mockMessage.setActionId(1);
-        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
         Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
         chatMessage.put("chatId", chat.getChatId());
         chatMessage.put("document", eplNd );
@@ -89,7 +93,7 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
 
         ContentMessage mockMessage = new ContentMessage();
         mockMessage.setActionId(2);
-        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
         Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
         chatMessage.put("chatId", chat.getChatId());
         chatMessage.put("isMailCorrect", "Y");
@@ -113,7 +117,7 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
 
         ContentMessage mockMessage = new ContentMessage();
         mockMessage.setActionId(50);
-        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
         Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
         chatMessage.put("chatId", chat.getChatId());
         chatMessage.put("codeVerification", "123456");
@@ -136,7 +140,7 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
 
         ContentMessage mockMessage = new ContentMessage();
         mockMessage.setActionId(500);
-        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
         Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
         chatMessage.put("chatId", chat.getChatId());
         mockMessage.setChatMessage(chatMessage);
@@ -161,7 +165,7 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
 
         ContentMessage mockMessage = new ContentMessage();
         mockMessage.setActionId(501);
-        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
         Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
         chatMessage.put("chatId", chat.getChatId());
         mockMessage.setChatMessage(chatMessage);
@@ -184,7 +188,7 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
 
         ContentMessage mockMessage = new ContentMessage();
         mockMessage.setActionId(502);
-        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
         Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
         chatMockup.setDocument(eplNd);
         chatMockup.setTypeDocument(tdcTdEpl);
@@ -210,7 +214,7 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
 
         ContentMessage mockMessage = new ContentMessage();
         mockMessage.setActionId(515);
-        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
         Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
         chatMockup.setDocument(eplNd);
         chatMockup.setTypeDocument(tdcTdEpl);
@@ -236,7 +240,7 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
 
         ContentMessage mockMessage = new ContentMessage();
         mockMessage.setActionId(516);
-        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
         Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
         chatMockup.setDocument(eplNd);
         chatMockup.setTypeDocument(tdcTdEpl);
@@ -262,7 +266,7 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
 
         ContentMessage mockMessage = new ContentMessage();
         mockMessage.setActionId(519);
-        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
         Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
         chatMockup.setDocument(eplNd);
         chatMockup.setTypeDocument(tdcTdEpl);
@@ -288,7 +292,7 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
 
         ContentMessage mockMessage = new ContentMessage();
         mockMessage.setActionId(508);
-        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
         Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
         chatMockup.setDocument(eplNd);
         chatMockup.setTypeDocument(tdcTdEpl);
@@ -314,7 +318,7 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
 
         ContentMessage mockMessage = new ContentMessage();
         mockMessage.setActionId(507);
-        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
         Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
         chatMockup.setDocument(eplNd);
         chatMockup.setTypeDocument(tdcTdEpl);
@@ -340,7 +344,7 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
 
         ContentMessage mockMessage = new ContentMessage();
         mockMessage.setActionId(521);
-        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
         Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
         chatMockup.setDocument(eplNd);
         chatMockup.setTypeDocument(tdcTdEpl);
@@ -366,7 +370,7 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
 
         ContentMessage mockMessage = new ContentMessage();
         mockMessage.setActionId(522);
-        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
         Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
         chatMockup.setDocument(eplNd);
         chatMockup.setTypeDocument(tdcTdEpl);
@@ -392,7 +396,7 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
 
         ContentMessage mockMessage = new ContentMessage();
         mockMessage.setActionId(530);
-        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
         Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
         chatMockup.setDocument(eplNd);
         chatMockup.setTypeDocument(tdcTdEpl);
@@ -418,7 +422,7 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
 
         ContentMessage mockMessage = new ContentMessage();
         mockMessage.setActionId(529);
-        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
         Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
         chatMockup.setDocument(eplNd);
         chatMockup.setTypeDocument(tdcTdEpl);
@@ -444,7 +448,7 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
 
         ContentMessage mockMessage = new ContentMessage();
         mockMessage.setActionId(528);
-        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
         Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
         chatMockup.setDocument(eplNd);
         chatMockup.setTypeDocument(tdcTdEpl);
@@ -471,7 +475,7 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
 
         ContentMessage mockMessage = new ContentMessage();
         mockMessage.setActionId(505);
-        Action action = actionsOracleServices.getActionForId(mockMessage.getActionId());
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
         Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
         chatMockup.setDocument(eplNd);
         chatMockup.setTypeDocument(tdcTdEpl);

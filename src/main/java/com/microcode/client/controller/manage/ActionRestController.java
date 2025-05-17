@@ -83,7 +83,7 @@ public class ActionRestController {
             action.setActionMessage(act.getActionMessage());
             action.setActionStatus(act.getActionStatus());
             action.setActionType(act.getActionType());
-            action.setActionTypeCall(act.getActionTypeCall());
+            action.setActionOptionError(act.getActionOptionError());
             action.setActionQuantity(act.getActionQuantity());
             action.setActionDaysQuantity(act.getActionDaysQuantity());
             action.setActionNameFunction(act.getActionNameFunction());

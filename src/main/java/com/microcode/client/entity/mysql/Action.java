@@ -34,9 +34,6 @@ public class Action implements Serializable, Cloneable {
     @Column(name = "ACT_TYPE", length = 100)
     private String actionType;
 
-    @Column(name = "ACT_TYPE_CALL", length = 100, nullable = false)
-    private String actionTypeCall;
-
     @Column(name = "ACT_RESP_OK_MESSAGE", length = 250)
     private String actionRespOkMessage;
 
@@ -70,6 +67,12 @@ public class Action implements Serializable, Cloneable {
     @Column(name = "ACT_CTO_ACTIVE", length = 10, nullable = false)
     private String actionCtoActive;
 
+    @Column(name = "ACT_OPTION", length = 50, nullable = false)
+    private String actionOption;
+
+    @Column(name = "ACT_OPTION_ERROR", length = 100, nullable = false)
+    private String actionOptionError;
+
     @Column(name = "AUD_DATE" ,length = 10)
     @Temporal(TemporalType.TIMESTAMP)
     private Date audDate;
@@ -94,4 +97,6 @@ public class Action implements Serializable, Cloneable {
             throw new RuntimeException(e);
         }
     }
+
+
 }

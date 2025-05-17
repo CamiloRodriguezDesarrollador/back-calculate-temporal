@@ -1,6 +1,7 @@
 package com.microcode.client.service.mysql;
 
 import com.microcode.client.entity.ContentMessage;
+import com.microcode.client.entity.ContentResponse;
 import lombok.Getter;
 import org.springframework.stereotype.Service;
 
@@ -59,7 +60,10 @@ public class Salt {
         return salt.toString();
     }
 
-
+    public static ContentResponse wrapContentResponde(ContentResponse contentResponse){
+        contentResponse.setActionMessage(Salt.wrapMessage(contentResponse.getActionMessage()));
+        return contentResponse;
+    }
 
 
 }
