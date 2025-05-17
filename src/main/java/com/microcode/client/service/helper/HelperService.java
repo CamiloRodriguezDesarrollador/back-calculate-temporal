@@ -5,7 +5,9 @@ import org.springframework.stereotype.Service;
 import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class HelperService {
@@ -48,50 +50,51 @@ public class HelperService {
         return visiblePart + maskedPart + domain;
     }
 
-    public List<String> getPeriodLabels(String perSigla) {
-        LocalDate today = LocalDate.now();
-        DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        List<String> labels = new ArrayList<>();
+    public static List<String> buildDatePeriodsQ(List<LocalDate> inputDates) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        Set<String> periods = new HashSet<>();
 
-        if ("M".equals(perSigla)) {
-            for (int i = 3; i >= 1; i--) {
-                LocalDate month = today.minusMonths(i);
-                labels.add(fmt.format(month.withDayOfMonth(1)) + " - " +
-                        fmt.format(month.withDayOfMonth(month.lengthOfMonth())));
-            }
-        } else if ("Q".equals(perSigla)) {
-            List<String> tempLabels = new ArrayList<>();
-            LocalDate ref;
+        for (LocalDate date : inputDates) {
+            LocalDate end;
 
-            if (today.getDayOfMonth() < 16) {
-                ref = today.minusMonths(1).withDayOfMonth(16);
+            if (date.getDayOfMonth() >= 16) {
+                end = date.with(TemporalAdjusters.lastDayOfMonth());
             } else {
-                ref = today.withDayOfMonth(1);
+                end = date.withDayOfMonth(15);
             }
 
-            while (tempLabels.size() < 6) {
-                LocalDate start;
-                LocalDate end;
-
-                if (ref.getDayOfMonth() == 1) {
-                    start = ref.withDayOfMonth(1);
-                    end = ref.withDayOfMonth(15);
-                    ref = ref.minusMonths(1).withDayOfMonth(16);
-                } else {
-                    // Segunda quincena
-                    start = ref.withDayOfMonth(16);
-                    end = ref.withDayOfMonth(ref.lengthOfMonth());
-                    ref = ref.withDayOfMonth(1);
-                }
-
-                tempLabels.add(fmt.format(start) + " - " + fmt.format(end));
-            }
-
-            Collections.reverse(tempLabels);
-            labels.addAll(tempLabels);
+            String period = formatter.format(date) + " - " + formatter.format(end);
+            periods.add(period);
         }
 
-        return labels;
+        return periods.stream()
+                .sorted((p1, p2) -> {
+                    LocalDate d1 = LocalDate.parse(p1.substring(0, 10), formatter);
+                    LocalDate d2 = LocalDate.parse(p2.substring(0, 10), formatter);
+                    return d2.compareTo(d1);
+                })
+                .limit(6)
+                .collect(Collectors.toList());
+    }
+
+    public static List<String> buildDatePeriodsM(List<LocalDate> inputDates) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        Set<String> periods = new HashSet<>();
+
+        for (LocalDate start : inputDates) {
+            LocalDate end = start.with(TemporalAdjusters.lastDayOfMonth());
+            String period = formatter.format(start) + " - " + formatter.format(end);
+            periods.add(period);
+        }
+
+        return periods.stream()
+                .sorted((p1, p2) -> {
+                    LocalDate d1 = LocalDate.parse(p1.substring(0, 10), formatter);
+                    LocalDate d2 = LocalDate.parse(p2.substring(0, 10), formatter);
+                    return d2.compareTo(d1);
+                })
+                .limit(3)
+                .collect(Collectors.toList());
     }
 
     public String getDateCertifiedDianStartDate() {

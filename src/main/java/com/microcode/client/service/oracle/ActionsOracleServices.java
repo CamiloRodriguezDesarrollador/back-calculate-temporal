@@ -7,11 +7,12 @@ import com.microcode.client.entity.QuantityResponse;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.entity.oracle.Company;
 import com.microcode.client.entity.oracle.Contract;
-import com.microcode.client.service.ChatSessionManager;
+import com.microcode.client.service.chat.ChatSessionManager;
 import com.microcode.client.entity.Chat;
 import com.microcode.client.entity.ContentResponse;
 import com.microcode.client.entity.Option;
 import com.microcode.client.entity.oracle.Employee;
+import com.microcode.client.service.chat.ConsumeChatService;
 import com.microcode.client.service.helper.HelperService;
 import com.microcode.client.service.jasper.JasperService;
 import com.microcode.client.service.mysql.ActionServices;
@@ -23,6 +24,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.*;
 
 @Service
@@ -65,6 +67,9 @@ public class ActionsOracleServices {
     public static ContentResponse error;
     public static ContentResponse withoutContract;
     public static ContentResponse maxAttempts;
+    public static ContentResponse otherSessionActive;
+    private final HistNovServices histNovServices;
+    private final ConsumeChatService consumeChatService;
 
 
     //    Inicializar opciones
@@ -133,6 +138,7 @@ public class ActionsOracleServices {
                 chat.setEmpNdFil(contract.getEmpNdFil());
                 chat.setTdcTdFil(contract.getTdcTdFil());
                 chat.setCtoNumber(contract.getCtoNumero());
+                chat.setPerSigla(contract.getPerSigla());
             }
             System.out.println(chat.getPrincipalRequest());
 
@@ -164,6 +170,7 @@ public class ActionsOracleServices {
                 chat.setChatDateCode(new Date());
                 mailServices.sendMailVerified(MAIL_TEST,code,chat.getPrincipalRequest());
 //                mailServices.sendMailVerified(chat.getChatMail(),code,chat.getPrincipalRequest());
+
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action);
             }
 
@@ -184,6 +191,18 @@ public class ActionsOracleServices {
             if(chatSessionManager.validateTimeCode(chat)) return timeOut;
 
             if(codeVerified.toLowerCase().equals(chat.getChatCode()) ){
+
+                try{
+                    Chat chatLast = chatSessionManager.getAuthorizedChatByDocumentAndType(chat.getDocument(),chat.getTypeDocument());
+                    System.out.println(chatLast);
+                    if(chatLast != null) {
+                        chatLast.setChatAuthenticated(false);
+                        chatLast.setChatDateAuthorized(null);
+                        consumeChatService.sendMessageToChat(chatLast.getChatId(), otherSessionActive);
+                    }
+                }catch (Exception e){
+                    System.out.println(e.getMessage());
+                }
                 chat.setChatAuthenticated(true);
                 chat.setChatDateAuthorized(new Date());
                 chatSessionManager.setChatById( chatId, chat );
@@ -286,15 +305,19 @@ public class ActionsOracleServices {
             ContentResponse resp = this.validateInitial(chat);
             if(resp != null) return resp;
 
-            Contract contract = contractServices.findContractForEpl(Long.valueOf((chat.getDocument())), chat.getTypeDocument(), chat.getPrincipalRequest());
+            if(chat.getCtoNumber() == null) return withoutContract;
 
-            if(contract == null )
+            List<LocalDate> dates = histNovServices.findPeriodsPay(
+                    chat.getCtoNumber(),chat.getEmpNd(),chat.getTdcTd()
+            );
+
+            if(dates == null || dates.isEmpty())
                 return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),optionsDocument, action);
-
-            chat.setCtoNumber(contract.getCtoNumero());
-
             List<Option> options = new ArrayList<>(List.of());
-            List<String> labels = helperService.getPeriodLabels(contract.getPerSigla());
+            List<String> labels =
+                    chat.getPerSigla().equals("M") ?
+                            HelperService.buildDatePeriodsM(dates) :
+                            HelperService.buildDatePeriodsQ(dates);
 
             for (String label : labels) {
                 options.add(
@@ -406,6 +429,10 @@ public class ActionsOracleServices {
     }
 
     public ContentResponse requirementAfpPersonalizate(Map<String,String> inputs, Action action) {
+        return methodStandard(inputs, action, optionsBasic);
+    }
+
+    public ContentResponse getStatusLiq(Map<String,String> inputs, Action action) {
         return methodStandard(inputs, action, optionsBasic);
     }
 
@@ -579,7 +606,7 @@ public class ActionsOracleServices {
                     if(helperService.isPrincipal(chat.getEmpNdFil())) {
                         action.setActionRespOkFile(null);
                         String urlSite = helperService.getUrlForPrincipal(chat.getEmpNd());
-                        String message = "<p>Genial!, los trabajadores internos deberán acceder al <a href='%s' target='_blank'> sitio del trabajador <a>, por favor confirmame si tienes otro requerimiento 👇.</p>";
+                        String message = "<p>Genial!, los trabajadores internos deberán acceder al <a href='%s' target='_blank'> sitio del trabajador<a>, por favor confirmame si tienes otro requerimiento 👇.</p>";
                         System.out.println(action.getActionRespOkFile());
                         return String.format(message,urlSite);
                     }else{
@@ -601,6 +628,15 @@ public class ActionsOracleServices {
                 case 532 :
                     String mailAttEps = helperService.getEmailEpsPrincipal(chat.getEmpNd(),"EPS");
                     return String.format(action.getActionRespOkMessage(),mailAttEps);
+                case 101 :
+                    String statusLiq = certificatesService.getStatusLiq(
+                            chat.getTypeDocument(),
+                            Long.valueOf(chat.getDocument())
+                    );
+                    System.out.println(statusLiq);
+                    if(statusLiq == null) return error;
+                    return String.format(action.getActionRespOkMessage(),statusLiq);
+
 
             }
             return null;
@@ -621,8 +657,11 @@ public class ActionsOracleServices {
 
     public ContentResponse closeChat(Map<String,String> inputs, Action action) {
         try{
+            System.out.println("Llega aca");
+
             return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()),null, action);
         } catch (Exception e) {
+            System.out.println(e.getMessage());
             return error;
         }
     }

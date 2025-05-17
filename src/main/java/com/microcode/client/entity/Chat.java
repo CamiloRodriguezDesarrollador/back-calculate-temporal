@@ -28,6 +28,7 @@ public class Chat {
     private String tdcTd;
     private Long empNd;
     private List<Long> principalRequest;
+    private String perSigla;
 
 
     public Chat() {

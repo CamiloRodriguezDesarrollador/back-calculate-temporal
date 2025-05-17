@@ -275,5 +275,32 @@ public class CertificatesService {
         return pagos;
     }
 
+    public String getStatusLiq(String tdcTdEpl,Long eplNd ) {
+        try{
+
+            StoredProcedureQuery query = entityManager.createStoredProcedureQuery("rep.QB_PROCESO_LIQ.PL_ESTADO_LIQ");
+
+            query.registerStoredProcedureParameter("vcTd_td_epl", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("nmEpl_nd", Long.class, ParameterMode.IN);
+
+            query.setParameter("vcTd_td_epl", tdcTdEpl);
+            query.setParameter("nmEpl_nd", eplNd);
+
+            query.registerStoredProcedureParameter("vcEstado", String.class, ParameterMode.OUT);
+            query.registerStoredProcedureParameter("vcError", String.class, ParameterMode.OUT);
+
+            query.execute();
+
+            String error = ((String) query.getOutputParameterValue("vcError"));
+            if(error != null) return null;
+
+            return (String) query.getOutputParameterValue("vcEstado");
+        }catch (Exception e ){
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+
 
 }

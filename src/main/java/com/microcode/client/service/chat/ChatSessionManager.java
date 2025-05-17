@@ -1,4 +1,4 @@
-package com.microcode.client.service;
+package com.microcode.client.service.chat;
 
 import com.microcode.client.entity.Chat;
 import com.microcode.client.entity.ContentMessage;
@@ -43,6 +43,18 @@ public class ChatSessionManager {
     public Chat getChatById(String chatId) {
         return activeChats.get(chatId);
     }
+
+    public Chat getAuthorizedChatByDocumentAndType(String document, String typeDocument) {
+        return activeChats.values().stream()
+                .filter(chat -> document.equals(chat.getDocument()))
+                .filter(chat -> typeDocument.equals(chat.getTypeDocument()))
+                .filter(Chat::getChatAuthenticated)
+                .findFirst()
+                .orElse(null);
+    }
+
+
+
 
     public boolean isAuthorized(String chatId){
         return activeChats.get(chatId).getChatAuthenticated();
@@ -91,6 +103,9 @@ public class ChatSessionManager {
 
             if (partialChat.getPrincipalRequest() != null)
                 existingChat.setPrincipalRequest(partialChat.getPrincipalRequest());
+
+            if (partialChat.getPerSigla() != null)
+                existingChat.setPerSigla(partialChat.getPerSigla());
 
             return existingChat;
         });

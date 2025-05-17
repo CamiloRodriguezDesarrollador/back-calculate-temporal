@@ -84,6 +84,7 @@ public class ActionServices implements ActionServicesI {
         ActionsOracleServices.quantityMax = buildResponse(actions, "quantityMax", optionsUnit);
         ActionsOracleServices.maxAttempts = buildResponse(actions, "maxAttempts", null);
         ActionsOracleServices.withoutContract = buildResponse(actions, "withoutContract", optionsUnit);
+        ActionsOracleServices.otherSessionActive = buildResponse(actions, "otherSessionActive", null);
 
     }
 
@@ -95,7 +96,7 @@ public class ActionServices implements ActionServicesI {
                         a.getActionRespOkMessage(),
                         secondParam,
                         a.getActionRespOkRequest(),
-                        null,
+                        a.getActionRespOkAction(),
                         null,
                         a.getActionType()
                 ))

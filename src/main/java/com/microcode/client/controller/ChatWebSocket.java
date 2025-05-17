@@ -1,6 +1,6 @@
 package com.microcode.client.controller;
 
-import com.microcode.client.service.ChatSessionManager;
+import com.microcode.client.service.chat.ChatSessionManager;
 import com.microcode.client.entity.*;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.service.helper.HelperService;
@@ -14,7 +14,6 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
-import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
 import java.util.List;
@@ -40,7 +39,7 @@ public class ChatWebSocket {
                                     ContentMessage message,
                                     SimpMessageHeaderAccessor headerAccessor)
             {
-
+        System.out.println(message.getActionId());
         Action action = new Action();
         try{
             List<Long> principalRequest = helperService.definePrincipalForCode(companyId);
@@ -54,7 +53,6 @@ public class ChatWebSocket {
             registerChatServices.createForMessage(chatId,messageUnwrapped,clientIp);
 
             action = actionsOracleServices.getActionForId(messageUnwrapped.getActionId());
-
             Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
             messageUnwrapped.getChatMessage().put("chatId", chatId);
             messageUnwrapped.getChatMessage().put("principalRequest", principalRequest.toString());
@@ -76,6 +74,8 @@ public class ChatWebSocket {
         }
 
     }
+
+
 
 
 

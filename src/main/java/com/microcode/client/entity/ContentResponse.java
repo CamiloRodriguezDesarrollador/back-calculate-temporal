@@ -1,7 +1,6 @@
 package com.microcode.client.entity;
 
 import com.microcode.client.entity.mysql.Action;
-import com.microcode.client.service.mysql.Salt;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
