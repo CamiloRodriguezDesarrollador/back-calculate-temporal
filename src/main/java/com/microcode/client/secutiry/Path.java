@@ -42,7 +42,7 @@ public class Path {
         myRoutesProtected.add(new Path("/api/chat/action/create", Collections.singletonList(autConsolePlatform)));
 
         myRoutesProtected.add(new Path("/api/chat/chats/active/chats", Collections.singletonList(autConsolePlatform)));
-        myRoutesProtected.add(new Path("/api/chat/chats/active/chats/sendMessageChatId", Collections.singletonList(autConsolePlatform)));
+        myRoutesProtected.add(new Path("/api/chat/chats/sendMessageChatId", Collections.singletonList(autConsolePlatform)));
 
         myRoutesProtected.add(new Path("/api/chat/quantity/dataTable", Collections.singletonList(autConsolePlatform)));
         myRoutesProtected.add(new Path("/api/chat/quantity/quantity", Collections.singletonList(autConsolePlatform)));

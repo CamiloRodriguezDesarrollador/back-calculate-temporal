@@ -32,7 +32,8 @@ public class ChatRestController {
     }
 
     @PostMapping("/sendMessageChatId")
-    public String sendMessage(@RequestParam String chatId,
+    public String sendMessage(
+                            @RequestParam String chatId,
                             @RequestParam String message,
                             @RequestParam String requestType,
                             @RequestParam String options) {
