@@ -454,6 +454,8 @@ public class ActionsOracleServices {
                             action
                     );
                     String nameCompany = comp.getEmpNombre();
+
+                    //TODO: Estructura con mas de una URL
                     String fileRequirements = "https://storage.googleapis.com/bucket_apps_public/CCF/requisitos.pdf";
                     String fileDeclaration = "https://storage.googleapis.com/bucket_apps_public/CCF/Declaraciones/"+comp.getEmpNd()+ ".pdf";
                     String fileVideo = "https://storage.googleapis.com/bucket_apps_public/CCF/instructivo.mp4";

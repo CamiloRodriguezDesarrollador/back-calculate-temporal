@@ -68,7 +68,7 @@ public class OptionsManageService {
     }
 
     @SuppressWarnings("unchecked")
-    static List<Option> getOptionsByActionWithName(String fieldName) {
+    public static List<Option> getOptionsByActionWithName(String fieldName) {
         try {
             Field field = OptionsManageService.class.getDeclaredField(fieldName);
             field.setAccessible(true);

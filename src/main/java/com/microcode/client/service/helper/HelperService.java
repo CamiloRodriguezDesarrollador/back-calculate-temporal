@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 public class HelperService {
 
     public String generateCode(){
-//        String CARACTERES = "abcdefghijklmnopqrstuvwxyz0123456789";
         String CARACTERES = "0123456789";
         SecureRandom random = new SecureRandom();
 
@@ -102,7 +101,7 @@ public class HelperService {
         int currentYear = now.getYear();
         int lastYear;
 
-        if (now.getMonthValue() > 3) { // después de marzo
+        if (now.getMonthValue() > 3) {
             lastYear = currentYear - 1;
         } else {
             lastYear = currentYear - 2;
@@ -116,7 +115,7 @@ public class HelperService {
         int currentYear = now.getYear();
         int lastYear;
 
-        if (now.getMonthValue() > 3) { // después de marzo
+        if (now.getMonthValue() > 3) {
             lastYear = currentYear - 1;
         } else {
             lastYear = currentYear - 2;
@@ -124,6 +123,40 @@ public class HelperService {
         return LocalDate.of(lastYear, 12, 31).format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
     }
 
+    public List<Long> definePrincipalForCode(Integer companyId){
+        if(companyId == 2) return List.of(800148972L);
+        if(companyId == 3) return List.of(830057687L);
+        return List.of(860090915L);
+    }
+
+    public Long defineUniquePrincipalForAuthorized(List<Long> authorized){
+        if(authorized.contains(800148972L)) return 800148972L;
+        if(authorized.contains(830057687L)) return 830057687L;
+        return 860090915L;
+    }
+
+    public String getUrlForPrincipal(Long empNd){
+        if(empNd == 830057687L)return "https://apps.genialw.com/SitioTrabajador/index5.jsp";
+        if(empNd == 800148972L)return "https://apps.genialw.com/SitioTrabajador/index3.jsp";
+        else return "https://apps.genialw.com/SitioTrabajador/index1.jsp";
+    }
+
+    //TODO: Estructura con principal - correo - tipo
+    public String getEmailEpsPrincipal(Long empNd, String type){
+        if(type.equals("AFP")){
+            if(empNd == 830057687L)return "asesorafp@atecno.com.co";
+            if(empNd == 800148972L)return "asesorafp@serviola.com.co";
+            return "asesorafp@activos.com.co";
+        }
+        if(type.equals("EPS")){
+            if(empNd == 830057687L)return "atencioneps@atecno.com.co";
+            if(empNd == 800148972L)return "atencioneps@serviola.com.co";
+            return "atencioneps@activos.com.co";
+        }
+        else return "";
+    }
+
+    //TODO: Estructura con CCF - correo
     public String getEmailByNit(String nitInput) {
 
         Map<String, String> nitToEmail = new HashMap<>();
@@ -164,37 +197,4 @@ public class HelperService {
 
         return nitToEmail.getOrDefault(nitInput, "por favor revisa con tu empresa el correo al cual enviar.");
     }
-
-    public String getEmailEpsPrincipal(Long empNd, String type){
-        if(type.equals("AFP")){
-            if(empNd == 830057687L)return "asesorafp@atecno.com.co";
-            if(empNd == 800148972L)return "asesorafp@serviola.com.co";
-            return "asesorafp@activos.com.co";
-        }
-        if(type.equals("EPS")){
-            if(empNd == 830057687L)return "atencioneps@atecno.com.co";
-            if(empNd == 800148972L)return "atencioneps@serviola.com.co";
-            return "atencioneps@activos.com.co";
-        }
-        else return "";
-    }
-
-    public String getUrlForPrincipal(Long empNd){
-        if(empNd == 830057687L)return "https://apps.genialw.com/SitioTrabajador/index5.jsp";
-        if(empNd == 800148972L)return "https://apps.genialw.com/SitioTrabajador/index3.jsp";
-        else return "https://apps.genialw.com/SitioTrabajador/index1.jsp";
-    }
-
-    public List<Long> definePrincipalForCode(Integer companyId){
-        if(companyId == 2) return List.of(800148972L);
-        if(companyId == 3) return List.of(830057687L);
-        return List.of(860090915L);
-    }
-
-    public Long defineUniquePrincipalForAuthorized(List<Long> authorized){
-        if(authorized.contains(800148972L)) return 800148972L;
-        if(authorized.contains(830057687L)) return 830057687L;
-        return 860090915L;
-    }
-
 }

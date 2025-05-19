@@ -24,7 +24,6 @@ import java.util.concurrent.ConcurrentMap;
 public class ChatRestController {
 
     private final ConsumeChatService consumeChatService;
-    private final ActionsOracleServices actionsOracleServices;
     private ChatSessionManager chatSessionManager;
 
     @GetMapping("/active/chats")
@@ -33,12 +32,16 @@ public class ChatRestController {
     }
 
     @PostMapping("/sendMessageChatId")
-    public void sendMessage(@RequestParam String chatId,@RequestParam String message,@RequestParam String requestType) {
+    public String sendMessage(@RequestParam String chatId,
+                            @RequestParam String message,
+                            @RequestParam String requestType,
+                            @RequestParam String options) {
         ContentResponse contentResponse = new ContentResponse();
-        contentResponse.setOptions(OptionsManageService.optionsBasic);
+        contentResponse.setOptions(OptionsManageService.getOptionsByActionWithName(options));
         contentResponse.setActionMessage(message);
         contentResponse.setActionRequest(requestType);
         consumeChatService.sendMessageToChat(chatId, contentResponse);
+        return "create";
     }
 
 

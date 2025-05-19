@@ -42,11 +42,11 @@ public class Handler implements HandlerInterceptor, WebMvcConfigurer {
     }
 
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        return true;
-//        defineCredentials(request, handler);
-//        if (validateUri(request.getRequestURI())) return true;
-//        response.sendError(HttpServletResponse.SC_FORBIDDEN, "unauthorized");
-//        return false;
+//        return true;
+        defineCredentials(request, handler);
+        if (validateUri(request.getRequestURI())) return true;
+        response.sendError(HttpServletResponse.SC_FORBIDDEN, "unauthorized");
+        return false;
     }
 
         public void defineCredentials(HttpServletRequest request, Object handler) {
