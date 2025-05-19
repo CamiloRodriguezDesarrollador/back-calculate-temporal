@@ -42,7 +42,7 @@ public class ChatRestController {
         contentResponse.setActionMessage(message);
         contentResponse.setActionRequest(requestType);
         consumeChatService.sendMessageToChat(chatId, contentResponse);
-        return "create";
+        return "created";
     }
 
 
