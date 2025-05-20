@@ -30,6 +30,9 @@ public class HistNovCompany {
     @Column(name = "pmg_fecinih")
     private LocalDate pmgFecini;
 
+    @Column(name = "PMG_FECFINH")
+    private LocalDate pmgFecFin;
+
     @Column(name = "pro_codigo")
     private Long proCodigo;
 

@@ -252,21 +252,20 @@ public class ActionsOracleServices {
             ContentResponse resp = this.validateInitial(chat);
             if(resp != null) return resp;
 
-            if(chat.getCtoNumber() == null) return withoutContract;
+            Contract contPay = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
 
-            List<LocalDate> dates = histNovServices.findPeriodsPay(
-                    chat.getCtoNumber(),chat.getEmpNd(),chat.getTdcTd()
+            if(contPay.getCtoNumero() == null) return withoutContract;
+
+            Integer quantityPeriods = contPay.getPerSigla().equals("M") ? 3 : 6;
+            List<String> dates = histNovServices.findPeriodsPay(
+                    contPay.getCtoNumero(),contPay.getEmpNd(),contPay.getTdcTd(),quantityPeriods
             );
 
             if(dates == null || dates.isEmpty())
                 return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),OptionsManageService.optionsDocument, action);
             List<Option> options = new ArrayList<>(List.of());
-            List<String> labels =
-                    chat.getPerSigla().equals("M") ?
-                            HelperService.buildDatePeriodsM(dates) :
-                            HelperService.buildDatePeriodsQ(dates);
 
-            for (String label : labels) {
+            for (String label : dates) {
                 options.add(
                         new Option(
                                 action.getActionRespOkAction(),
@@ -305,7 +304,6 @@ public class ActionsOracleServices {
             return error;
         }
     }
-
 
 //   Metodo estandar
 
@@ -404,6 +402,7 @@ public class ActionsOracleServices {
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
                         return null;
                     } else {
+
                         Contract contPay = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
 
                         byte[] filePay = jasperService.getCertificatePay(

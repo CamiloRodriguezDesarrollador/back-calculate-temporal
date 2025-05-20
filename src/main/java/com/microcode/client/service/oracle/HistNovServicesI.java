@@ -5,6 +5,6 @@ import java.util.List;
 
 public interface HistNovServicesI {
 
-    List<LocalDate> findPeriodsPay(Long ctoNumber, Long empNd, String tdcTd  );
+    List<String> findPeriodsPay(Long ctoNumber, Long empNd, String tdcTd, Integer quantityList  );
 
 }

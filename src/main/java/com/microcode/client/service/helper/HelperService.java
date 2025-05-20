@@ -49,52 +49,7 @@ public class HelperService {
         return visiblePart + maskedPart + domain;
     }
 
-    public static List<String> buildDatePeriodsQ(List<LocalDate> inputDates) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        Set<String> periods = new HashSet<>();
 
-        for (LocalDate date : inputDates) {
-            LocalDate end;
-
-            if (date.getDayOfMonth() >= 16) {
-                end = date.with(TemporalAdjusters.lastDayOfMonth());
-            } else {
-                end = date.withDayOfMonth(15);
-            }
-
-            String period = formatter.format(date) + " - " + formatter.format(end);
-            periods.add(period);
-        }
-
-        return periods.stream()
-                .sorted((p1, p2) -> {
-                    LocalDate d1 = LocalDate.parse(p1.substring(0, 10), formatter);
-                    LocalDate d2 = LocalDate.parse(p2.substring(0, 10), formatter);
-                    return d2.compareTo(d1);
-                })
-                .limit(6)
-                .collect(Collectors.toList());
-    }
-
-    public static List<String> buildDatePeriodsM(List<LocalDate> inputDates) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        Set<String> periods = new HashSet<>();
-
-        for (LocalDate start : inputDates) {
-            LocalDate end = start.with(TemporalAdjusters.lastDayOfMonth());
-            String period = formatter.format(start) + " - " + formatter.format(end);
-            periods.add(period);
-        }
-
-        return periods.stream()
-                .sorted((p1, p2) -> {
-                    LocalDate d1 = LocalDate.parse(p1.substring(0, 10), formatter);
-                    LocalDate d2 = LocalDate.parse(p2.substring(0, 10), formatter);
-                    return d2.compareTo(d1);
-                })
-                .limit(3)
-                .collect(Collectors.toList());
-    }
 
     public String getDateCertifiedDianStartDate() {
         LocalDate now = LocalDate.now();
