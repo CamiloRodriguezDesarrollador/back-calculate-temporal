@@ -104,14 +104,29 @@ public class HelperService {
             return "asesorafp@activos.com.co";
         }
         if(type.equals("EPS")){
-            if(empNd == 830057687L)return "atencioneps@atecno.com.co";
-            if(empNd == 800148972L)return "atencioneps@serviola.com.co";
-            return "atencioneps@activos.com.co";
+            if(empNd == 830057687L)return "atencioneps@atecno.com.co , cgomez@atecno.com.co";
+            if(empNd == 800148972L)return "atencioneps@serviola.com.co , cgomez@serviola.com.co";
+            return "atencioneps@activos.com.co , cgomez@activos.com.co";
         }
         if(type.equals("INC")){
             if(empNd == 830057687L)return "auxincapacidades3@atecno.com.co";
             if(empNd == 800148972L)return "auxincapacidades3@serviola.com.co";
             return "auxincapacidades3@activos.com.co";
+        }
+        if(type.equals("CCF")){
+            if(empNd == 830057687L)return "atencionccf@atecno.com.co";
+            if(empNd == 800148972L)return "atencionccf@serviola.com.co";
+            return "atencionccf@activos.com.co";
+        }
+        if(type.equals("PPAL")){
+            if(empNd == 830057687L)return "Atecno S.A.S";
+            if(empNd == 800148972L)return "Serviola S.A.S";
+            return "Activos S.A.S";
+        }
+        if(type.equals("RRHH")){
+            if(empNd == 830057687L)return "coordinadorrrhh@atecno.com";
+            if(empNd == 800148972L)return "coordinadorrrhh@serviola.com";
+            return "coordinadorrrhh@activos.com";
         }
         else return "";
     }

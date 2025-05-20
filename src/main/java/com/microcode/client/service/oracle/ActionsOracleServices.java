@@ -487,8 +487,19 @@ public class ActionsOracleServices {
                     String mailAttAfp = helperService.getEmailEpsPrincipal(cont.getEmpNd(),"AFP");
                     return String.format(action.getActionRespOkMessage(),mailAttAfp);
                 case 532 :
+                case 515 :
                     String mailAttEps = helperService.getEmailEpsPrincipal(chat.getEmpNd(),"EPS");
                     return String.format(action.getActionRespOkMessage(),mailAttEps);
+                case 530 :
+                    String mailAttCcf = helperService.getEmailEpsPrincipal(chat.getEmpNd(),"CCF");
+                    return String.format(action.getActionRespOkMessage(),mailAttCcf);
+                case 506 :
+                    String mailAttR = helperService.getEmailEpsPrincipal(chat.getEmpNd(),"RRHH");
+                    return String.format(action.getActionRespOkMessage(),mailAttR);
+                case 516 :
+                    String mailEpsP = helperService.getEmailEpsPrincipal(chat.getEmpNd(),"PPAL");
+                    String mailEpsTras = helperService.getEmailEpsPrincipal(chat.getEmpNd(),"EPS");
+                    return String.format(action.getActionRespOkMessage(),mailEpsP,mailEpsTras,mailEpsTras);
                 case 101 :
                     String statusLiq = certificatesService.getStatusLiq(
                             chat.getTypeDocument(),

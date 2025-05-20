@@ -13,19 +13,20 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Service;
 
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.sql.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import oracle.sql.ARRAY;
-import oracle.sql.Datum;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.SqlOutParameter;
 import org.springframework.jdbc.core.SqlParameter;
 import org.springframework.jdbc.object.StoredProcedure;
-import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.sql.*;
@@ -337,7 +338,7 @@ public class CertificatesService {
             query.setParameter("vctdc_td_fil","NI");
             query.setParameter("nmEmp_nd_fil",860090915L);
             query.setParameter("vctdc_td_epl","CC");
-            query.setParameter("nmepl_nd",1015459785L);
+            query.setParameter("nmepl_nd",1076668714L);
             query.setParameter("nmtmocode",1L);
             query.setParameter("nmTrecode",1L);
             query.setParameter("vctpq_periodo","202504");
@@ -374,14 +375,49 @@ public class CertificatesService {
             Long tpqCode = (Long) query.getOutputParameterValue("nmTpq_Code");
 
             System.out.println(endpoint);
-            System.out.println(xmlInputClob);
             System.out.println(error);
             System.out.println(mensaje);
             System.out.println(tpqCode);
             if (error == null || error.isEmpty()) {
                 System.out.println("EWntra aca");
             }
-            System.out.println(query);
+
+            String xmlInput = clobToString(xmlInputClob);
+
+            endpoint = URLEncoder.encode(endpoint, "UTF-8");
+            xmlInput = URLEncoder.encode(xmlInput, "UTF-8");
+
+
+            try {
+                URL url = new URL("http://apps.activos.com.co/JADP0007/ServletRespuestaSOAP?END_POINT=" + endpoint + "&XML_INPUT=" + xmlInput);
+                URLConnection uc = url.openConnection();
+                uc.connect();
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
+                String inputLine;
+                String contenido = "";
+
+                while ((inputLine = in.readLine()) != null) {
+                    contenido += inputLine + "\n";
+                }
+                in.close();
+
+                // Aquí puedes imprimir o registrar el contenido
+                System.out.println("Contenido recibido:");
+                System.out.println(contenido);
+
+                // Verifica si contiene algún error esperado
+                if (contenido.contains("Error") || contenido.contains("Exception")) {
+                    System.out.println("La respuesta contiene un posible error.");
+                }
+
+
+            } catch (IOException e) {
+                System.err.println("Error al conectarse o leer la respuesta:");
+                e.printStackTrace();
+            }
+
+
             return "";
         }catch (Exception e ){
             System.out.println("Es este error");
@@ -499,5 +535,22 @@ public class CertificatesService {
             return null;
         }
     }
+
+    private String clobToString(Clob clob) {
+        if (clob == null) return null;
+        try (Reader reader = clob.getCharacterStream();
+             StringWriter writer = new StringWriter()) {
+            char[] buffer = new char[2048];
+            int bytesRead;
+            while ((bytesRead = reader.read(buffer)) != -1) {
+                writer.write(buffer, 0, bytesRead);
+            }
+            return writer.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
 }
