@@ -6,6 +6,7 @@ import com.microcode.client.entity.*;
 import com.microcode.client.service.chat.ConsumeChatService;
 import com.microcode.client.service.mysql.Salt;
 import com.microcode.client.service.oracle.ActionsOracleServices;
+import com.microcode.client.service.oracle.CertificatesService;
 import com.microcode.client.service.oracle.OptionsManageService;
 import lombok.AllArgsConstructor;
 import net.sf.jasperreports.engine.JRException;
@@ -24,6 +25,7 @@ import java.util.concurrent.ConcurrentMap;
 public class ChatRestController {
 
     private final ConsumeChatService consumeChatService;
+    private final CertificatesService certificatesService;
     private ChatSessionManager chatSessionManager;
 
     @GetMapping("/active/chats")
@@ -47,27 +49,30 @@ public class ChatRestController {
 
 
     @PostMapping("/jasper")
-    public CertificatePay getJasper(@RequestParam Long eplNd ) throws JRException, MalformedURLException, SQLException {
+    public CertificatePay getJasper() throws JRException, MalformedURLException, SQLException {
+        certificatesService.getDataCertificateDian();
+
+
 //        String jrxmlPath = "src/main/resources/templates/ComprobanteDePago.jrxml";
 //        String jasperPath = "src/main/resources/templates/ComprobanteDePago.jasper";
 //        JasperCompileManager.compileReportToFile(jrxmlPath, jasperPath);
 //        System.out.println("Reporte compilado con éxito.");
 
-        String jrxmlPath3 = "src/main/resources/templates/ComprobanteDePago.jrxml";
-        String jasperPath3 = "src/main/resources/templates/ComprobanteDePago.jasper";
-        JasperCompileManager.compileReportToFile(jrxmlPath3, jasperPath3);
-
-        String jrxmlPath2 = "src/main/resources/templates/ComprobanteDePagoSubRep1.jrxml";
-        String jasperPath2 = "src/main/resources/templates/ComprobanteDePagoSubRep1.jasper";
-        JasperCompileManager.compileReportToFile(jrxmlPath2, jasperPath2);
-        System.out.println("Reporte compilado con éxito.");
+//        String jrxmlPath3 = "src/main/resources/templates/ComprobanteDePago.jrxml";
+//        String jasperPath3 = "src/main/resources/templates/ComprobanteDePago.jasper";
+//        JasperCompileManager.compileReportToFile(jrxmlPath3, jasperPath3);
+//
+//        String jrxmlPath2 = "src/main/resources/templates/ComprobanteDePagoSubRep1.jrxml";
+//        String jasperPath2 = "src/main/resources/templates/ComprobanteDePagoSubRep1.jasper";
+//        JasperCompileManager.compileReportToFile(jrxmlPath2, jasperPath2);
+//        System.out.println("Reporte compilado con éxito.");
 
 
 //        System.out.println("Reporte compilado con éxito.");
 
-        String jrxmlPath4 = "src/main/resources/templates/CertificacionLaboral.jrxml";
-        String jasperPath4 = "src/main/resources/templates/CertificacionLaboral.jasper";
-        JasperCompileManager.compileReportToFile(jrxmlPath4, jasperPath4);
+//        String jrxmlPath4 = "src/main/resources/templates/CertificacionLaboral.jrxml";
+//        String jasperPath4 = "src/main/resources/templates/CertificacionLaboral.jasper";
+//        JasperCompileManager.compileReportToFile(jrxmlPath4, jasperPath4);
 
 
 //        certificatesService.getDataNumbersRads(1286413L,5L,"01/04/2025 - 15/04/2025");

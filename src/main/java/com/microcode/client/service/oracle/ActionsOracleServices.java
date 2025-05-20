@@ -427,11 +427,11 @@ public class ActionsOracleServices {
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
                         return null;
                     }else{
-                        Contract cont = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
-                        if(cont == null) return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action);
+                        Contract contLast = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
+                        if(contLast == null) return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action);
                         String url = certificatesService.getDataCertificatedDian(
-                                cont.getTdcTd(),
-                                cont.getEmpNd(),
+                                contLast.getTdcTd(),
+                                contLast.getEmpNd(),
                                 chat.getTypeDocument(),
                                 Long.valueOf(chat.getDocument()),
                                 helperService.getDateCertifiedDianStartDate(),
@@ -475,7 +475,8 @@ public class ActionsOracleServices {
                     }else{
                         String responsible;
                         responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
-                        if(responsible == null) responsible = "auxincapacidades3@activos.com.co";
+                        String mailAttInca = helperService.getEmailEpsPrincipal(chat.getEmpNd(),"INC");
+                        if(responsible == null) responsible = mailAttInca;
                         return String.format(action.getActionRespOkMessage(),responsible);
                     }
 
@@ -496,7 +497,7 @@ public class ActionsOracleServices {
                     );
                     System.out.println(statusLiq);
                     if(statusLiq == null) return error;
-                    return String.format(action.getActionRespOkMessage(),statusLiq);
+                    return String.format(action.getActionRespOkMessage(),statusLiq.substring(0, 1).toUpperCase() + statusLiq.substring(1).toLowerCase());
 
 
             }

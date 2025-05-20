@@ -14,7 +14,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Service;
 
 import java.sql.Array;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import oracle.sql.ARRAY;
 import oracle.sql.Datum;
@@ -248,6 +250,7 @@ public class CertificatesService {
             String response;
             response = ((String) query.getOutputParameterValue("vcSalida"));
             String error = ((String) query.getOutputParameterValue("vcerror"));
+            System.out.println("error cert ingresos:" + error);
 
             if(error != null) return null;
             return response;
@@ -301,6 +304,200 @@ public class CertificatesService {
         }
     }
 
+    public String getDataCertificateDian() {
+        try{
 
+            StoredProcedureQuery query = entityManager.createStoredProcedureQuery("RHU.QB_AUTOLIQUIDACION_JRHU0034.pl_wsdl_autoliquidacion_epl");
+
+            query.registerStoredProcedureParameter("vctdc_td", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("nmEmp_nd", Long.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("vctdc_td_fil", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("nmEmp_nd_fil", Long.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("vctdc_td_epl", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("nmepl_nd", Long.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("nmtmocode", Long.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("nmTrecode", Long.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("vctpq_periodo", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("vcaud_usuario", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("vcfecha_trans", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("vcbandera", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("vcciu_nombre", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("vcsuc_nombre_fil", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("vccct_nombre", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("vcconsumo_masivo", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("nmAcm_Codigo", Long.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("nmNum_Planilla", Long.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("nmtio_codigo", Long.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("vcTipoFiltro", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("vcValorFiltro", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("vcTiempoEstimado", String.class, ParameterMode.IN);
+
+            query.setParameter("vctdc_td","NI");
+            query.setParameter("nmEmp_nd",860090915L);
+            query.setParameter("vctdc_td_fil","NI");
+            query.setParameter("nmEmp_nd_fil",860090915L);
+            query.setParameter("vctdc_td_epl","CC");
+            query.setParameter("nmepl_nd",1015459785L);
+            query.setParameter("nmtmocode",1L);
+            query.setParameter("nmTrecode",1L);
+            query.setParameter("vctpq_periodo","202504");
+            query.setParameter("vcaud_usuario","1015459785");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+            String dateTrans = simpleDateFormat.format(new Date());
+            query.setParameter("vcfecha_trans",dateTrans);
+            query.setParameter("vcbandera","0");
+            query.setParameter("vcciu_nombre","");
+            query.setParameter("vcsuc_nombre_fil","");
+            query.setParameter("vccct_nombre","");
+            query.setParameter("vcconsumo_masivo","N");
+            query.setParameter("nmAcm_Codigo",0L);
+            query.setParameter("nmNum_Planilla",0L);
+            query.setParameter("nmtio_codigo",2L);
+            query.setParameter("vcTipoFiltro", "");
+            query.setParameter("vcValorFiltro", "");
+            query.setParameter("vcTiempoEstimado", "");
+
+
+            query.registerStoredProcedureParameter("vcENDPOINT", String.class, ParameterMode.OUT);
+            query.registerStoredProcedureParameter("vcXMLINPUT", Clob.class, ParameterMode.OUT);
+            query.registerStoredProcedureParameter("vcerror", String.class, ParameterMode.OUT);
+            query.registerStoredProcedureParameter("vcmensaje", String.class, ParameterMode.OUT);
+            query.registerStoredProcedureParameter("nmTpq_Code", Long.class, ParameterMode.OUT);
+
+
+            query.execute();
+
+            String endpoint = (String) query.getOutputParameterValue("vcENDPOINT");
+            Clob xmlInputClob = (Clob) query.getOutputParameterValue("vcXMLINPUT");
+            String error = (String) query.getOutputParameterValue("vcerror");
+            String mensaje = (String) query.getOutputParameterValue("vcmensaje");
+            Long tpqCode = (Long) query.getOutputParameterValue("nmTpq_Code");
+
+            System.out.println(endpoint);
+            System.out.println(xmlInputClob);
+            System.out.println(error);
+            System.out.println(mensaje);
+            System.out.println(tpqCode);
+            if (error == null || error.isEmpty()) {
+                System.out.println("EWntra aca");
+            }
+            System.out.println(query);
+            return "";
+        }catch (Exception e ){
+            System.out.println("Es este error");
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    public String getDataCertificateDianInsert() {
+        try{
+
+            StoredProcedureQuery query = entityManager.createStoredProcedureQuery("RHU.QB_AUTOLIQUIDACION_JRHU0034.pl_ins_transaccion_int_autol");
+
+            query.registerStoredProcedureParameter("vctia_descripcion", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("vctdc_td_epl", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("nmepl_nd", Long.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("vctdc_td", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("nmemp_nd", Long.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("vctdc_td_fil", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("nmemp_nd_fill", Long.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("nmgpr_code", Long.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("vcperiodo", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("nmtre_code", Long.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("AUD_USUARIO", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("vcbandera", String.class, ParameterMode.IN);
+
+            query.setParameter("vctia_descripcion","Reporte inicial");
+            query.setParameter("vctdc_td_epl","CC");
+            query.setParameter("nmepl_nd",1015459785L);
+            query.setParameter("vctdc_td","NI");
+            query.setParameter("nmemp_nd",860090915L);
+            query.setParameter("vctdc_td_fil","NI");
+            query.setParameter("nmemp_nd_fill",860090915L);
+            query.setParameter("nmgpr_code",0L);
+            query.setParameter("vcperiodo","202504");
+            query.setParameter("nmtre_code",1L);
+            query.setParameter("AUD_USUARIO","1015459785");
+            query.setParameter("vcbandera","S");
+
+
+            query.registerStoredProcedureParameter("vcestado_proceso", String.class, ParameterMode.INOUT);
+            query.registerStoredProcedureParameter("vcmensaje_proceso", String.class, ParameterMode.INOUT);
+
+            query.setParameter("vcestado_proceso", "");
+            query.setParameter("vcmensaje_proceso", "");
+
+
+            query.execute();
+
+            String vcestadoProceso = (String) query.getOutputParameterValue("vcestado_proceso");
+            String vcmensajeProceso = (String) query.getOutputParameterValue("vcmensaje_proceso");
+
+            System.out.println(vcestadoProceso);
+            System.out.println(vcmensajeProceso);
+            return "";
+        }catch (Exception e ){
+            System.out.println("Es este error");
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    public String getDataCertificateDianKey() {
+        try{
+
+            StoredProcedureQuery query = entityManager.createStoredProcedureQuery("RHU.QB_AUTOLIQUIDACION_JRHU0034.pb_fil_periodo_epl");
+
+            query.registerStoredProcedureParameter("VCTDC_TD", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("NMEPL_ND", Long.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("PERIODO_FIL", String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter("VCTRECODE", Long.class, ParameterMode.IN);
+
+            query.setParameter("VCTDC_TD","CC");
+            query.setParameter("NMEPL_ND",1015459785L);
+            query.setParameter("PERIODO_FIL","202503");
+            query.setParameter("VCTRECODE",0L);
+
+
+            query.registerStoredProcedureParameter("VCPERIODO", String.class, ParameterMode.OUT);
+            query.registerStoredProcedureParameter("VCREQ", String.class, ParameterMode.OUT);
+            query.registerStoredProcedureParameter("VCKEYPPAL", String.class, ParameterMode.OUT);
+            query.registerStoredProcedureParameter("VCGPE_CODE", Long.class, ParameterMode.OUT);
+            query.registerStoredProcedureParameter("vcestado_proceso", String.class, ParameterMode.INOUT);
+            query.registerStoredProcedureParameter("vcmensaje_proceso", String.class, ParameterMode.INOUT);
+            query.registerStoredProcedureParameter("VCTRE_CODE", Long.class, ParameterMode.OUT);
+            query.registerStoredProcedureParameter("NMTPQ_CODE", Long.class, ParameterMode.OUT);
+
+            query.setParameter("vcestado_proceso", "");
+            query.setParameter("vcmensaje_proceso", "");
+
+
+            query.execute();
+
+            String vcPeriod = (String) query.getOutputParameterValue("VCPERIODO");
+            String vcReq = (String) query.getOutputParameterValue("VCREQ");
+            String vcKey = (String) query.getOutputParameterValue("VCKEYPPAL");
+            Long vcGpe = (Long) query.getOutputParameterValue("VCGPE_CODE");
+            Long vcTre = (Long) query.getOutputParameterValue("VCTRE_CODE");
+            Long nmtpqCode = (Long) query.getOutputParameterValue("NMTPQ_CODE");
+            String vcestadoProceso = (String) query.getOutputParameterValue("vcestado_proceso");
+            String vcmensajeProceso = (String) query.getOutputParameterValue("vcmensaje_proceso");
+
+            System.out.println(vcPeriod);
+            System.out.println(vcReq);
+            System.out.println(vcKey);
+            System.out.println(vcGpe);
+            System.out.println(vcTre);
+            System.out.println(nmtpqCode);
+            System.out.println(vcestadoProceso);
+            System.out.println(vcmensajeProceso);
+            return "";
+        }catch (Exception e ){
+            System.out.println("Es este error");
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
 
 }

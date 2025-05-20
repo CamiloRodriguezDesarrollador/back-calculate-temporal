@@ -101,7 +101,7 @@ public class HelperService {
         int currentYear = now.getYear();
         int lastYear;
 
-        if (now.getMonthValue() > 3) {
+        if (now.getMonthValue() > 4) {
             lastYear = currentYear - 1;
         } else {
             lastYear = currentYear - 2;
@@ -115,7 +115,7 @@ public class HelperService {
         int currentYear = now.getYear();
         int lastYear;
 
-        if (now.getMonthValue() > 3) {
+        if (now.getMonthValue() > 4) {
             lastYear = currentYear - 1;
         } else {
             lastYear = currentYear - 2;
@@ -152,6 +152,11 @@ public class HelperService {
             if(empNd == 830057687L)return "atencioneps@atecno.com.co";
             if(empNd == 800148972L)return "atencioneps@serviola.com.co";
             return "atencioneps@activos.com.co";
+        }
+        if(type.equals("INC")){
+            if(empNd == 830057687L)return "auxincapacidades3@atecno.com.co";
+            if(empNd == 800148972L)return "auxincapacidades3@serviola.com.co";
+            return "auxincapacidades3@activos.com.co";
         }
         else return "";
     }
