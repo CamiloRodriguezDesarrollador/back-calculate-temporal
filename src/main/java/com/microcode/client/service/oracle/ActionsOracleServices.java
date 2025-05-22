@@ -594,6 +594,7 @@ public class ActionsOracleServices {
                 if(responsible != null) return List.of(responsible);
             }
         }
+        if(action.getActionId()==529) return List.of();
 
 
         String[] siglas =
