@@ -107,6 +107,13 @@ public class ChatSessionManager {
             if (partialChat.getPerSigla() != null)
                 existingChat.setPerSigla(partialChat.getPerSigla());
 
+            if (partialChat.getPeriodPlanilla() != null)
+                existingChat.setPeriodPlanilla(partialChat.getPeriodPlanilla());
+
+            if (partialChat.getContractActive() != null)
+                existingChat.setContractActive(partialChat.getContractActive());
+
+
             return existingChat;
         });
     }

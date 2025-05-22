@@ -1,6 +1,8 @@
 package com.microcode.client.service.oracle;
 
+import com.microcode.client.clients.MailServices;
 import com.microcode.client.entity.oracle.*;
+import com.microcode.client.service.helper.HelperService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.ParameterMode;
 import jakarta.persistence.PersistenceContext;
@@ -17,6 +19,7 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.sql.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -37,6 +40,8 @@ import java.util.*;
 public class CertificatesService {
 
     private final JdbcTemplate jdbcTemplate;
+    private final MailServices mailServices;
+    private final HelperService helperService;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -305,9 +310,9 @@ public class CertificatesService {
         }
     }
 
-    public String getDataCertificateDian() {
-        try{
-
+    public Long getDataCertificatePlanilla(String tdcTd, Long empNd, String tdcTdFil, Long empNdFil, String tdcTdEpl, Long eplNd, String period,
+                                           Long typeFormat) {
+        try {
             StoredProcedureQuery query = entityManager.createStoredProcedureQuery("RHU.QB_AUTOLIQUIDACION_JRHU0034.pl_wsdl_autoliquidacion_epl");
 
             query.registerStoredProcedureParameter("vctdc_td", String.class, ParameterMode.IN);
@@ -333,31 +338,30 @@ public class CertificatesService {
             query.registerStoredProcedureParameter("vcValorFiltro", String.class, ParameterMode.IN);
             query.registerStoredProcedureParameter("vcTiempoEstimado", String.class, ParameterMode.IN);
 
-            query.setParameter("vctdc_td","NI");
-            query.setParameter("nmEmp_nd",860090915L);
-            query.setParameter("vctdc_td_fil","NI");
-            query.setParameter("nmEmp_nd_fil",860090915L);
-            query.setParameter("vctdc_td_epl","CC");
-            query.setParameter("nmepl_nd",1076668714L);
-            query.setParameter("nmtmocode",1L);
-            query.setParameter("nmTrecode",1L);
-            query.setParameter("vctpq_periodo","202504");
-            query.setParameter("vcaud_usuario","1015459785");
+            query.setParameter("vctdc_td", tdcTd);
+            query.setParameter("nmEmp_nd", empNd);
+            query.setParameter("vctdc_td_fil", tdcTdFil);
+            query.setParameter("nmEmp_nd_fil", empNdFil);
+            query.setParameter("vctdc_td_epl", tdcTdEpl);
+            query.setParameter("nmepl_nd", eplNd);
+            query.setParameter("nmtmocode", 1L);
+            query.setParameter("nmTrecode", typeFormat);
+            query.setParameter("vctpq_periodo", period);
+            query.setParameter("vcaud_usuario", eplNd);
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
             String dateTrans = simpleDateFormat.format(new Date());
-            query.setParameter("vcfecha_trans",dateTrans);
-            query.setParameter("vcbandera","0");
-            query.setParameter("vcciu_nombre","");
-            query.setParameter("vcsuc_nombre_fil","");
-            query.setParameter("vccct_nombre","");
-            query.setParameter("vcconsumo_masivo","N");
-            query.setParameter("nmAcm_Codigo",0L);
-            query.setParameter("nmNum_Planilla",0L);
-            query.setParameter("nmtio_codigo",2L);
+            query.setParameter("vcfecha_trans", dateTrans);
+            query.setParameter("vcbandera", "0");
+            query.setParameter("vcciu_nombre", "");
+            query.setParameter("vcsuc_nombre_fil", "");
+            query.setParameter("vccct_nombre", "");
+            query.setParameter("vcconsumo_masivo", "N");
+            query.setParameter("nmAcm_Codigo", 0L);
+            query.setParameter("nmNum_Planilla", 0L);
+            query.setParameter("nmtio_codigo", 2L);
             query.setParameter("vcTipoFiltro", "");
             query.setParameter("vcValorFiltro", "");
             query.setParameter("vcTiempoEstimado", "");
-
 
             query.registerStoredProcedureParameter("vcENDPOINT", String.class, ParameterMode.OUT);
             query.registerStoredProcedureParameter("vcXMLINPUT", Clob.class, ParameterMode.OUT);
@@ -365,192 +369,60 @@ public class CertificatesService {
             query.registerStoredProcedureParameter("vcmensaje", String.class, ParameterMode.OUT);
             query.registerStoredProcedureParameter("nmTpq_Code", Long.class, ParameterMode.OUT);
 
-
             query.execute();
 
             String endpoint = (String) query.getOutputParameterValue("vcENDPOINT");
             Clob xmlInputClob = (Clob) query.getOutputParameterValue("vcXMLINPUT");
             String error = (String) query.getOutputParameterValue("vcerror");
-            String mensaje = (String) query.getOutputParameterValue("vcmensaje");
             Long tpqCode = (Long) query.getOutputParameterValue("nmTpq_Code");
 
-            System.out.println(endpoint);
-            System.out.println(error);
-            System.out.println(mensaje);
             System.out.println(tpqCode);
-            if (error == null || error.isEmpty()) {
-                System.out.println("EWntra aca");
+            System.out.println(error);
+
+            if (tpqCode == null) return null;
+
+            if (error == null || error.isEmpty() || error.equals("K")) {
+                String xmlInput = helperService.clobToString(xmlInputClob);
+                if (!getContentHTML(endpoint, xmlInput)) return null;
+                return tpqCode;
+
             }
 
-            String xmlInput = clobToString(xmlInputClob);
-
-            endpoint = URLEncoder.encode(endpoint, "UTF-8");
-            xmlInput = URLEncoder.encode(xmlInput, "UTF-8");
-
-
-            try {
-                URL url = new URL("http://apps.activos.com.co/JADP0007/ServletRespuestaSOAP?END_POINT=" + endpoint + "&XML_INPUT=" + xmlInput);
-                URLConnection uc = url.openConnection();
-                uc.connect();
-
-                BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
-                String inputLine;
-                String contenido = "";
-
-                while ((inputLine = in.readLine()) != null) {
-                    contenido += inputLine + "\n";
-                }
-                in.close();
-
-                // Aquí puedes imprimir o registrar el contenido
-                System.out.println("Contenido recibido:");
-                System.out.println(contenido);
-
-                // Verifica si contiene algún error esperado
-                if (contenido.contains("Error") || contenido.contains("Exception")) {
-                    System.out.println("La respuesta contiene un posible error.");
-                }
-
-
-            } catch (IOException e) {
-                System.err.println("Error al conectarse o leer la respuesta:");
-                e.printStackTrace();
-            }
-
-
-            return "";
-        }catch (Exception e ){
-            System.out.println("Es este error");
+            return null;
+        }
+        catch(Exception e ){
             System.out.println(e.getMessage());
             return null;
         }
     }
 
-    public String getDataCertificateDianInsert() {
-        try{
+    public boolean getContentHTML(String endpoint, String xmlInput ) {
 
-            StoredProcedureQuery query = entityManager.createStoredProcedureQuery("RHU.QB_AUTOLIQUIDACION_JRHU0034.pl_ins_transaccion_int_autol");
+        try {
+            endpoint = URLEncoder.encode(endpoint, StandardCharsets.UTF_8);
+            xmlInput = URLEncoder.encode(xmlInput, StandardCharsets.UTF_8);
 
-            query.registerStoredProcedureParameter("vctia_descripcion", String.class, ParameterMode.IN);
-            query.registerStoredProcedureParameter("vctdc_td_epl", String.class, ParameterMode.IN);
-            query.registerStoredProcedureParameter("nmepl_nd", Long.class, ParameterMode.IN);
-            query.registerStoredProcedureParameter("vctdc_td", String.class, ParameterMode.IN);
-            query.registerStoredProcedureParameter("nmemp_nd", Long.class, ParameterMode.IN);
-            query.registerStoredProcedureParameter("vctdc_td_fil", String.class, ParameterMode.IN);
-            query.registerStoredProcedureParameter("nmemp_nd_fill", Long.class, ParameterMode.IN);
-            query.registerStoredProcedureParameter("nmgpr_code", Long.class, ParameterMode.IN);
-            query.registerStoredProcedureParameter("vcperiodo", String.class, ParameterMode.IN);
-            query.registerStoredProcedureParameter("nmtre_code", Long.class, ParameterMode.IN);
-            query.registerStoredProcedureParameter("AUD_USUARIO", String.class, ParameterMode.IN);
-            query.registerStoredProcedureParameter("vcbandera", String.class, ParameterMode.IN);
+            URL url = new URL("http://apps.activos.com.co/JADP0007/ServletRespuestaSOAP?END_POINT=" + endpoint + "&XML_INPUT=" + xmlInput);
+            URLConnection uc = url.openConnection();
+            uc.connect();
 
-            query.setParameter("vctia_descripcion","Reporte inicial");
-            query.setParameter("vctdc_td_epl","CC");
-            query.setParameter("nmepl_nd",1015459785L);
-            query.setParameter("vctdc_td","NI");
-            query.setParameter("nmemp_nd",860090915L);
-            query.setParameter("vctdc_td_fil","NI");
-            query.setParameter("nmemp_nd_fill",860090915L);
-            query.setParameter("nmgpr_code",0L);
-            query.setParameter("vcperiodo","202504");
-            query.setParameter("nmtre_code",1L);
-            query.setParameter("AUD_USUARIO","1015459785");
-            query.setParameter("vcbandera","S");
+            BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
+            String inputLine;
+            StringBuilder content = new StringBuilder();
 
-
-            query.registerStoredProcedureParameter("vcestado_proceso", String.class, ParameterMode.INOUT);
-            query.registerStoredProcedureParameter("vcmensaje_proceso", String.class, ParameterMode.INOUT);
-
-            query.setParameter("vcestado_proceso", "");
-            query.setParameter("vcmensaje_proceso", "");
-
-
-            query.execute();
-
-            String vcestadoProceso = (String) query.getOutputParameterValue("vcestado_proceso");
-            String vcmensajeProceso = (String) query.getOutputParameterValue("vcmensaje_proceso");
-
-            System.out.println(vcestadoProceso);
-            System.out.println(vcmensajeProceso);
-            return "";
-        }catch (Exception e ){
-            System.out.println("Es este error");
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    public String getDataCertificateDianKey() {
-        try{
-
-            StoredProcedureQuery query = entityManager.createStoredProcedureQuery("RHU.QB_AUTOLIQUIDACION_JRHU0034.pb_fil_periodo_epl");
-
-            query.registerStoredProcedureParameter("VCTDC_TD", String.class, ParameterMode.IN);
-            query.registerStoredProcedureParameter("NMEPL_ND", Long.class, ParameterMode.IN);
-            query.registerStoredProcedureParameter("PERIODO_FIL", String.class, ParameterMode.IN);
-            query.registerStoredProcedureParameter("VCTRECODE", Long.class, ParameterMode.IN);
-
-            query.setParameter("VCTDC_TD","CC");
-            query.setParameter("NMEPL_ND",1015459785L);
-            query.setParameter("PERIODO_FIL","202503");
-            query.setParameter("VCTRECODE",0L);
-
-
-            query.registerStoredProcedureParameter("VCPERIODO", String.class, ParameterMode.OUT);
-            query.registerStoredProcedureParameter("VCREQ", String.class, ParameterMode.OUT);
-            query.registerStoredProcedureParameter("VCKEYPPAL", String.class, ParameterMode.OUT);
-            query.registerStoredProcedureParameter("VCGPE_CODE", Long.class, ParameterMode.OUT);
-            query.registerStoredProcedureParameter("vcestado_proceso", String.class, ParameterMode.INOUT);
-            query.registerStoredProcedureParameter("vcmensaje_proceso", String.class, ParameterMode.INOUT);
-            query.registerStoredProcedureParameter("VCTRE_CODE", Long.class, ParameterMode.OUT);
-            query.registerStoredProcedureParameter("NMTPQ_CODE", Long.class, ParameterMode.OUT);
-
-            query.setParameter("vcestado_proceso", "");
-            query.setParameter("vcmensaje_proceso", "");
-
-
-            query.execute();
-
-            String vcPeriod = (String) query.getOutputParameterValue("VCPERIODO");
-            String vcReq = (String) query.getOutputParameterValue("VCREQ");
-            String vcKey = (String) query.getOutputParameterValue("VCKEYPPAL");
-            Long vcGpe = (Long) query.getOutputParameterValue("VCGPE_CODE");
-            Long vcTre = (Long) query.getOutputParameterValue("VCTRE_CODE");
-            Long nmtpqCode = (Long) query.getOutputParameterValue("NMTPQ_CODE");
-            String vcestadoProceso = (String) query.getOutputParameterValue("vcestado_proceso");
-            String vcmensajeProceso = (String) query.getOutputParameterValue("vcmensaje_proceso");
-
-            System.out.println(vcPeriod);
-            System.out.println(vcReq);
-            System.out.println(vcKey);
-            System.out.println(vcGpe);
-            System.out.println(vcTre);
-            System.out.println(nmtpqCode);
-            System.out.println(vcestadoProceso);
-            System.out.println(vcmensajeProceso);
-            return "";
-        }catch (Exception e ){
-            System.out.println("Es este error");
-            System.out.println(e.getMessage());
-            return null;
-        }
-    }
-
-    private String clobToString(Clob clob) {
-        if (clob == null) return null;
-        try (Reader reader = clob.getCharacterStream();
-             StringWriter writer = new StringWriter()) {
-            char[] buffer = new char[2048];
-            int bytesRead;
-            while ((bytesRead = reader.read(buffer)) != -1) {
-                writer.write(buffer, 0, bytesRead);
+            while ((inputLine = in.readLine()) != null) {
+                content.append(inputLine).append("\n");
             }
-            return writer.toString();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            in.close();
+            System.out.println(content);
+            return !content.toString().contains("Error") && !content.toString().contains("Exception");
+
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            return false;
         }
     }
+
 
 
 }

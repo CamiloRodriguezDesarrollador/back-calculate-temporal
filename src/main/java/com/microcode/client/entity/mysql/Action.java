@@ -37,6 +37,9 @@ public class Action implements Serializable, Cloneable {
     @Column(name = "ACT_RESP_OK_MESSAGE", length = 250)
     private String actionRespOkMessage;
 
+    @Column(name = "ACT_RESP_OK_MESSAGE_PPAL", length = 250)
+    private String actionRespOkMessagePrincipal;
+
     @Column(name = "ACT_RESP_OK_ACTION")
     private Integer actionRespOkAction;
 
@@ -72,6 +75,12 @@ public class Action implements Serializable, Cloneable {
 
     @Column(name = "ACT_OPTION_ERROR", length = 100, nullable = false)
     private String actionOptionError;
+
+    @Column(name = "ACT_SIGLA", length = 50, nullable = false)
+    private String actionSigla;
+
+    @Column(name = "ACT_SIGLA_PPAL", length = 50, nullable = false)
+    private String actionSiglaPrincipal;
 
     @Column(name = "AUD_DATE" ,length = 10)
     @Temporal(TemporalType.TIMESTAMP)

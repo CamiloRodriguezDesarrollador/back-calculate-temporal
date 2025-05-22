@@ -134,7 +134,8 @@ public class ActionServices implements ActionServicesI {
 
     public boolean verifiedRequirementContractActive(Chat chat, Action action){
         if(action.getActionCtoActive() == null) return true;
-        return !action.getActionCtoActive().equals("A") || chat.getEmpNdFil() != null;
+        if(chat.getContractActive() != null  && chat.getContractActive()) return true;
+        return !action.getActionCtoActive().equals("A") || !Boolean.FALSE.equals(chat.getContractActive());
     }
 
 }

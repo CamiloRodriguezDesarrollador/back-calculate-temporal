@@ -29,6 +29,8 @@ public class Chat {
     private Long empNd;
     private List<Long> principalRequest;
     private String perSigla;
+    private String periodPlanilla;
+    private Boolean contractActive;
 
 
     public Chat() {

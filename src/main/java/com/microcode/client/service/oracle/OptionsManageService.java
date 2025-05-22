@@ -2,6 +2,7 @@ package com.microcode.client.service.oracle;
 
 import com.microcode.client.entity.Option;
 import com.microcode.client.entity.mysql.Action;
+import com.microcode.client.entity.mysql.PrincipalData;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -30,9 +31,16 @@ public class OptionsManageService {
     public static List<Option> optionsInca;
     public static List<Option> optionsCCF;
 
+    public static List<PrincipalData> dataActionsPrincipal;
+
+
     public static void updateActions(List<Action> actions) {
         actionsPrincipal = actions;
     }
+    public static void updateDataActionsPrincipal(List<PrincipalData> dataActions) {
+        dataActionsPrincipal = dataActions;
+    }
+
     public static void updateOptionsBasic(List<Option> options) {
         optionsBasic = options;
     }

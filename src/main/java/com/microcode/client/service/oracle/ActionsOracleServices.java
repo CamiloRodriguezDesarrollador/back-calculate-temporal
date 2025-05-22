@@ -14,16 +14,20 @@ import com.microcode.client.entity.Option;
 import com.microcode.client.entity.oracle.Employee;
 import com.microcode.client.service.chat.ConsumeChatService;
 import com.microcode.client.service.helper.HelperService;
+import com.microcode.client.service.helper.PdfDownloaderService;
 import com.microcode.client.service.jasper.JasperService;
 import com.microcode.client.service.mysql.ActionServices;
+import com.microcode.client.service.mysql.PrincipalDataServices;
 import com.microcode.client.service.mysql.QuantityChatServices;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
-import java.time.LocalDate;
+import java.time.Duration;
 import java.util.*;
 
 @Service
@@ -55,14 +59,18 @@ public class ActionsOracleServices {
     public static ContentResponse otherSessionActive;
     private final HistNovServices histNovServices;
     private final ConsumeChatService consumeChatService;
+    private final ContributionNovServices contributionNovServices;
+    private final OptionsManageService optionsManageService;
+    private final PrincipalDataServices principalDataServices;
 
     @PostConstruct
     public void init() {
         actionServices.updateTypesChat();
+        principalDataServices.updateDataPrincipal();
     }
 
-    public final String MAIL_TEST = "yriascos@activos.com.co";
-//    public final String MAIL_TEST = "cgonzalez@activos.com.co";
+//    public final String MAIL_TEST = "yriascos@activos.com.co";
+    public final String MAIL_TEST = "cgonzalez@activos.com.co";
 
     public Chat initialChatIfNull(String chatId){
         chatSessionManager.updateChatActivity(chatId,null);
@@ -119,6 +127,16 @@ public class ActionsOracleServices {
                 chat.setTdcTdFil(contract.getTdcTdFil());
                 chat.setCtoNumber(contract.getCtoNumero());
                 chat.setPerSigla(contract.getPerSigla());
+                chat.setContractActive(true);
+            }else{
+                Contract cont = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
+                chat.setEmpNd(cont.getEmpNd());
+                chat.setTdcTd(cont.getTdcTd());
+                chat.setEmpNdFil(cont.getEmpNdFil());
+                chat.setTdcTdFil(cont.getTdcTdFil());
+                chat.setCtoNumber(cont.getCtoNumero());
+                chat.setPerSigla(cont.getPerSigla());
+                chat.setContractActive(false);
             }
 
             chatSessionManager.setChatById( chatId, chat );
@@ -142,12 +160,12 @@ public class ActionsOracleServices {
             chat.setChatStart(new Date());
 
             if (isMailCorrect.equals("Y")) {
-//                String code = "123456";
-                String code = helperService.generateCode();
+                String code = "123456";
+//                String code = helperService.generateCode();
                 chat.setChatCode(code);
                 chat.setChatAttempts(1);
                 chat.setChatDateCode(new Date());
-                mailServices.sendMailVerified(MAIL_TEST,code,chat.getPrincipalRequest());
+//                mailServices.sendMailVerified(MAIL_TEST,code,chat.getPrincipalRequest());
 //                mailServices.sendMailVerified(chat.getChatMail(),code,chat.getPrincipalRequest());
 
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action);
@@ -252,20 +270,55 @@ public class ActionsOracleServices {
             ContentResponse resp = this.validateInitial(chat);
             if(resp != null) return resp;
 
-            Contract contPay = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
-
-            if(contPay.getCtoNumero() == null) return withoutContract;
-
-            Integer quantityPeriods = contPay.getPerSigla().equals("M") ? 3 : 6;
+            Integer quantityPeriods = chat.getPerSigla().equals("M") ? 3 : 6;
             List<String> dates = histNovServices.findPeriodsPay(
-                    contPay.getCtoNumero(),contPay.getEmpNd(),contPay.getTdcTd(),quantityPeriods
+                    chat.getCtoNumber(),chat.getEmpNd(),chat.getTdcTd(),quantityPeriods
             );
 
-            if(dates == null || dates.isEmpty())
-                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),OptionsManageService.optionsDocument, action);
+            return getContentResponse(action, chat, dates);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return error;
+        }
+
+    }
+
+    public ContentResponse getCertifiedPlanilla(Map<String,String> inputs, Action action) {
+        try {
+            String chatId = inputs.get("chatId");
+            Chat chat = chatSessionManager.getChatById(chatId);
+            ContentResponse resp = this.validateInitial(chat);
+            if(resp != null) return resp;
+            if(chat.getContractActive() == null ||  !chat.getContractActive()) return responseWithOptionsParam(withoutContract,action);
+
+            List<String> dates = contributionNovServices.findPeriodsPay(
+                    chat.getTdcTd(),chat.getEmpNd(),chat.getTypeDocument(), Long.valueOf(chat.getDocument())
+            );
+
+            return getContentResponse(action, chat, dates);
+        } catch (Exception e) {
+            return error;
+        }
+
+    }
+
+    public ContentResponse getCertifiedPlanillaIbc(Map<String,String> inputs, Action action) {
+        try {
+            String chatId = inputs.get("chatId");
+            String detail = inputs.get("detail");
+
+            Chat chat = chatSessionManager.getChatById(chatId);
+            ContentResponse resp = this.validateInitial(chat);
+            if(resp != null) return resp;
+
+            if(detail == null)
+                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), chat.getNames()),OptionsManageService.optionsDocument, action);
+
+            chat.setPeriodPlanilla(detail);
+
             List<Option> options = new ArrayList<>(List.of());
 
-            for (String label : dates) {
+            for (String label : List.of("Sin IBC","Con IBC")) {
                 options.add(
                         new Option(
                                 action.getActionRespOkAction(),
@@ -275,11 +328,12 @@ public class ActionsOracleServices {
                         )
                 );
             }
-            Action actionBack = actionServices.getActionForId(1004);
+
+            Action actionBack = actionServices.getActionForId(504);
             options.add(
                     new Option(
-                            actionBack.getActionRespOkAction(),
-                            actionBack.getActionMessage(),
+                            actionBack.getActionId(),
+                            "Atras 🚪",
                             null,
                             null
                     )
@@ -287,7 +341,6 @@ public class ActionsOracleServices {
 
             return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), chat.getNames()),options, action);
         } catch (Exception e) {
-            System.out.println(e.getMessage());
             return error;
         }
 
@@ -332,7 +385,10 @@ public class ActionsOracleServices {
             String chatId = inputs.get("chatId");
             Chat chat = chatSessionManager.getChatById(chatId);
 
-            String messageOk = action.getActionRespOkMessage();
+            if(!actionServices.verifiedRequirementContractActive(chat,action)) return withoutContract;
+
+
+            String messageOk = helperService.isPrincipal(chat.getEmpNdFil()) ? action.getActionRespOkMessagePrincipal() : action.getActionRespOkMessage();
 
             ContentResponse validateQuantity = validateQuantityOver(action, chat, detail);
             if (validateQuantity != null) return responseWithOptionsParam(validateQuantity, action);
@@ -340,7 +396,10 @@ public class ActionsOracleServices {
             ContentResponse resp = this.validateInitial(chat);
             if (resp != null) return resp;
 
-            if(!actionServices.verifiedRequirementContractActive(chat,action)) return withoutContract;
+
+            if(action.getActionSigla() != null || action.getActionSiglaPrincipal() != null
+                )  messageOk = String.format( helperService.isPrincipal(chat.getEmpNdFil()) ? action.getActionRespOkMessagePrincipal() : action.getActionRespOkMessage()
+                       , assignPrincipalData(action,chat).toArray()) ;
 
             Object validationAdditional = methodStandardAdditional(detail, action,chat);
 
@@ -403,12 +462,10 @@ public class ActionsOracleServices {
                         return null;
                     } else {
 
-                        Contract contPay = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
-
                         byte[] filePay = jasperService.getCertificatePay(
-                                contPay.getEmpNd(),
-                                contPay.getTdcTd(),
-                                contPay.getCtoNumero(),
+                                chat.getEmpNd(),
+                                chat.getTdcTd(),
+                                chat.getCtoNumber(),
                                 detail
                         );
                         if (filePay == null)
@@ -426,11 +483,9 @@ public class ActionsOracleServices {
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
                         return null;
                     }else{
-                        Contract contLast = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
-                        if(contLast == null) return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action);
                         String url = certificatesService.getDataCertificatedDian(
-                                contLast.getTdcTd(),
-                                contLast.getEmpNd(),
+                                chat.getTdcTd(),
+                                chat.getEmpNd(),
                                 chat.getTypeDocument(),
                                 Long.valueOf(chat.getDocument()),
                                 helperService.getDateCertifiedDianStartDate(),
@@ -462,44 +517,9 @@ public class ActionsOracleServices {
                             chat.getNames(),MAIL_TEST,nameCompany,fileRequirements,fileDeclaration,fileVideo,chat.getPrincipalRequest()
                     ).subscribe();
 
-                    String mailSend = helperService.getEmailByNit(comp.getEmpNd().toString());
+                    String mailSend = principalDataServices.getForSiglaAndEmpNd("ccfProvider", comp.getEmpNd());
                     return String.format(action.getActionRespOkMessage(),nameCompany,mailSend);
 
-                case 524 :
-                    if(helperService.isPrincipal(chat.getEmpNdFil())) {
-                        action.setActionRespOkFile(null);
-                        String urlSite = helperService.getUrlForPrincipal(chat.getEmpNd());
-                        String message = "<p>Genial!, los trabajadores internos deberán acceder al <a href='%s' target='_blank'> sitio del trabajador<a>, por favor confirmame si tienes otro requerimiento 👇.</p>";
-                        return String.format(message,urlSite);
-                    }else{
-                        String responsible;
-                        responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
-                        String mailAttInca = helperService.getEmailEpsPrincipal(chat.getEmpNd(),"INC");
-                        if(responsible == null) responsible = mailAttInca;
-                        return String.format(action.getActionRespOkMessage(),responsible);
-                    }
-
-                case 533 :
-                case 507 :
-                case 521 :
-                case 522 :
-                    Contract cont = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
-                    String mailAttAfp = helperService.getEmailEpsPrincipal(cont.getEmpNd(),"AFP");
-                    return String.format(action.getActionRespOkMessage(),mailAttAfp);
-                case 532 :
-                case 515 :
-                    String mailAttEps = helperService.getEmailEpsPrincipal(chat.getEmpNd(),"EPS");
-                    return String.format(action.getActionRespOkMessage(),mailAttEps);
-                case 530 :
-                    String mailAttCcf = helperService.getEmailEpsPrincipal(chat.getEmpNd(),"CCF");
-                    return String.format(action.getActionRespOkMessage(),mailAttCcf);
-                case 506 :
-                    String mailAttR = helperService.getEmailEpsPrincipal(chat.getEmpNd(),"RRHH");
-                    return String.format(action.getActionRespOkMessage(),mailAttR);
-                case 516 :
-                    String mailEpsP = helperService.getEmailEpsPrincipal(chat.getEmpNd(),"PPAL");
-                    String mailEpsTras = helperService.getEmailEpsPrincipal(chat.getEmpNd(),"EPS");
-                    return String.format(action.getActionRespOkMessage(),mailEpsP,mailEpsTras,mailEpsTras);
                 case 101 :
                     String statusLiq = certificatesService.getStatusLiq(
                             chat.getTypeDocument(),
@@ -508,6 +528,32 @@ public class ActionsOracleServices {
                     System.out.println(statusLiq);
                     if(statusLiq == null) return error;
                     return String.format(action.getActionRespOkMessage(),statusLiq.substring(0, 1).toUpperCase() + statusLiq.substring(1).toLowerCase());
+                case 535 :
+                    Long typeFormat = detail.equals("Sin IBC") ? 0L : 1L;
+                    System.out.println(typeFormat);
+                    System.out.println(chat.getPeriodPlanilla());
+                    Long codePlanilla = certificatesService.getDataCertificatePlanilla(
+                            chat.getTdcTd(),chat.getEmpNd(),chat.getTdcTdFil(),chat.getEmpNdFil(),chat.getTypeDocument(), Long.valueOf(chat.getDocument()),
+                            chat.getPeriodPlanilla(),typeFormat
+                    );
+                    System.out.println(codePlanilla);
+                    if(codePlanilla == null)
+                        return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action);
+//
+                    Mono.delay(Duration.ofSeconds(10))
+                            .flatMap(tick -> Mono.fromCallable(() -> {
+                                PdfDownloaderService downloader = new PdfDownloaderService();
+                                byte[] certPlanilla = downloader.getPdfBytes(codePlanilla);
+
+                                mailServices.sendMailCertificates(
+                                        chat.getNames(), "Planilla", MAIL_TEST, certPlanilla,
+                                        "Planilla.pdf", chat.getPrincipalRequest()
+                                ).subscribe();
+
+                                return true;
+                            }).subscribeOn(Schedulers.boundedElastic()))
+                            .subscribe();
+                    return null;
 
 
             }
@@ -518,7 +564,6 @@ public class ActionsOracleServices {
         }
 
     }
-
 
 //    Validations
 
@@ -538,6 +583,33 @@ public class ActionsOracleServices {
         return responseClone;
     }
 
+    public List<String> assignPrincipalData(Action action, Chat chat) {
+
+        if(action.getActionId()==524){
+            if(helperService.isPrincipal(chat.getEmpNdFil())) {
+                action.setActionRespOkFile(null);
+            }else{
+                String responsible;
+                responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
+                if(responsible != null) return List.of(responsible);
+            }
+        }
+
+
+        String[] siglas =
+                helperService.isPrincipal(chat.getEmpNdFil())
+                    ? action.getActionSiglaPrincipal().split("-")
+                        :action.getActionSigla().split("-");
+
+        List<String> values = new ArrayList<>();
+        for (String sigla : siglas) {
+            String val = principalDataServices.getForSiglaAndEmpNd(sigla, chat.getEmpNd());
+            values.add(val == null ? "sin asignar" : val);
+        }
+
+        return values;
+    }
+
     public static ContentResponse responseWithOptionsParam(ContentResponse response, Action action){
         ContentResponse responseClone = ContentResponse.cloneContentResponse(response);
         if(action == null || action.getActionOptionError() == null) {
@@ -549,7 +621,33 @@ public class ActionsOracleServices {
         return responseClone;
     }
 
+    private ContentResponse getContentResponse(Action action, Chat chat, List<String> dates) {
+        if(dates == null || dates.isEmpty())
+            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action);
+        List<Option> options = new ArrayList<>(List.of());
 
+        for (String label : dates) {
+            options.add(
+                    new Option(
+                            action.getActionRespOkAction(),
+                            label,
+                            label,
+                            label
+                    )
+            );
+        }
+        Action actionBack = actionServices.getActionForId(1004);
+        options.add(
+                new Option(
+                        actionBack.getActionRespOkAction(),
+                        actionBack.getActionMessage(),
+                        null,
+                        null
+                )
+        );
+
+        return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), chat.getNames()),options, action);
+    }
 
 
 }
