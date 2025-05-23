@@ -46,20 +46,20 @@ public class Action implements Serializable, Cloneable {
     @Column(name = "ACT_RESP_OK_REQUEST", length = 50)
     private String actionRespOkRequest;
 
-    @Column(name = "ACT_RESP_OK_FILE", length = 250)
-    private String actionRespOkFile;
-
     @Column(name = "ACT_RESP_FAIL_MESSAGE", length = 250)
     private String actionRespFailMessage;
+
+    @Column(name = "ACT_RESP_OK_MAIL", length = 2500)
+    private String actionRepOkMail;
+
+    @Column(name = "ACT_RESP_OK_MAIL_SUBJECT", length = 300)
+    private String actionRepOkMailSubject;
 
     @Column(name = "ACT_RESP_FAIL_ACTION")
     private Integer actionRespFailAction;
 
     @Column(name = "ACT_RESP_FAIL_REQUEST", length = 50)
     private String actionRespFailRequest;
-
-    @Column(name = "ACT_RESP_FAIL_FILE", length = 250)
-    private String actionRespFailFile;
 
     @Column(name = "ACT_QUANTITY", length = 10, nullable = false)
     private Integer actionQuantity;

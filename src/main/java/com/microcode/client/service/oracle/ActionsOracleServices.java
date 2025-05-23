@@ -165,7 +165,10 @@ public class ActionsOracleServices {
                 chat.setChatCode(code);
                 chat.setChatAttempts(1);
                 chat.setChatDateCode(new Date());
-                mailServices.sendMailVerified(MAIL_TEST,code,chat.getPrincipalRequest());
+
+                String contentMail = String.format(action.getActionRepOkMail(),code);
+                String subject = String.format(action.getActionRepOkMailSubject(),code);
+                mailServices.sendMailChat(MAIL_TEST,contentMail,subject,chat.getPrincipalRequest());
 //                mailServices.sendMailVerified(chat.getChatMail(),code,chat.getPrincipalRequest());
 
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action);
@@ -450,8 +453,12 @@ public class ActionsOracleServices {
 
                         if (file == null) return error;
                         file = jasperService.protectPdfWithPassword(file, chat.getDocument());
+
+                        String contentMail = String.format(action.getActionRepOkMail(),"Laboral", chat.getNames());
+                        String subject = String.format(action.getActionRepOkMailSubject(),"Laboral", chat.getNames());
+
                         mailServices.sendMailCertificates(
-                                chat.getNames(), "Laboral", MAIL_TEST, file, "CertificadoLaboral.pdf",chat.getPrincipalRequest()
+                                contentMail, subject, MAIL_TEST, file, "CertificadoLaboral.pdf",chat.getPrincipalRequest()
                         ).subscribe();
                     }
                     return null;
@@ -472,9 +479,14 @@ public class ActionsOracleServices {
                             return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action);
                         filePay = jasperService.protectPdfWithPassword(filePay, chat.getDocument());
 
+
+                        String contentMail = String.format(action.getActionRepOkMail(),"de pago", chat.getNames());
+                        String subject = String.format(action.getActionRepOkMailSubject(),"de pago", chat.getNames());
+
                         mailServices.sendMailCertificates(
-                                chat.getNames(), "de pago", MAIL_TEST, filePay, "CertificacionPago.pdf",chat.getPrincipalRequest()
+                                contentMail, subject, MAIL_TEST, filePay, "CertificacionPago.pdf",chat.getPrincipalRequest()
                         ).subscribe();
+
                     }
                     return null;
 
@@ -493,9 +505,9 @@ public class ActionsOracleServices {
                         );
                         if (url == null)
                             return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action);
-                        action.setActionRespOkFile(url);
+                        return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), url), OptionsManageService.optionsBasic, action);
+
                      }
-                    return null;
 
                 case 529:
                     Company comp = entitiesServices.findForDataEpl(
@@ -509,13 +521,10 @@ public class ActionsOracleServices {
                     );
                     String nameCompany = comp.getEmpNombre();
 
-                    //TODO: Estructura con mas de una URL
-                    String fileRequirements = "https://storage.googleapis.com/bucket_apps_public/CCF/requisitos.pdf";
-                    String fileDeclaration = "https://storage.googleapis.com/bucket_apps_public/CCF/Declaraciones/"+comp.getEmpNd()+ ".pdf";
-                    String fileVideo = "https://storage.googleapis.com/bucket_apps_public/CCF/instructivo.mp4";
-                    mailServices.sendMailInformationCCF(
-                            chat.getNames(),MAIL_TEST,nameCompany,fileRequirements,fileDeclaration,fileVideo,chat.getPrincipalRequest()
-                    ).subscribe();
+                    String contentMailPay = String.format(action.getActionRepOkMail(),chat.getNames(),comp.getEmpNd(),nameCompany);
+                    String subjectPay = String.format(action.getActionRepOkMailSubject(),chat.getNames());
+
+                    mailServices.sendMailChat(MAIL_TEST,contentMailPay,subjectPay,chat.getPrincipalRequest());
 
                     String mailSend = principalDataServices.getForSiglaAndEmpNd("ccfProvider", comp.getEmpNd());
                     return String.format(action.getActionRespOkMessage(),nameCompany,mailSend);
@@ -529,31 +538,38 @@ public class ActionsOracleServices {
                     if(statusLiq == null) return error;
                     return String.format(action.getActionRespOkMessage(),statusLiq.substring(0, 1).toUpperCase() + statusLiq.substring(1).toLowerCase());
                 case 535 :
-                    Long typeFormat = detail.equals("Sin IBC") ? 0L : 1L;
-                    System.out.println(typeFormat);
-                    System.out.println(chat.getPeriodPlanilla());
-                    Long codePlanilla = certificatesService.getDataCertificatePlanilla(
-                            chat.getTdcTd(),chat.getEmpNd(),chat.getTdcTdFil(),chat.getEmpNdFil(),chat.getTypeDocument(), Long.valueOf(chat.getDocument()),
-                            chat.getPeriodPlanilla(),typeFormat
-                    );
-                    System.out.println(codePlanilla);
-                    if(codePlanilla == null)
-                        return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action);
-//
-                    Mono.delay(Duration.ofSeconds(10))
-                            .flatMap(tick -> Mono.fromCallable(() -> {
-                                PdfDownloaderService downloader = new PdfDownloaderService();
-                                byte[] certPlanilla = downloader.getPdfBytes(codePlanilla);
+                    if (helperService.isPrincipal(chat.getEmpNdFil())) {
+                        action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
+                        return null;
+                    }else {
+                        Long typeFormat = detail.equals("Sin IBC") ? 0L : 1L;
+                        System.out.println(typeFormat);
+                        System.out.println(chat.getPeriodPlanilla());
+                        Long codePlanilla = certificatesService.getDataCertificatePlanilla(
+                                chat.getTdcTd(), chat.getEmpNd(), chat.getTdcTdFil(), chat.getEmpNdFil(), chat.getTypeDocument(), Long.valueOf(chat.getDocument()),
+                                chat.getPeriodPlanilla(), typeFormat
+                        );
+                        System.out.println(codePlanilla);
+                        if (codePlanilla == null)
+                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action);
+                        //
+                        Mono.delay(Duration.ofSeconds(10))
+                                .flatMap(tick -> Mono.fromCallable(() -> {
+                                    PdfDownloaderService downloader = new PdfDownloaderService();
+                                    byte[] certPlanilla = downloader.getPdfBytes(codePlanilla);
 
-                                mailServices.sendMailCertificates(
-                                        chat.getNames(), "Planilla", MAIL_TEST, certPlanilla,
-                                        "Planilla.pdf", chat.getPrincipalRequest()
-                                ).subscribe();
+                                    String contentMailPlanilla = String.format(action.getActionRepOkMail(), "Planilla", chat.getNames());
+                                    String subjectPlanilla = String.format(action.getActionRepOkMailSubject(), "Planilla", chat.getNames());
 
-                                return true;
-                            }).subscribeOn(Schedulers.boundedElastic()))
-                            .subscribe();
-                    return null;
+                                    mailServices.sendMailCertificates(
+                                            contentMailPlanilla, subjectPlanilla, MAIL_TEST, certPlanilla, "Planilla.pdf", chat.getPrincipalRequest()
+                                    ).subscribe();
+
+                                    return true;
+                                }).subscribeOn(Schedulers.boundedElastic()))
+                                .subscribe();
+                        return null;
+                    }
 
 
             }
@@ -586,13 +602,9 @@ public class ActionsOracleServices {
     public List<String> assignPrincipalData(Action action, Chat chat) {
 
         if(action.getActionId()==524){
-            if(helperService.isPrincipal(chat.getEmpNdFil())) {
-                action.setActionRespOkFile(null);
-            }else{
-                String responsible;
-                responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
-                if(responsible != null) return List.of(responsible);
-            }
+            String responsible;
+            responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
+            if(responsible != null) return List.of(responsible);
         }
         if(action.getActionId()==529) return List.of();
 

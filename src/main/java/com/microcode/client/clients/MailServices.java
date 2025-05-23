@@ -28,17 +28,18 @@ public class MailServices {
         this.helperService = new HelperService();
     }
 
-    public void sendMailVerified(String emailTo, String code, List<Long>  authorized) {
+    public void sendMailChat(String emailTo, String contentMail, String subject, List<Long>  authorized) {
 
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
         params.add("emailTo", emailTo);
-        params.add("code", code);
+        params.add("contentMail", contentMail);
+        params.add("subject", subject);
 
         Long principalAuthorized = helperService.defineUniquePrincipalForAuthorized(authorized);
         params.add("principalAuthorized", principalAuthorized);
         try{
             this.webClient.post()
-                    .uri(urlMail + "/sendMailVerified")
+                    .uri(urlMail + "/sendMailChat")
                     .bodyValue(params)
                     .retrieve()
                     .bodyToMono(String.class)
@@ -48,12 +49,11 @@ public class MailServices {
         }
     }
 
-    public Mono<String> sendMailCertificates(String employeeName,String typeCertificate, String emailTo, byte[] fileBytes, String filename,
+    public Mono<String> sendMailCertificates(String contentMail, String subject ,String emailTo, byte[] fileBytes, String filename,
                                              List<Long> authorized) throws IOException {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("typeCertificate", typeCertificate);
-        body.add("employeeName", employeeName);
-        body.add("sendMailCertificates", employeeName);
+        body.add("contentMail", contentMail);
+        body.add("subject", subject);
         body.add("emailTo", emailTo);
 
         Long principalAuthorized = helperService.defineUniquePrincipalForAuthorized(authorized);

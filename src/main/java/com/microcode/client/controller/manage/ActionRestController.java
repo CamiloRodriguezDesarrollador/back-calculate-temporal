@@ -90,12 +90,10 @@ public class ActionRestController {
             action.setActionRespOkMessage(act.getActionRespOkMessage());
             action.setActionRespOkAction(act.getActionRespOkAction());
             action.setActionRespOkRequest(act.getActionRespOkRequest());
-            action.setActionRespOkFile(act.getActionRespOkFile());
 
             action.setActionRespFailMessage(act.getActionRespFailMessage());
             action.setActionRespFailAction(act.getActionRespFailAction());
             action.setActionRespFailRequest(act.getActionRespFailRequest());
-            action.setActionRespFailFile(act.getActionRespFailFile());
 
             try {
                 actionServices.create(action);
