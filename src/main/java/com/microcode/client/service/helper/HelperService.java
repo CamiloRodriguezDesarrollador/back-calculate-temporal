@@ -8,9 +8,7 @@ import java.security.SecureRandom;
 import java.sql.Clob;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 public class HelperService {
@@ -52,30 +50,29 @@ public class HelperService {
         return visiblePart + maskedPart + domain;
     }
 
+    public Boolean getDateCertificateAvailable() {
+        LocalDate now = LocalDate.now();
+        return now.getMonthValue() >= 4;
+    }
+
+    public Integer getYearCertificate() {
+        LocalDate now = LocalDate.now();
+        int currentYear = now.getYear();
+        int lastYear = currentYear - 1;;
+        return lastYear;
+    }
+
     public String getDateCertifiedDianStartDate() {
         LocalDate now = LocalDate.now();
         int currentYear = now.getYear();
-        int lastYear;
-
-        if (now.getMonthValue() > 4) {
-            lastYear = currentYear - 1;
-        } else {
-            lastYear = currentYear - 2;
-        }
-
+        int lastYear = currentYear - 1;;
         return LocalDate.of(lastYear, 1, 1).format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
     }
 
     public String getDateCertifiedDianEndDate() {
         LocalDate now = LocalDate.now();
         int currentYear = now.getYear();
-        int lastYear;
-
-        if (now.getMonthValue() > 4) {
-            lastYear = currentYear - 1;
-        } else {
-            lastYear = currentYear - 2;
-        }
+        int lastYear = currentYear - 1;;
         return LocalDate.of(lastYear, 12, 31).format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
     }
 
@@ -86,9 +83,9 @@ public class HelperService {
     }
 
     public Long defineUniquePrincipalForAuthorized(List<Long> authorized){
-        if(authorized.contains(800148972L)) return 800148972L;
-        if(authorized.contains(830057687L)) return 830057687L;
-        return 860090915L;
+        if(authorized.contains(800148972L)) return 2L;
+        if(authorized.contains(830057687L)) return 3L;
+        return 1L;
     }
 
     public String clobToString(Clob clob) {
@@ -104,6 +101,18 @@ public class HelperService {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
+        }
+    }
+
+    public static String getDataExtractLine(String text) {
+        try{
+            if (text == null || text.isEmpty()) return "";
+            int index = text.indexOf('-');
+            if (index > 0)
+                return text.substring(0, index).toLowerCase();
+            else return "";
+        }catch (Exception e){
+            return "";
         }
     }
 

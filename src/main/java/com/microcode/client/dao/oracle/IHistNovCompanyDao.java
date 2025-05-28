@@ -21,4 +21,6 @@ public interface IHistNovCompanyDao extends CrudRepository<HistNovCompany, Long>
     """)
     List<Object[]> findByCompanyAndCode(Long ctoNumber, Long empNd, String tdcTd , LocalDate startDate );
 
+
+
 }

@@ -5,6 +5,7 @@ import com.microcode.client.entity.oracle.Contract;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -32,6 +33,11 @@ public class ContractServices implements ContractServicesI {
     @Override
     public Contract findContractForEpl(Long eplNd, String tdcTd, List<Long> principalRequest) {
         return ContractDao.findForEplLast(eplNd,tdcTd,principalRequest);
+    }
+
+    @Override
+    public Contract findForYear(Long empNd, String tdcTd, Long ctoNumber,Integer yearIng) {
+        return ContractDao.findByDate(empNd, tdcTd, ctoNumber,yearIng);
     }
 
 }

@@ -7,6 +7,7 @@ import com.microcode.client.entity.QuantityResponse;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.entity.oracle.Company;
 import com.microcode.client.entity.oracle.Contract;
+import com.microcode.client.entity.oracle.Incapacity;
 import com.microcode.client.service.chat.ChatSessionManager;
 import com.microcode.client.entity.Chat;
 import com.microcode.client.entity.ContentResponse;
@@ -27,8 +28,11 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -62,6 +66,8 @@ public class ActionsOracleServices {
     private final ContributionNovServices contributionNovServices;
     private final OptionsManageService optionsManageService;
     private final PrincipalDataServices principalDataServices;
+    private final HistConstantServices histConstantServices;
+    private final IncapacityServices incapacityServices;
 
     @PostConstruct
     public void init() {
@@ -168,6 +174,7 @@ public class ActionsOracleServices {
 
                 String contentMail = String.format(action.getActionRepOkMail(),code);
                 String subject = String.format(action.getActionRepOkMailSubject(),code);
+
                 mailServices.sendMailChat(MAIL_TEST,contentMail,subject,chat.getPrincipalRequest());
 //                mailServices.sendMailVerified(chat.getChatMail(),code,chat.getPrincipalRequest());
 
@@ -278,7 +285,7 @@ public class ActionsOracleServices {
                     chat.getCtoNumber(),chat.getEmpNd(),chat.getTdcTd(),quantityPeriods
             );
 
-            return getContentResponse(action, chat, dates);
+            return getContentResponse(action, chat, dates,1004);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return error;
@@ -298,7 +305,7 @@ public class ActionsOracleServices {
                     chat.getTdcTd(),chat.getEmpNd(),chat.getTypeDocument(), Long.valueOf(chat.getDocument())
             );
 
-            return getContentResponse(action, chat, dates);
+            return getContentResponse(action, chat, dates,1004);
         } catch (Exception e) {
             return error;
         }
@@ -361,6 +368,31 @@ public class ActionsOracleServices {
         }
     }
 
+    public ContentResponse getInformationIncaStatus(Map<String,String> inputs, Action action) {
+        try {
+            String chatId = inputs.get("chatId");
+            Chat chat = chatSessionManager.getChatById(chatId);
+            ContentResponse resp = this.validateInitial(chat);
+            if(resp != null) return resp;
+            if(chat.getContractActive() == null ||  !chat.getContractActive()) return responseWithOptionsParam(withoutContract,action);
+            if(helperService.isPrincipal(chat.getEmpNdFil())){
+                String messageOk = principalDataServices.getForSiglaAndEmpNd("plantaIncapacidad", 0L);
+                String val = principalDataServices.getForSiglaAndEmpNd("urlSiteJob", chat.getEmpNd());
+                return ContentResponse.buildContentResponseOk(
+                        String.format(messageOk,val),
+                        OptionsManageService.optionsBasic,
+                        action
+                );
+            }
+
+            List<String> options = List.of("Aprobadas","Pendientes");
+            return getContentResponse(action, chat, options,1008);
+        } catch (Exception e) {
+            return error;
+        }
+
+    }
+
 //   Metodo estandar
 
     public ContentResponse methodStandardRedirect(Map<String,String> inputs, Action action) {
@@ -394,21 +426,21 @@ public class ActionsOracleServices {
             String messageOk = helperService.isPrincipal(chat.getEmpNdFil()) ? action.getActionRespOkMessagePrincipal() : action.getActionRespOkMessage();
 
             ContentResponse validateQuantity = validateQuantityOver(action, chat, detail);
+
             if (validateQuantity != null) return responseWithOptionsParam(validateQuantity, action);
 
             ContentResponse resp = this.validateInitial(chat);
             if (resp != null) return resp;
 
 
-            if(action.getActionSigla() != null || action.getActionSiglaPrincipal() != null
-                )  messageOk = String.format( helperService.isPrincipal(chat.getEmpNdFil()) ? action.getActionRespOkMessagePrincipal() : action.getActionRespOkMessage()
-                       , assignPrincipalData(action,chat).toArray()) ;
+            if(action.getActionSigla() != null || action.getActionSiglaPrincipal() != null){
+                messageOk = assignPrincipalData(action,chat);
+            }
 
             Object validationAdditional = methodStandardAdditional(detail, action,chat);
 
             if(validationAdditional != null){
                 if(validationAdditional instanceof String){
-
                     messageOk = (String) validationAdditional;
                 }
                 if(validationAdditional instanceof ContentResponse){
@@ -480,11 +512,11 @@ public class ActionsOracleServices {
                         filePay = jasperService.protectPdfWithPassword(filePay, chat.getDocument());
 
 
-                        String contentMail = String.format(action.getActionRepOkMail(),"de pago", chat.getNames());
-                        String subject = String.format(action.getActionRepOkMailSubject(),"de pago", chat.getNames());
+                        String contentMailPay = String.format(action.getActionRepOkMail(),"de pago", chat.getNames());
+                        String subjectPay = String.format(action.getActionRepOkMailSubject(),"de pago", chat.getNames());
 
                         mailServices.sendMailCertificates(
-                                contentMail, subject, MAIL_TEST, filePay, "CertificacionPago.pdf",chat.getPrincipalRequest()
+                                contentMailPay, subjectPay, MAIL_TEST, filePay, "CertificacionPago.pdf",chat.getPrincipalRequest()
                         ).subscribe();
 
                     }
@@ -495,6 +527,17 @@ public class ActionsOracleServices {
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
                         return null;
                     }else{
+
+                        if(!helperService.getDateCertificateAvailable()){
+                            String message = principalDataServices.getForSiglaAndEmpNd("dianNotDisp", 0L);
+                            return ContentResponse.buildContentResponseOk(message, OptionsManageService.optionsBasic, action);
+                        }
+
+                        Contract contractYear =  contractServices.findForYear(
+                                chat.getEmpNd(),chat.getTdcTd(),chat.getCtoNumber(),helperService.getYearCertificate()
+                        );
+                        if(contractYear == null) return action.getActionRespFailMessage();
+
                         String url = certificatesService.getDataCertificatedDian(
                                 chat.getTdcTd(),
                                 chat.getEmpNd(),
@@ -503,9 +546,10 @@ public class ActionsOracleServices {
                                 helperService.getDateCertifiedDianStartDate(),
                                 helperService.getDateCertifiedDianEndDate()
                         );
+
                         if (url == null)
-                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action);
-                        return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), url), OptionsManageService.optionsBasic, action);
+                            return action.getActionRespFailMessage();
+                        return String.format(action.getActionRespOkMessage(), url);
 
                      }
 
@@ -535,8 +579,15 @@ public class ActionsOracleServices {
                             Long.valueOf(chat.getDocument())
                     );
                     System.out.println(statusLiq);
-                    if(statusLiq == null) return error;
-                    return String.format(action.getActionRespOkMessage(),statusLiq.substring(0, 1).toUpperCase() + statusLiq.substring(1).toLowerCase());
+                    if(statusLiq == null)
+                        return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(),chat.getNames() ), OptionsManageService.optionsBasic, action);
+                    String sigla = HelperService.getDataExtractLine(statusLiq);
+                    String val = principalDataServices.getForSiglaAndEmpNd(sigla, 0L);
+                    System.out.println(val);
+                    if(val == null)
+                        return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(),chat.getNames()), OptionsManageService.optionsBasic, action);
+                    return ContentResponse.buildContentResponseOk(String.format(val,chat.getNames() ), OptionsManageService.optionsBasic, action);
+
                 case 535 :
                     if (helperService.isPrincipal(chat.getEmpNdFil())) {
                         action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
@@ -571,6 +622,57 @@ public class ActionsOracleServices {
                         return null;
                     }
 
+                case 537 :
+                        List<String> listStatus = detail.equals("Aprobadas") ? List.of("APR") :  List.of("CPT","PEN","RRI","RIN");
+                        List<Incapacity> incapacities = incapacityServices.findIncapacities(
+                                chat.getEmpNd(),
+                                chat.getTdcTd(),
+                                chat.getCtoNumber(),
+                                listStatus
+                        );
+
+                        System.out.println(incapacities);
+                        if(incapacities.isEmpty()){
+                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(),detail.toLowerCase()), OptionsManageService.optionsInca, action);
+                        }else{
+                            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                            String list = """
+                                    <table style="width: 100%; border: 1px solid #ccc; border-collapse: collapse;" cellpadding="5" cellspacing="0">
+                                        <thead>
+                                            <tr>
+                                                <th style="border: 1px solid #ccc; text-align: center;">Fecha inicio</th>
+                                                <th style="border: 1px solid #ccc; text-align: center;">Fecha fin</th>
+                                                <th style="border: 1px solid #ccc; text-align: center;">Días</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                    """ +
+                                    incapacities.stream()
+                                            .limit(10)
+                                            .map(i -> String.format(
+                                                    "<tr><td style='border: 1px solid #ccc; text-align: center; font-size:12px;'>%s</td><td style='border: 1px solid #ccc;  text-align: center; font-size:12px;'>%s</td><td style='border: 1px solid #ccc; text-align: center;font-size:12px;'>%s</td></tr>",
+                                                    formatter.format(i.getIncInit()),
+                                                    formatter.format(i.getIncEnd()),
+                                                    i.getIncDays()
+                                            ))
+                                            .collect(Collectors.joining()) +
+                                    """
+                                        </tbody>
+                                    </table>
+                                    """;
+
+                            String status;
+                            if(detail.equals("Pendientes")){
+                                String responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
+                                if(responsible == null) responsible = principalDataServices.getForSiglaAndEmpNd("extension", 0L);
+                                status = principalDataServices.getForSiglaAndEmpNd(detail.toLowerCase(), 0L);
+                                status = String.format(status,responsible);
+                            }else{
+                                status = principalDataServices.getForSiglaAndEmpNd(detail.toLowerCase(), 0L);
+                            }
+                            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(),list,status), OptionsManageService.optionsBasic, action);
+                        }
+
 
             }
             return null;
@@ -599,14 +701,29 @@ public class ActionsOracleServices {
         return responseClone;
     }
 
-    public List<String> assignPrincipalData(Action action, Chat chat) {
+    public String assignPrincipalData(Action action, Chat chat) {
+        String messageOk = helperService.isPrincipal(chat.getEmpNdFil())
+                ? action.getActionRespOkMessagePrincipal()
+                : action.getActionRespOkMessage();
+
 
         if(action.getActionId()==524){
-            String responsible;
-            responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
-            if(responsible != null) return List.of(responsible);
+            if( histConstantServices.findIfHaveConstant(chat.getEmpNdFil()) ){
+                System.out.println("entra aca");
+                action.setActionRespOkMessage(action.getActionRespOkMessagePrincipal());
+                String val = principalDataServices.getForSiglaAndEmpNd("urlSiteJob", chat.getEmpNd());
+                return  String.format(action.getActionRespOkMessagePrincipal() ,  val);
+            }
+            else{
+                String responsible;
+                responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
+                if(responsible != null)
+                    return  String.format(messageOk ,  List.of(responsible).toArray());
+
+            }
+
         }
-        if(action.getActionId()==529) return List.of();
+        if(action.getActionId()==529) return messageOk;
 
 
         String[] siglas =
@@ -619,8 +736,7 @@ public class ActionsOracleServices {
             String val = principalDataServices.getForSiglaAndEmpNd(sigla, chat.getEmpNd());
             values.add(val == null ? "sin asignar" : val);
         }
-
-        return values;
+        return  String.format(messageOk ,  values.toArray());
     }
 
     public static ContentResponse responseWithOptionsParam(ContentResponse response, Action action){
@@ -634,7 +750,7 @@ public class ActionsOracleServices {
         return responseClone;
     }
 
-    private ContentResponse getContentResponse(Action action, Chat chat, List<String> dates) {
+    private ContentResponse getContentResponse(Action action, Chat chat, List<String> dates, Integer actionIdReturn) {
         if(dates == null || dates.isEmpty())
             return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action);
         List<Option> options = new ArrayList<>(List.of());
@@ -649,7 +765,7 @@ public class ActionsOracleServices {
                     )
             );
         }
-        Action actionBack = actionServices.getActionForId(1004);
+        Action actionBack = actionServices.getActionForId(actionIdReturn);
         options.add(
                 new Option(
                         actionBack.getActionRespOkAction(),

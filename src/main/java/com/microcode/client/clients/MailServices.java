@@ -76,31 +76,6 @@ public class MailServices {
                 .onErrorResume(RestClientException.class, ex -> Mono.empty());
     }
 
-    public Mono<String> sendMailInformationCCF(String employeeName, String emailTo,String companyName,
-                                         String fileRequirements, String fileDeclaration, String fileVideo,
-                                               List<Long>  authorized) {
-        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
-        params.add("employeeName", employeeName);
-        params.add("emailTo", emailTo);
-        params.add("companyName", companyName);
-        params.add("fileRequirements", fileRequirements);
-        params.add("fileDeclaration", fileDeclaration);
-        params.add("fileVideo", fileVideo);
-        Long principalAuthorized = helperService.defineUniquePrincipalForAuthorized(authorized);
-        params.add("principalAuthorized", principalAuthorized);
-
-        try{
-            return this.webClient.post()
-                    .uri(urlMail +"/sendMailInformationCCF")
-                    .bodyValue(params)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .onErrorResume(RestClientException.class, ex -> Mono.empty());
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
 
     public void ping() {
         try{

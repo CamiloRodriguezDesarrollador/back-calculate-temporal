@@ -32,6 +32,9 @@ public class Contract implements Serializable {
     @Column(name = "CTO_FECING")
     private Date ctoIng;
 
+    @Column(name = "CTO_FECRET")
+    private Date ctoEnd;
+
     @Column(name = "ECT_SIGLA")
     private String ectSigla;
 
