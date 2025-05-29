@@ -81,19 +81,25 @@ public class ActionRestController {
         Action action = this.actionServices.findActionById(act.getActionId());
         if (action != null) {
             action.setActionMessage(act.getActionMessage());
-            action.setActionStatus(act.getActionStatus());
             action.setActionType(act.getActionType());
-            action.setActionOptionError(act.getActionOptionError());
-            action.setActionQuantity(act.getActionQuantity());
             action.setActionDaysQuantity(act.getActionDaysQuantity());
+            action.setActionQuantity(act.getActionQuantity());
             action.setActionNameFunction(act.getActionNameFunction());
             action.setActionRespOkMessage(act.getActionRespOkMessage());
+            action.setActionRespOkMessagePrincipal(act.getActionRespOkMessagePrincipal());
             action.setActionRespOkAction(act.getActionRespOkAction());
             action.setActionRespOkRequest(act.getActionRespOkRequest());
-
+            action.setActionRepOkMail(act.getActionRepOkMail());
+            action.setActionRepOkMailSubject(act.getActionRepOkMailSubject());
             action.setActionRespFailMessage(act.getActionRespFailMessage());
             action.setActionRespFailAction(act.getActionRespFailAction());
             action.setActionRespFailRequest(act.getActionRespFailRequest());
+            action.setActionStatus(act.getActionStatus());
+            action.setActionCtoActive(act.getActionCtoActive());
+            action.setActionOption(act.getActionOption());
+            action.setActionOptionError(act.getActionOptionError());
+            action.setActionSigla(act.getActionSigla());
+            action.setActionSiglaPrincipal(act.getActionSiglaPrincipal());
 
             try {
                 actionServices.create(action);

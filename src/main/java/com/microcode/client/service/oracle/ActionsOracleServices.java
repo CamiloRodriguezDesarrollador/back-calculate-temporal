@@ -670,7 +670,7 @@ public class ActionsOracleServices {
                             }else{
                                 status = principalDataServices.getForSiglaAndEmpNd(detail.toLowerCase(), 0L);
                             }
-                            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(),list,status), OptionsManageService.optionsBasic, action);
+                            return String.format(action.getActionRespOkMessage(),list,status);
                         }
 
 

@@ -11,18 +11,11 @@ import org.springframework.stereotype.Service;
 public class Env {
 
     private static final ThreadLocal<String> currentToken = ThreadLocal.withInitial(() -> null);
-//    private static final ThreadLocal<Integer> currentClient = ThreadLocal.withInitial(() -> null);
-//    private static final ThreadLocal<Integer> currentUser = ThreadLocal.withInitial(() -> null);
-//    private static final ThreadLocal<Integer> currentType = ThreadLocal.withInitial(() -> null);
-//    private static final ThreadLocal<Integer> currentPermission = ThreadLocal.withInitial(() -> null);
-//    private static final ThreadLocal<String> currentMail = ThreadLocal.withInitial(() -> null);
-
-    private static final ThreadLocal<Integer> currentClient = ThreadLocal.withInitial(() -> 1);
-    private static final ThreadLocal<Integer> currentUser = ThreadLocal.withInitial(() -> 1);
-    private static final ThreadLocal<Integer> currentType = ThreadLocal.withInitial(() -> 1);
-    private static final ThreadLocal<Integer> currentPermission = ThreadLocal.withInitial(() -> 1);
-    private static final ThreadLocal<String> currentMail = ThreadLocal.withInitial(() -> "cgonzalez@activos.com.co");
-
+    private static final ThreadLocal<Integer> currentClient = ThreadLocal.withInitial(() -> null);
+    private static final ThreadLocal<Integer> currentUser = ThreadLocal.withInitial(() -> null);
+    private static final ThreadLocal<Integer> currentType = ThreadLocal.withInitial(() -> null);
+    private static final ThreadLocal<Integer> currentPermission = ThreadLocal.withInitial(() -> null);
+    private static final ThreadLocal<String> currentMail = ThreadLocal.withInitial(() -> null);
 
     public static String getCurrentMail() {
         return currentMail.get();

@@ -41,18 +41,11 @@ public class ChatRestController {
         return "created";
     }
 
-
-    @PostMapping("/jasper")
-    public String getJasper() throws JRException, MalformedURLException, SQLException {
-//        certificatesService.getDataCertificatePlanilla();
-        return "";
-
 //        String jrxmlPath = "src/main/resources/templates/ComprobanteDePago.jrxml";
 //        String jasperPath = "src/main/resources/templates/ComprobanteDePago.jasper";
 //        JasperCompileManager.compileReportToFile(jrxmlPath, jasperPath);
 //        System.out.println("Reporte compilado con éxito.");
 
-    }
 
 
 

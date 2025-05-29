@@ -20,9 +20,10 @@ public interface IActionDao extends CrudRepository<Action, Long> {
     @Query(""" 
             SELECT p
             FROM Action p
-            WHERE ( lower(p.actionMessage) LIKE %:text% or lower(p.actionType) LIKE %:text% 
-                or lower(p.actionMessage) LIKE %:text% or lower(p.actionRespOkMessage) LIKE %:text% 
-                 or lower(p.actionRespFailMessage) LIKE %:text% )
+            WHERE ( lower(p.actionMessage) LIKE %:text% or lower(p.actionType) LIKE %:text%
+                or lower(p.actionNameFunction) LIKE %:text% or lower(p.actionRespOkMessage) LIKE %:text%
+                or lower(p.actionRespOkMessagePrincipal) LIKE %:text% or lower(p.actionRespFailMessage) LIKE %:text%
+                 or lower(p.actionOption) LIKE %:text% )
             ORDER BY p.actionId DESC
             """)
     List<Action> findTableData(String text, Pageable pageable);
@@ -30,9 +31,10 @@ public interface IActionDao extends CrudRepository<Action, Long> {
     @Query(""" 
             SELECT count(p)
             FROM Action p
-            WHERE ( lower(p.actionMessage) LIKE %:text% or lower(p.actionType) LIKE %:text% 
-                or lower(p.actionMessage) LIKE %:text% or lower(p.actionRespOkMessage) LIKE %:text% 
-                 or lower(p.actionRespFailMessage) LIKE %:text% )
+            WHERE ( lower(p.actionMessage) LIKE %:text% or lower(p.actionType) LIKE %:text%
+                or lower(p.actionNameFunction) LIKE %:text% or lower(p.actionRespOkMessage) LIKE %:text%
+                or lower(p.actionRespOkMessagePrincipal) LIKE %:text% or lower(p.actionRespFailMessage) LIKE %:text%
+                 or lower(p.actionOption) LIKE %:text% )
             """)
     Integer findTableQuantity(String text);
 
