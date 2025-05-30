@@ -152,7 +152,7 @@ public class ChatSessionManager {
 
 
 
-    public QuantityResponse validityQuantityRequest(Action action, Chat chat, String detail ) {
+    public QuantityResponse validityQuantityRequest(Action action, Chat chat, String detail, String actionPrincipal ) {
         Integer quantity = action.getActionDaysQuantity();
         if(quantity == null) return new QuantityResponse(null,false);
 
@@ -163,7 +163,7 @@ public class ChatSessionManager {
 
         Date startDate = Date.from(startLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         List<QuantityChat> quantityChats = quantityChatServices.findQuantityForDocumentAndAction(
-                action.getActionId(), chat.getTypeDocument(), chat.getDocument(), startDate, endDate, detail
+                action.getActionId(), chat.getTypeDocument(), chat.getDocument(), startDate, endDate, detail, actionPrincipal
         );
 
 

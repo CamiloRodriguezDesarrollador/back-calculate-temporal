@@ -20,11 +20,12 @@ public interface IQuantityChatDao extends CrudRepository<QuantityChat, Long> {
             LEFT JOIN Action pe ON pe.actionId = p.actionId
             WHERE p.actionId = :actionId AND p.document = :document AND p.typeDocument = :typeDocument
             AND p.actionDetail = :actionDetail
+            AND p.actionPrincipal = :actionPrincipal
             AND p.audDate BETWEEN :startDate AND :endDate
             ORDER BY p.quantityId DESC
             """)
     List<QuantityChat> findByActionIdAndTypeDocumentAndDocument(Integer actionId
-            , String typeDocument, String document, Date startDate, Date endDate, String actionDetail);
+            , String typeDocument, String document, Date startDate, Date endDate, String actionDetail, String actionPrincipal);
 
     @Query(""" 
             SELECT p
@@ -32,10 +33,11 @@ public interface IQuantityChatDao extends CrudRepository<QuantityChat, Long> {
             LEFT JOIN Action pe ON pe.actionId = p.actionId
             WHERE p.document = :document AND p.typeDocument = :typeDocument
             AND p.actionDetail = :actionDetail
+            AND p.actionPrincipal = :actionPrincipal
             AND p.audDate BETWEEN :startDate AND :endDate
             ORDER BY p.quantityId DESC
             """)
-    List<QuantityChat> findByTypeDocumentAndDocument(String typeDocument, String document, Date startDate, Date endDate, String actionDetail);
+    List<QuantityChat> findByTypeDocumentAndDocument(String typeDocument, String document, Date startDate, Date endDate, String actionDetail, String actionPrincipal);
 
     @Query(""" 
             SELECT new com.microcode.client.entity.mysql.QuantityChat(

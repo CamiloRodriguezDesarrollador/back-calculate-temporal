@@ -9,8 +9,8 @@ import java.util.List;
 public interface RegisterChatServicesI {
 
     void create(RegisterChat registerChat);
-    void createForMessage(String chatId, ContentMessage contentMessage, String ip);
-    void createForResponse(String chatId, ContentResponse contentResponse, String ip);
+    void createForMessage(String chatId, ContentMessage contentMessage, String ip, Integer companyId);
+    void createForResponse(String chatId, ContentResponse contentResponse, String ip, Integer companyId);
     List<RegisterChat> findTableData(String text, Integer numberPage, Integer numberElementPage);
     Integer findTableQuantity(String text);
 

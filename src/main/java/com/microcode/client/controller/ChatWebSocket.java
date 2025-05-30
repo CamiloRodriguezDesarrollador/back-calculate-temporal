@@ -51,14 +51,16 @@ public class ChatWebSocket {
             if (message == null || message.getActionId() == null) return Salt.wrapContentResponde(ActionsOracleServices.responseWithOptionsParam(error,action));
             ContentMessage messageUnwrapped = Salt.unwrapContentMessage(message);
             chatSessionManager.updateChatActivity(chatId, messageUnwrapped);
-            registerChatServices.createForMessage(chatId,messageUnwrapped,clientIp);
+            registerChatServices.createForMessage(chatId,messageUnwrapped,clientIp, companyId);
 
             action =  actionServices.getActionForId(messageUnwrapped.getActionId());
+
+
             Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
             messageUnwrapped.getChatMessage().put("chatId", chatId);
             messageUnwrapped.getChatMessage().put("principalRequest", principalRequest.toString());
             ContentResponse resp = (ContentResponse) methodAction.invoke(actionsOracleServices, messageUnwrapped.getChatMessage(), action);
-            registerChatServices.createForResponse(chatId,resp,clientIp);
+            registerChatServices.createForResponse(chatId,resp,clientIp, companyId);
             ContentResponse responseWrap = ContentResponse.cloneContentResponse(resp);
             if (responseWrap != null) responseWrap.setActionMessage(Salt.wrapMessage(resp.getActionMessage()));
             return responseWrap;

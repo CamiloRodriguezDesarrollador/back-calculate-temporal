@@ -44,6 +44,9 @@ public class RegisterChat implements Serializable {
     @Column(name = "CHAT_IP", nullable = false)
     private String chatIp;
 
+    @Column(name = "CHAT_PRINCIPAL", nullable = false)
+    private String chatPrincipal;
+
 
     @Serial
     private static final long serialVersionUID = 1L;

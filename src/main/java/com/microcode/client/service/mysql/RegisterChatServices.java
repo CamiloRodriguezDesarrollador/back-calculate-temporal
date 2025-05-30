@@ -6,6 +6,7 @@ import com.microcode.client.entity.ContentMessage;
 import com.microcode.client.entity.ContentResponse;
 import com.microcode.client.entity.mysql.RegisterChat;
 import com.microcode.client.service.chat.ChatSessionManager;
+import com.microcode.client.service.helper.HelperService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -22,6 +23,7 @@ public class RegisterChatServices implements RegisterChatServicesI {
     private final IRegisterChatDao registerChatDao;
     private final ChatSessionManager chatSessionManager;
     private final HttpServletRequest request;
+    private final HelperService helperService;
 
     @Override
     public void create(RegisterChat registerChat) {
@@ -29,8 +31,9 @@ public class RegisterChatServices implements RegisterChatServicesI {
     }
 
     @Override
-    public void createForMessage(String chatId, ContentMessage contentMessage, String ip) {
+    public void createForMessage(String chatId, ContentMessage contentMessage, String ip, Integer companyId) {
         Chat chat = chatSessionManager.getChatById(chatId);
+        String codePrincipal = helperService.definePrincipalForCode(companyId).toString();
 
         try{
             RegisterChat reg = new RegisterChat();
@@ -40,6 +43,7 @@ public class RegisterChatServices implements RegisterChatServicesI {
             reg.setChatOwnerMessage(contentMessage.getChatOwnerMessage());
             reg.setChatMessage(contentMessage.toStringMessage());
             reg.setActionId(contentMessage.getActionId());
+            reg.setChatPrincipal( codePrincipal);
             reg.setChatIp(ip);
             create( reg );
         } catch (Exception e) {
@@ -48,8 +52,9 @@ public class RegisterChatServices implements RegisterChatServicesI {
     }
 
     @Override
-    public void createForResponse(String chatId, ContentResponse contentResponse, String ip) {
+    public void createForResponse(String chatId, ContentResponse contentResponse, String ip, Integer companyId) {
         Chat chat = chatSessionManager.getChatById(chatId);
+        String codePrincipal = helperService.definePrincipalForCode(companyId).toString();
 
         try {
             RegisterChat reg = new RegisterChat();
@@ -57,6 +62,7 @@ public class RegisterChatServices implements RegisterChatServicesI {
             reg.setTypeDocument(chat.getTypeDocument());
             reg.setDocument(chat.getDocument());
             reg.setChatOwnerMessage("bot");
+            reg.setChatPrincipal(codePrincipal);
             reg.setChatMessage(contentResponse.getActionMessage() +
                     (contentResponse.getOptions() != null ? " , Options: " + contentResponse.getOptions() : ""));
             reg.setActionId(contentResponse.getActionId());

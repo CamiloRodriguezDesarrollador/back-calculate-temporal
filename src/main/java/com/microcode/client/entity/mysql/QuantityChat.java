@@ -31,6 +31,9 @@ public class QuantityChat implements Serializable {
     @Column(name = "ACT_DETAIL", length = 100)
     private String actionDetail;
 
+    @Column(name = "ACT_PPAL")
+    private String actionPrincipal;
+
     @Column(name = "AUD_DATE", nullable = false)
     private Date audDate;
 

@@ -3,6 +3,7 @@ package com.microcode.client.controller.manage;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.secutiry.Env;
 import com.microcode.client.service.mysql.ActionServices;
+import com.microcode.client.service.mysql.PrincipalDataServices;
 import com.microcode.client.service.mysql.RegexService;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -17,6 +18,7 @@ import java.util.List;
 @RequestMapping("/api/chat/action")
 public class ActionRestController {
 
+    private final PrincipalDataServices principalDataServices;
     private ActionServices actionServices;
     private RegexService regexService;
 
@@ -38,6 +40,8 @@ public class ActionRestController {
     public boolean updateActions() {
         try {
             actionServices.updateTypesChat();
+            principalDataServices.updateDataPrincipal();
+
             return true;
         } catch (Exception e) {
             return false;

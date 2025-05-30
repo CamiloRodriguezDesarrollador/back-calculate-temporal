@@ -25,13 +25,13 @@ public class QuantityChatServices implements QuantityChatServicesI {
     }
 
     @Override
-    public  List<QuantityChat> findQuantityForDocumentAndAction(Integer actionId, String typeDocument, String document, Date startDate, Date endDate, String actionDetail) {
-        return quantityChatDao.findByActionIdAndTypeDocumentAndDocument(actionId, typeDocument,document,startDate,endDate,actionDetail);
+    public  List<QuantityChat> findQuantityForDocumentAndAction(Integer actionId, String typeDocument, String document, Date startDate, Date endDate, String actionDetail, String actionPrincipal) {
+        return quantityChatDao.findByActionIdAndTypeDocumentAndDocument(actionId, typeDocument,document,startDate,endDate,actionDetail, actionPrincipal);
     }
 
     @Override
-    public List<QuantityChat> findQuantityForDocument(String typeDocument, String document, Date startDate, Date endDate, String actionDetail) {
-        return quantityChatDao.findByTypeDocumentAndDocument(typeDocument,document,startDate,endDate,actionDetail);
+    public List<QuantityChat> findQuantityForDocument(String typeDocument, String document, Date startDate, Date endDate, String actionDetail,String actionPrincipal) {
+        return quantityChatDao.findByTypeDocumentAndDocument(typeDocument,document,startDate,endDate,actionDetail, actionPrincipal);
     }
 
     @Override
@@ -52,22 +52,24 @@ public class QuantityChatServices implements QuantityChatServicesI {
         return quantityChatDao.findTableQuantity( text);
     }
 
-    public void createForAction(Integer actionId, String typeDocument,String document, String detail){
+    public void createForAction(Integer actionId, String typeDocument,String document, String detail, String actionPrincipal){
         QuantityChat quantityChat = new QuantityChat();
         quantityChat.setTypeDocument(typeDocument);
         quantityChat.setDocument(document);
         quantityChat.setActionId(actionId);
+        quantityChat.setActionPrincipal(actionPrincipal);
         quantityChat.setActionDetail(detail);
         this.create(quantityChat);
     }
 
-    public void createQuantityForAction(Action action, Chat chat, String detail){
+    public void createQuantityForAction(Action action, Chat chat, String detail,String actionPrincipal){
         if(action.getActionQuantity() != null && action.getActionDaysQuantity() != null){
             createForAction(
                     Integer.valueOf(action.getActionId().toString()),
                     chat.getTypeDocument(),
                     chat.getDocument(),
-                    detail
+                    detail,
+                    actionPrincipal
             );
         }
     }

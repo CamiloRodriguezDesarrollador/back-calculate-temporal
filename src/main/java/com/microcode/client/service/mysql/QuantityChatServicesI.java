@@ -9,8 +9,8 @@ import java.util.List;
 public interface QuantityChatServicesI {
 
     QuantityChat findQuantityForId(Integer quantityId);
-    List<QuantityChat> findQuantityForDocumentAndAction(Integer actionId, String typeDocument, String document, Date startDate, Date endDate, String actionDetail);
-    List<QuantityChat> findQuantityForDocument(String typeDocument, String document, Date startDate, Date endDate, String actionDetail);
+    List<QuantityChat> findQuantityForDocumentAndAction(Integer actionId, String typeDocument, String document, Date startDate, Date endDate, String actionDetail, String actionPrincipal);
+    List<QuantityChat> findQuantityForDocument(String typeDocument, String document, Date startDate, Date endDate, String actionDetail, String actionPrincipal);
     void create(QuantityChat quantityChat);
     List<QuantityChat> findTableData(String text, Integer numberPage, Integer numberElementPage);
     Integer findTableQuantity(String text);

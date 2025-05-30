@@ -5,14 +5,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microcode.client.clients.MailServices;
 import com.microcode.client.entity.QuantityResponse;
 import com.microcode.client.entity.mysql.Action;
-import com.microcode.client.entity.oracle.Company;
-import com.microcode.client.entity.oracle.Contract;
-import com.microcode.client.entity.oracle.Incapacity;
+import com.microcode.client.entity.oracle.*;
 import com.microcode.client.service.chat.ChatSessionManager;
 import com.microcode.client.entity.Chat;
 import com.microcode.client.entity.ContentResponse;
 import com.microcode.client.entity.Option;
-import com.microcode.client.entity.oracle.Employee;
 import com.microcode.client.service.chat.ConsumeChatService;
 import com.microcode.client.service.helper.HelperService;
 import com.microcode.client.service.helper.PdfDownloaderService;
@@ -68,6 +65,7 @@ public class ActionsOracleServices {
     private final PrincipalDataServices principalDataServices;
     private final HistConstantServices histConstantServices;
     private final IncapacityServices incapacityServices;
+    private final LibIngServices libIngServices;
 
     @PostConstruct
     public void init() {
@@ -378,13 +376,13 @@ public class ActionsOracleServices {
 
             if(helperService.isPrincipal(chat.getEmpNdFil())){
 
-                ContentResponse validateQuantity = validateQuantityOver(action, chat, "0");
+                ContentResponse validateQuantity = validateQuantityOver(action, chat, "0", chat.getEmpNd().toString());
                 if (validateQuantity != null) return responseWithOptionsParam(validateQuantity, action);
 
                 String messageOk = principalDataServices.getForSiglaAndEmpNd("plantaIncapacidad", 0L);
                 String val = principalDataServices.getForSiglaAndEmpNd("urlSiteJob", chat.getEmpNd());
 
-                quantityChatServices.createQuantityForAction(action,chat,"0");
+                quantityChatServices.createQuantityForAction(action,chat,"0", chat.getEmpNd().toString());
 
                 return ContentResponse.buildContentResponseOk(
                         String.format(messageOk,val),
@@ -433,7 +431,7 @@ public class ActionsOracleServices {
 
             String messageOk = helperService.isPrincipal(chat.getEmpNdFil()) ? action.getActionRespOkMessagePrincipal() : action.getActionRespOkMessage();
 
-            ContentResponse validateQuantity = validateQuantityOver(action, chat, detail);
+            ContentResponse validateQuantity = validateQuantityOver(action, chat, detail,chat.getEmpNd().toString());
 
             if (validateQuantity != null) return responseWithOptionsParam(validateQuantity, action);
 
@@ -457,7 +455,7 @@ public class ActionsOracleServices {
                 }
             }
 
-            quantityChatServices.createQuantityForAction(action,chat,detail);
+            quantityChatServices.createQuantityForAction(action,chat,detail,chat.getEmpNd().toString());
 
             return ContentResponse.buildContentResponseOk(
                     messageOk,
@@ -573,10 +571,10 @@ public class ActionsOracleServices {
                     );
                     String nameCompany = comp.getEmpNombre();
 
-                    String contentMailPay = String.format(action.getActionRepOkMail(),chat.getNames(),comp.getEmpNd(),nameCompany);
-                    String subjectPay = String.format(action.getActionRepOkMailSubject(),chat.getNames());
+                    String contentMailCcf = String.format(action.getActionRepOkMail(),chat.getNames(),comp.getEmpNd(),nameCompany);
+                    String subjectCcf = String.format(action.getActionRepOkMailSubject(),chat.getNames());
 
-                    mailServices.sendMailChat(MAIL_TEST,contentMailPay,subjectPay,chat.getPrincipalRequest());
+                    mailServices.sendMailChat(MAIL_TEST,contentMailCcf,subjectCcf,chat.getPrincipalRequest());
 
                     String mailSend = principalDataServices.getForSiglaAndEmpNd("ccfProvider", comp.getEmpNd());
                     return String.format(action.getActionRespOkMessage(),nameCompany,mailSend);
@@ -588,13 +586,22 @@ public class ActionsOracleServices {
                     );
                     System.out.println(statusLiq);
                     if(statusLiq == null)
-                        return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(),chat.getNames() ), OptionsManageService.optionsBasic, action);
+                        return  String.format(action.getActionRespFailMessage(),chat.getNames() );
                     String sigla = HelperService.getDataExtractLine(statusLiq);
                     String val = principalDataServices.getForSiglaAndEmpNd(sigla, 0L);
+
                     System.out.println(val);
+
+
                     if(val == null)
-                        return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(),chat.getNames()), OptionsManageService.optionsBasic, action);
-                    return ContentResponse.buildContentResponseOk(String.format(val,chat.getNames() ), OptionsManageService.optionsBasic, action);
+                        return String.format(action.getActionRespFailMessage(),chat.getNames());
+
+                    if(val.equals("tba")){
+                        LibIng libIng = libIngServices.findForIdentities(chat.getEmpNd(),chat.getTdcTd(),chat.getCtoNumber());
+                        String suc = libIng == null ? "Mas cercana" : libIng.getSucNameAdmin();
+                        return  String.format(val,chat.getNames(),suc);
+                    }
+                    return String.format(val,chat.getNames() );
 
                 case 535 :
                     if (helperService.isPrincipal(chat.getEmpNdFil())) {
@@ -651,6 +658,7 @@ public class ActionsOracleServices {
                                                 <th style="border: 1px solid #ccc; text-align: center;">Fecha inicio</th>
                                                 <th style="border: 1px solid #ccc; text-align: center;">Fecha fin</th>
                                                 <th style="border: 1px solid #ccc; text-align: center;">Días</th>
+                                                <th style="border: 1px solid #ccc; text-align: center;">Estado</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -658,10 +666,11 @@ public class ActionsOracleServices {
                                     incapacities.stream()
                                             .limit(10)
                                             .map(i -> String.format(
-                                                    "<tr><td style='border: 1px solid #ccc; text-align: center; font-size:12px;'>%s</td><td style='border: 1px solid #ccc;  text-align: center; font-size:12px;'>%s</td><td style='border: 1px solid #ccc; text-align: center;font-size:12px;'>%s</td></tr>",
+                                                    "<tr><td style='border: 1px solid #ccc; text-align: center; font-size:12px;'>%s</td><td style='border: 1px solid #ccc;  text-align: center; font-size:12px;'>%s</td><td style='border: 1px solid #ccc; text-align: center;font-size:12px;'>%s</td><td style='border: 1px solid #ccc; text-align: center;font-size:12px;'>%s</td></tr>",
                                                     formatter.format(i.getIncInit()),
                                                     formatter.format(i.getIncEnd()),
-                                                    i.getIncDays()
+                                                    i.getIncDays(),
+                                                    i.getHprCon()  == null ? "Pendiente" : "Paga"
                                             ))
                                             .collect(Collectors.joining()) +
                                     """
@@ -700,9 +709,9 @@ public class ActionsOracleServices {
         return null;
     }
 
-    public ContentResponse validateQuantityOver(Action action, Chat chat, String detail){
+    public ContentResponse validateQuantityOver(Action action, Chat chat, String detail, String actionPrincipal){
         if(action.getActionQuantity() == null || action.getActionDaysQuantity() == null) return null;
-        QuantityResponse quantityResponse = chatSessionManager.validityQuantityRequest(action,chat,detail);
+        QuantityResponse quantityResponse = chatSessionManager.validityQuantityRequest(action,chat,detail,actionPrincipal);
         if(!quantityResponse.getIsOver()) return null;
         ContentResponse responseClone = ContentResponse.cloneContentResponse(ActionsOracleServices.quantityMax);
         responseClone.setActionMessage(String.format(ActionsOracleServices.quantityMax.getActionMessage(),quantityResponse.getDateOptionTrain()));

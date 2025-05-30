@@ -42,5 +42,8 @@ public class Incapacity {
     @Column(name = "INC_DIAS")
     private String incDays;
 
+    @Column(name = "HPR_CONSEC")
+    private String hprCon;
+
 
 }
