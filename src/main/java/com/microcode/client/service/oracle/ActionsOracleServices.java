@@ -375,9 +375,16 @@ public class ActionsOracleServices {
             ContentResponse resp = this.validateInitial(chat);
             if(resp != null) return resp;
             if(chat.getContractActive() == null ||  !chat.getContractActive()) return responseWithOptionsParam(withoutContract,action);
+
+            ContentResponse validateQuantity = validateQuantityOver(action, chat, null);
+            if (validateQuantity != null) return responseWithOptionsParam(validateQuantity, action);
+
             if(helperService.isPrincipal(chat.getEmpNdFil())){
                 String messageOk = principalDataServices.getForSiglaAndEmpNd("plantaIncapacidad", 0L);
                 String val = principalDataServices.getForSiglaAndEmpNd("urlSiteJob", chat.getEmpNd());
+
+                quantityChatServices.createQuantityForAction(action,chat,null);
+
                 return ContentResponse.buildContentResponseOk(
                         String.format(messageOk,val),
                         OptionsManageService.optionsBasic,
