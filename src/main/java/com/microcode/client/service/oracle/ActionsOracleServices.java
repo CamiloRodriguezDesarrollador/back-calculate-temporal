@@ -528,10 +528,10 @@ public class ActionsOracleServices {
                     return null;
 
                 case 505:
-//                    if (helperService.isPrincipal(chat.getEmpNdFil())) {
-//                        action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
-//                        return null;
-//                    }else{
+                    if (helperService.isPrincipal(chat.getEmpNdFil())) {
+                        action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
+                        return null;
+                    }else{
 
                         if(!helperService.getDateCertificateAvailable()){
                             String message = principalDataServices.getForSiglaAndEmpNd("dianNotDisp", 0L);
@@ -575,7 +575,7 @@ public class ActionsOracleServices {
 
                         return null;
 
-//                     }
+                     }
 
                 case 529:
                     Company comp = entitiesServices.findForDataEpl(
