@@ -77,11 +77,6 @@ public class ActionRestController {
 
     @PutMapping("")
     public String updated(@RequestBody Action act ){
-        try{
-            if (!regexService.isActionCorrect(act)) return "incorrect_fields";
-        } catch (Exception e) {
-            throw new RuntimeException("incorrect_fields " + e.getMessage());
-        }
         Action action = this.actionServices.findActionById(act.getActionId());
         if (action != null) {
             action.setActionMessage(act.getActionMessage());

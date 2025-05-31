@@ -36,7 +36,6 @@ public class PrincipalDataServices implements PrincipalDataServicesI {
     public void updateDataPrincipal(){
         List<PrincipalData> actions = principalDataDao.findPrincipalValueAll("A");
         OptionsManageService.updateDataActionsPrincipal(actions);
-        System.out.println("entra ca");
     }
 
     public String getForSiglaAndEmpNd(String sigla, Long empNd ){

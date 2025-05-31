@@ -31,24 +31,36 @@ public class HelperService {
 
     public String generateMail(String email) {
         int atIndex = email.indexOf('@');
-        if (atIndex <= 0) return email;
+        if (atIndex <= 0 || atIndex == email.length() - 1) return email;
 
         String username = email.substring(0, atIndex);
-        String domain = email.substring(atIndex);
+        String domain = email.substring(atIndex + 1);
 
-        String visiblePart;
-        String maskedPart;
+        String maskedUsername = mask(username);
 
-        if (username.length() <= 4) {
-            visiblePart = username.substring(0, 1);
-            maskedPart = "*".repeat(username.length() - 1);
+        int visibleDomainChars = 7;
+        String maskedDomain;
+        if (domain.length() <= visibleDomainChars) {
+            maskedDomain = "*".repeat(domain.length());
         } else {
-            visiblePart = username.substring(0, 3);
-            maskedPart = "*".repeat(username.length() - 3);
+            int maskLength = domain.length() - visibleDomainChars;
+            maskedDomain = "*".repeat(maskLength) + domain.substring(maskLength);
         }
 
-        return visiblePart + maskedPart + domain;
+        return maskedUsername + "@" + maskedDomain;
     }
+
+    private String mask(String text) {
+        int visible = text.length() <= 4 ? 1 : 3;
+        int masked = text.length() - visible;
+        if (masked <= 0) return text;
+        return text.substring(0, visible) + "*".repeat(masked);
+    }
+
+
+
+
+
 
     public Boolean getDateCertificateAvailable() {
         LocalDate now = LocalDate.now();

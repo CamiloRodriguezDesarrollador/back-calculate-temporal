@@ -52,6 +52,11 @@ public class QuantityChatServices implements QuantityChatServicesI {
         return quantityChatDao.findTableQuantity( text);
     }
 
+    @Override
+    public void delete(Long quantityId) {
+        quantityChatDao.deleteById(quantityId);
+    }
+
     public void createForAction(Integer actionId, String typeDocument,String document, String detail, String actionPrincipal){
         QuantityChat quantityChat = new QuantityChat();
         quantityChat.setTypeDocument(typeDocument);

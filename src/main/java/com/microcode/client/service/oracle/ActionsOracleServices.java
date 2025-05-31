@@ -27,7 +27,6 @@ import reactor.core.scheduler.Schedulers;
 
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -529,10 +528,10 @@ public class ActionsOracleServices {
                     return null;
 
                 case 505:
-                    if (helperService.isPrincipal(chat.getEmpNdFil())) {
-                        action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
-                        return null;
-                    }else{
+//                    if (helperService.isPrincipal(chat.getEmpNdFil())) {
+//                        action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
+//                        return null;
+//                    }else{
 
                         if(!helperService.getDateCertificateAvailable()){
                             String message = principalDataServices.getForSiglaAndEmpNd("dianNotDisp", 0L);
@@ -542,6 +541,7 @@ public class ActionsOracleServices {
                         Contract contractYear =  contractServices.findForYear(
                                 chat.getEmpNd(),chat.getTdcTd(),chat.getCtoNumber(),helperService.getYearCertificate()
                         );
+
                         if(contractYear == null) return action.getActionRespFailMessage();
 
                         String url = certificatesService.getDataCertificatedDian(
@@ -553,11 +553,29 @@ public class ActionsOracleServices {
                                 helperService.getDateCertifiedDianEndDate()
                         );
 
+                        System.out.println(url);
                         if (url == null)
                             return action.getActionRespFailMessage();
-                        return String.format(action.getActionRespOkMessage(), url);
 
-                     }
+                        Mono.delay(Duration.ofSeconds(10))
+                                .flatMap(tick -> Mono.fromCallable(() -> {
+                                    PdfDownloaderService downloader = new PdfDownloaderService();
+                                    byte[] certPlanilla = downloader.getPdfBytesDian(url);
+
+                                    String contentMailPlanilla = String.format(action.getActionRepOkMail(), "Ingresos y Egresos", chat.getNames());
+                                    String subjectPlanilla = String.format(action.getActionRepOkMailSubject(), "Ingresos y Egresos", chat.getNames());
+
+                                    mailServices.sendMailCertificates(
+                                            contentMailPlanilla, subjectPlanilla, MAIL_TEST, certPlanilla, "IngresosEgresos.pdf", chat.getPrincipalRequest()
+                                    ).subscribe();
+
+                                    return true;
+                                }).subscribeOn(Schedulers.boundedElastic()))
+                                .subscribe();
+
+                        return null;
+
+//                     }
 
                 case 529:
                     Company comp = entitiesServices.findForDataEpl(
@@ -622,7 +640,7 @@ public class ActionsOracleServices {
                         Mono.delay(Duration.ofSeconds(10))
                                 .flatMap(tick -> Mono.fromCallable(() -> {
                                     PdfDownloaderService downloader = new PdfDownloaderService();
-                                    byte[] certPlanilla = downloader.getPdfBytes(codePlanilla);
+                                    byte[] certPlanilla = downloader.getPdfBytesPlanilla(codePlanilla);
 
                                     String contentMailPlanilla = String.format(action.getActionRepOkMail(), "Planilla", chat.getNames());
                                     String subjectPlanilla = String.format(action.getActionRepOkMailSubject(), "Planilla", chat.getNames());

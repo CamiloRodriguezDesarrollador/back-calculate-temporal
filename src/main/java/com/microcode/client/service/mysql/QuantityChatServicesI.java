@@ -14,6 +14,7 @@ public interface QuantityChatServicesI {
     void create(QuantityChat quantityChat);
     List<QuantityChat> findTableData(String text, Integer numberPage, Integer numberElementPage);
     Integer findTableQuantity(String text);
+    void delete(Long quantityId);
 
 
 }
