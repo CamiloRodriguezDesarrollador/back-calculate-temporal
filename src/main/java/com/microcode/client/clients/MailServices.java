@@ -59,7 +59,7 @@ public class MailServices {
         Long principalAuthorized = helperService.defineUniquePrincipalForAuthorized(authorized);
         body.add("principalAuthorized", principalAuthorized);
 
-        if (fileBytes == null || fileBytes.length == 0) return Mono.empty();
+//        if (fileBytes == null || fileBytes.length == 0) return Mono.empty();
 
         body.add("file", new ByteArrayResource(fileBytes) {
             @Override
