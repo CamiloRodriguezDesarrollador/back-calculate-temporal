@@ -36,15 +36,23 @@ public class PdfDownloaderService {
                 .block();
     }
 
-    public byte[] getPdfBytesDian(String uri) {
-        System.out.println(uri);
+    public byte[] getPdfBytesDian(String rawUri) {
+        // Reemplazar dobles slashes excepto en https://
+        String normalizedUri = rawUri.replaceFirst("(?<!:)//+", "/");
+
+        System.out.println("Llamando a URL: " + normalizedUri);
+        long startTime = System.currentTimeMillis();
+
         return webClient.get()
-                .uri(uri)
+                .uri(normalizedUri)
                 .header("User-Agent", "Mozilla/5.0")
                 .header("Accept", "*/*")
                 .header("Accept-Encoding", "identity")
                 .header("Connection", "keep-alive")
                 .exchangeToMono(response -> {
+                    long duration = System.currentTimeMillis() - startTime;
+                    System.out.println("Respuesta recibida en " + duration + " ms con status " + response.statusCode());
+
                     if (response.statusCode().is2xxSuccessful()) {
                         return response.bodyToMono(byte[].class);
                     } else {
@@ -55,6 +63,11 @@ public class PdfDownloaderService {
                                 })
                                 .then(Mono.empty());
                     }
+                })
+                .onErrorResume(e -> {
+                    long duration = System.currentTimeMillis() - startTime;
+                    System.err.println("Excepción al hacer la solicitud tras " + duration + " ms: " + e.toString());
+                    return Mono.empty();
                 })
                 .block();
     }

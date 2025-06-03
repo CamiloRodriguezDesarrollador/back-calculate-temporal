@@ -557,7 +557,7 @@ public class ActionsOracleServices {
                         if (url == null)
                             return action.getActionRespFailMessage();
 
-                        Mono.delay(Duration.ofSeconds(20))
+                        Mono.delay(Duration.ofSeconds(10))
                                 .flatMap(tick -> Mono.fromCallable(() -> {
                                     PdfDownloaderService downloader = new PdfDownloaderService();
                                     byte[] certPlanilla = downloader.getPdfBytesDian(url);
