@@ -72,8 +72,8 @@ public class ActionsOracleServices {
         principalDataServices.updateDataPrincipal();
     }
 
-    public final String MAIL_TEST = "yriascos@activos.com.co";
-//    public final String MAIL_TEST = "cgonzalez@activos.com.co";
+//    public final String MAIL_TEST = "yriascos@activos.com.co";
+    public final String MAIL_TEST = "cgonzalez@activos.com.co";
 
     public Chat initialChatIfNull(String chatId){
         chatSessionManager.updateChatActivity(chatId,null);
