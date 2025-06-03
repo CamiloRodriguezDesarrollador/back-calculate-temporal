@@ -72,8 +72,8 @@ public class ActionsOracleServices {
         principalDataServices.updateDataPrincipal();
     }
 
-//    public final String MAIL_TEST = "yriascos@activos.com.co";
-    public final String MAIL_TEST = "cgonzalez@activos.com.co";
+    public final String MAIL_TEST = "yriascos@activos.com.co";
+//    public final String MAIL_TEST = "cgonzalez@activos.com.co";
 
     public Chat initialChatIfNull(String chatId){
         chatSessionManager.updateChatActivity(chatId,null);
@@ -557,12 +557,12 @@ public class ActionsOracleServices {
                         if (url == null)
                             return action.getActionRespFailMessage();
 
-                        Mono.delay(Duration.ofSeconds(10))
+                        Mono.delay(Duration.ofSeconds(5))
                                 .flatMap(tick -> Mono.fromCallable(() -> {
                                     PdfDownloaderService downloader = new PdfDownloaderService();
                                     byte[] certPlanilla = downloader.getPdfBytesDian(url);
 
-                                    String contentMailPlanilla = String.format(action.getActionRepOkMail(), "Ingresos y Egresos", chat.getNames());
+                                    String contentMailPlanilla = String.format(action.getActionRepOkMail(), "Ingresos y Egresos", chat.getNames(), url);
                                     String subjectPlanilla = String.format(action.getActionRepOkMailSubject(), "Ingresos y Egresos", chat.getNames());
 
                                     mailServices.sendMailCertificates(
