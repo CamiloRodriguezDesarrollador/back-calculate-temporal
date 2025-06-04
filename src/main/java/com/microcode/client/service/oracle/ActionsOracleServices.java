@@ -562,7 +562,7 @@ public class ActionsOracleServices {
 //                                    PdfDownloaderService downloader = new PdfDownloaderService();
 //                                    byte[] certPlanilla = downloader.getPdfBytesDian(url);
 
-                                    byte[] certPlanilla = new byte[0];
+                                    byte[] certPlanilla = null;
                                     String contentMailPlanilla = String.format(action.getActionRepOkMail(), "Ingresos y Egresos", chat.getNames(), url);
                                     String subjectPlanilla = String.format(action.getActionRepOkMailSubject(), "Ingresos y Egresos", chat.getNames());
 
