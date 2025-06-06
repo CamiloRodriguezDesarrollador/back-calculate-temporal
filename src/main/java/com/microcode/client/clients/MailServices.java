@@ -49,8 +49,8 @@ public class MailServices {
         }
     }
 
-    public Mono<String> sendMailCertificates(String contentMail, String subject ,String emailTo, byte[] fileBytes, String filename,
-                                             List<Long> authorized) throws IOException {
+    public Mono<String> sendMailCertificatesFile(String contentMail, String subject , String emailTo, byte[] fileBytes, String filename,
+                                                 List<Long> authorized) throws IOException {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("contentMail", contentMail);
         body.add("subject", subject);
@@ -59,7 +59,7 @@ public class MailServices {
         Long principalAuthorized = helperService.defineUniquePrincipalForAuthorized(authorized);
         body.add("principalAuthorized", principalAuthorized);
 
-//        if (fileBytes == null || fileBytes.length == 0) return Mono.empty();
+        if (fileBytes == null || fileBytes.length == 0) return Mono.empty();
 
         body.add("file", new ByteArrayResource(fileBytes) {
             @Override
@@ -67,6 +67,24 @@ public class MailServices {
                 return filename;
             }
         });
+
+        return this.webClient.post()
+                .uri(urlMail + "/sendMailCertificatesFile")
+                .bodyValue(body)
+                .retrieve()
+                .bodyToMono(String.class)
+                .onErrorResume(RestClientException.class, ex -> Mono.empty());
+    }
+
+    public Mono<String> sendMailCertificates(String contentMail, String subject ,String emailTo, String filename,
+                                             List<Long> authorized) throws IOException {
+        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+        body.add("contentMail", contentMail);
+        body.add("subject", subject);
+        body.add("emailTo", emailTo);
+
+        Long principalAuthorized = helperService.defineUniquePrincipalForAuthorized(authorized);
+        body.add("principalAuthorized", principalAuthorized);
 
         return this.webClient.post()
                 .uri(urlMail + "/sendMailCertificates")

@@ -489,7 +489,7 @@ public class ActionsOracleServices {
                         String contentMail = String.format(action.getActionRepOkMail(),"Laboral", chat.getNames());
                         String subject = String.format(action.getActionRepOkMailSubject(),"Laboral", chat.getNames());
 
-                        mailServices.sendMailCertificates(
+                        mailServices.sendMailCertificatesFile(
                                 contentMail, subject, MAIL_TEST, file, "CertificadoLaboral.pdf",chat.getPrincipalRequest()
                         ).subscribe();
                     return null;
@@ -509,7 +509,7 @@ public class ActionsOracleServices {
                         String contentMailPay = String.format(action.getActionRepOkMail(),"de pago", chat.getNames());
                         String subjectPay = String.format(action.getActionRepOkMailSubject(),"de pago", chat.getNames());
 
-                        mailServices.sendMailCertificates(
+                        mailServices.sendMailCertificatesFile(
                                 contentMailPay, subjectPay, MAIL_TEST, filePay, "CertificacionPago.pdf",chat.getPrincipalRequest()
                         ).subscribe();
                     return null;
@@ -539,22 +539,22 @@ public class ActionsOracleServices {
                         if (url == null)
                             return action.getActionRespFailMessage();
 
-                        Mono.delay(Duration.ofSeconds(5))
-                                .flatMap(tick -> Mono.fromCallable(() -> {
-                                    PdfDownloaderService downloader = new PdfDownloaderService();
-                                    byte[] certPlanilla = downloader.getPdfBytesDian(url);
+//                        Mono.delay(Duration.ofSeconds(5))
+//                                .flatMap(tick -> Mono.fromCallable(() -> {
+//                                    PdfDownloaderService downloader = new PdfDownloaderService();
+//                                    byte[] certPlanilla = downloader.getPdfBytesDian(url);
 
 //                                    byte[] certPlanilla = new byte[0];
-                                    String contentMailPlanilla = String.format(action.getActionRepOkMail(), "Ingresos y Retenciones", chat.getNames(), url);
-                                    String subjectPlanilla = String.format(action.getActionRepOkMailSubject(), "Ingresos y Retenciones", chat.getNames());
+                                    String contentMailDian = String.format(action.getActionRepOkMail(), "Ingresos y Retenciones", chat.getNames(), url);
+                                    String subjectDian = String.format(action.getActionRepOkMailSubject(), "Ingresos y Retenciones", chat.getNames());
 
                                     mailServices.sendMailCertificates(
-                                            contentMailPlanilla, subjectPlanilla, MAIL_TEST, certPlanilla, "IngresosRetenciones.pdf", chat.getPrincipalRequest()
+                                            contentMailDian, subjectDian, MAIL_TEST, "IngresosRetenciones.pdf", chat.getPrincipalRequest()
                                     ).subscribe();
 
-                                    return true;
-                                }).subscribeOn(Schedulers.boundedElastic()))
-                                .subscribe();
+//                                    return true;
+//                                }).subscribeOn(Schedulers.boundedElastic()))
+//                                .subscribe();
 
                         return null;
 
@@ -622,7 +622,7 @@ public class ActionsOracleServices {
                                     String contentMailPlanilla = String.format(action.getActionRepOkMail(), "Planilla", chat.getNames());
                                     String subjectPlanilla = String.format(action.getActionRepOkMailSubject(), "Planilla", chat.getNames());
 
-                                    mailServices.sendMailCertificates(
+                                    mailServices.sendMailCertificatesFile(
                                             contentMailPlanilla, subjectPlanilla, MAIL_TEST, certPlanilla, "Planilla.pdf", chat.getPrincipalRequest()
                                     ).subscribe();
 
