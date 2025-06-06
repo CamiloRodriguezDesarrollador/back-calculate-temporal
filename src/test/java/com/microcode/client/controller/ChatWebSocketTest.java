@@ -489,6 +489,31 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
 
     }
 
+    @Test
+    public void getIncapacities() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Chat chat = new Chat();
+        Map<String, String> chatMessage = new HashMap<>();
+        chat.setChatId(String.valueOf(UUID.randomUUID()));
+        Chat chatMockup = actionsOracleServices.initialChatIfNull(chat.getChatId());
+        chatMockup.setChatStart(new Date());
+        chatMockup.setChatDateAuthorized(new Date());
+        chatMockup.setChatAuthenticated(true);
+
+        ContentMessage mockMessage = new ContentMessage();
+        mockMessage.setActionId(505);
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
+        Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
+        chatMockup.setDocument(eplNd);
+        chatMockup.setTypeDocument(tdcTdEpl);
+        chatMessage.put("detail", detail);
+        chatMessage.put("chatId", chat.getChatId());
+        mockMessage.setChatMessage(chatMessage);
+
+        ContentResponse resp = (ContentResponse) methodAction.invoke(actionsOracleServices, mockMessage.getChatMessage(), action);
+
+    }
+
+
 
 
 }

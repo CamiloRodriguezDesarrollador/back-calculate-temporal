@@ -72,7 +72,6 @@ public class ActionsOracleServices {
         principalDataServices.updateDataPrincipal();
     }
 
-//    public final String MAIL_TEST = "yriascos@activos.com.co";
     public final String MAIL_TEST = "cgonzalez@activos.com.co";
 
     public Chat initialChatIfNull(String chatId){
@@ -471,10 +470,6 @@ public class ActionsOracleServices {
         try{
             switch (action.getActionId()) {
                 case 502:
-                    if (helperService.isPrincipal(chat.getEmpNdFil())) {
-                        action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
-                        return null;
-                    } else {
                         String[] part = detail.split("-");
                         Long contract = Long.parseLong(part[0]);
                         Long empNd = Long.parseLong(part[1]);
@@ -497,15 +492,9 @@ public class ActionsOracleServices {
                         mailServices.sendMailCertificates(
                                 contentMail, subject, MAIL_TEST, file, "CertificadoLaboral.pdf",chat.getPrincipalRequest()
                         ).subscribe();
-                    }
                     return null;
 
                 case 528:
-                    if (helperService.isPrincipal(chat.getEmpNdFil())) {
-                        action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
-                        return null;
-                    } else {
-
                         byte[] filePay = jasperService.getCertificatePay(
                                 chat.getEmpNd(),
                                 chat.getTdcTd(),
@@ -523,16 +512,9 @@ public class ActionsOracleServices {
                         mailServices.sendMailCertificates(
                                 contentMailPay, subjectPay, MAIL_TEST, filePay, "CertificacionPago.pdf",chat.getPrincipalRequest()
                         ).subscribe();
-
-                    }
                     return null;
 
                 case 505:
-                    if (helperService.isPrincipal(chat.getEmpNdFil())) {
-                        action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
-                        return null;
-                    }else{
-
                         if(!helperService.getDateCertificateAvailable()){
                             String message = principalDataServices.getForSiglaAndEmpNd("dianNotDisp", 0L);
                             return ContentResponse.buildContentResponseOk(message, OptionsManageService.optionsBasic, action);
@@ -563,11 +545,11 @@ public class ActionsOracleServices {
                                     byte[] certPlanilla = downloader.getPdfBytesDian(url);
 
 //                                    byte[] certPlanilla = new byte[0];
-                                    String contentMailPlanilla = String.format(action.getActionRepOkMail(), "Ingresos y Egresos", chat.getNames(), url);
-                                    String subjectPlanilla = String.format(action.getActionRepOkMailSubject(), "Ingresos y Egresos", chat.getNames());
+                                    String contentMailPlanilla = String.format(action.getActionRepOkMail(), "Ingresos y Retenciones", chat.getNames(), url);
+                                    String subjectPlanilla = String.format(action.getActionRepOkMailSubject(), "Ingresos y Retenciones", chat.getNames());
 
                                     mailServices.sendMailCertificates(
-                                            contentMailPlanilla, subjectPlanilla, MAIL_TEST, certPlanilla, "IngresosEgresos.pdf", chat.getPrincipalRequest()
+                                            contentMailPlanilla, subjectPlanilla, MAIL_TEST, certPlanilla, "IngresosRetenciones.pdf", chat.getPrincipalRequest()
                                     ).subscribe();
 
                                     return true;
@@ -575,8 +557,6 @@ public class ActionsOracleServices {
                                 .subscribe();
 
                         return null;
-
-                     }
 
                 case 529:
                     Company comp = entitiesServices.findForDataEpl(
@@ -623,10 +603,6 @@ public class ActionsOracleServices {
                     return String.format(val,chat.getNames() );
 
                 case 535 :
-                    if (helperService.isPrincipal(chat.getEmpNdFil())) {
-                        action.setActionRespOkMessage("<p>Es un trabajador de planta,por favor intenta otra opción 👇.</p>");
-                        return null;
-                    }else {
                         Long typeFormat = detail.equals("Sin IBC") ? 0L : 1L;
                         System.out.println(typeFormat);
                         System.out.println(chat.getPeriodPlanilla());
@@ -654,7 +630,6 @@ public class ActionsOracleServices {
                                 }).subscribeOn(Schedulers.boundedElastic()))
                                 .subscribe();
                         return null;
-                    }
 
                 case 537 :
                         List<String> listStatus = detail.equals("Aprobadas") ? List.of("APR") :  List.of("CPT","PEN","RRI","RIN");
