@@ -23,7 +23,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                 .setAllowedOrigins(
                         "http://localhost:5173",
                         "https://front-chat-842209943869.us-east1.run.app",
-                        "https://front-chat-2-842209943869.us-east1.run.app"
+                        "https://front-chat-2-842209943869.us-east1.run.app",
+                        "https://www.activos.com.co",
+                        "https://www.serviola.com.co",
+                        "https://www.atecno.com.co"
                 )
         ;
     }
