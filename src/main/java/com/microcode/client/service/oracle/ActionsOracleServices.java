@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.util.*;
@@ -541,14 +542,25 @@ public class ActionsOracleServices {
                         System.out.println(url);
                         if (url == null)
                             return action.getActionRespFailMessage();
-                        byte[] certDian = connectExternalServices.connectUrl(url);
-                        System.out.println(certDian.length);
 
-                        String contentMailDian = String.format(action.getActionRepOkMail(), "Ingresos y Retenciones", chat.getNames(), url);
-                        String subjectDian = String.format(action.getActionRepOkMailSubject(), "Ingresos y Retenciones", chat.getNames());
-                        mailServices.sendMailCertificatesFile(
-                                 contentMailDian, subjectDian, MAIL_TEST,certDian, "IngresosRetenciones.pdf", chat.getPrincipalRequest()
-                        ).subscribe();
+                        Mono.fromRunnable(() -> {
+                                byte[] certDian = connectExternalServices.connectUrl(url);
+                                System.out.println(certDian.length);
+
+                                String contentMailDian = String.format(action.getActionRepOkMail(), "Ingresos y Retenciones", chat.getNames(), url);
+                                String subjectDian = String.format(action.getActionRepOkMailSubject(), "Ingresos y Retenciones", chat.getNames());
+
+                                        try {
+                                            mailServices.sendMailCertificatesFile(
+                                                    contentMailDian, subjectDian, MAIL_TEST, certDian, "IngresosRetenciones.pdf", chat.getPrincipalRequest()
+                                            ).subscribe();
+                                        } catch (IOException e) {
+                                            return;
+                                        }
+                                    })
+                            .subscribeOn(Schedulers.boundedElastic())
+                        .subscribe();
+
                         return null;
 
                 case 529:
