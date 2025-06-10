@@ -2,6 +2,7 @@ package com.microcode.client.service.oracle;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.microcode.client.clients.ConnectExternalServices;
 import com.microcode.client.clients.MailServices;
 import com.microcode.client.entity.QuantityResponse;
 import com.microcode.client.entity.mysql.Action;
@@ -65,6 +66,7 @@ public class ActionsOracleServices {
     private final HistConstantServices histConstantServices;
     private final IncapacityServices incapacityServices;
     private final LibIngServices libIngServices;
+    private final ConnectExternalServices connectExternalServices;
 
     @PostConstruct
     public void init() {
@@ -538,24 +540,14 @@ public class ActionsOracleServices {
                         System.out.println(url);
                         if (url == null)
                             return action.getActionRespFailMessage();
+                        byte[] certDian = connectExternalServices.connectUrl(url);
+                        System.out.println(certDian.length);
 
-//                        Mono.delay(Duration.ofSeconds(5))
-//                                .flatMap(tick -> Mono.fromCallable(() -> {
-//                                    PdfDownloaderService downloader = new PdfDownloaderService();
-//                                    byte[] certPlanilla = downloader.getPdfBytesDian(url);
-
-//                                    byte[] certPlanilla = new byte[0];
-                                    String contentMailDian = String.format(action.getActionRepOkMail(), "Ingresos y Retenciones", chat.getNames(), url);
-                                    String subjectDian = String.format(action.getActionRepOkMailSubject(), "Ingresos y Retenciones", chat.getNames());
-
-                                    mailServices.sendMailCertificates(
-                                            contentMailDian, subjectDian, MAIL_TEST, "IngresosRetenciones.pdf", chat.getPrincipalRequest()
-                                    ).subscribe();
-
-//                                    return true;
-//                                }).subscribeOn(Schedulers.boundedElastic()))
-//                                .subscribe();
-
+                        String contentMailDian = String.format(action.getActionRepOkMail(), "Ingresos y Retenciones", chat.getNames(), url);
+                        String subjectDian = String.format(action.getActionRepOkMailSubject(), "Ingresos y Retenciones", chat.getNames());
+                        mailServices.sendMailCertificatesFile(
+                                 contentMailDian, subjectDian, MAIL_TEST,certDian, "IngresosRetenciones.pdf", chat.getPrincipalRequest()
+                        ).subscribe();
                         return null;
 
                 case 529:
@@ -614,10 +606,12 @@ public class ActionsOracleServices {
                         if (codePlanilla == null)
                             return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action);
                         //
+
+
                         Mono.delay(Duration.ofSeconds(10))
                                 .flatMap(tick -> Mono.fromCallable(() -> {
-                                    PdfDownloaderService downloader = new PdfDownloaderService();
-                                    byte[] certPlanilla = downloader.getPdfBytesPlanilla(codePlanilla);
+                                    String urlPlanilla = "https://apps.genialw.com/SitioTrabajador/ServletDownloadFileMiPlanilla?TPQ_CODE=" +codePlanilla;
+                                    byte[] certPlanilla = connectExternalServices.connectUrl(urlPlanilla);
 
                                     String contentMailPlanilla = String.format(action.getActionRepOkMail(), "Planilla", chat.getNames());
                                     String subjectPlanilla = String.format(action.getActionRepOkMailSubject(), "Planilla", chat.getNames());
