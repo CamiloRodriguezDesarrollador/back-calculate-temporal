@@ -147,6 +147,7 @@ public class ActionsOracleServices {
 
             String mailUser = helperService.generateMail(employee.getEmail().toLowerCase());
             mailServices.ping();
+            connectExternalServices.ping();
             return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), mailUser),null, action);
         } catch (Exception e) {
             System.out.println(e.getMessage());

@@ -60,5 +60,16 @@ public class ConnectExternalServices {
         }
     }
 
+    public void ping() {
+        try{
+            this.webClient.post()
+                    .uri(urlAuthorization + "/ping")
+                    .retrieve()
+                    .bodyToMono(Void.class)
+                    .onErrorResume(RestClientException.class, ex -> Mono.empty()).subscribe();
+        } catch (Exception ignored) {
+        }
+    }
+
 
    }
