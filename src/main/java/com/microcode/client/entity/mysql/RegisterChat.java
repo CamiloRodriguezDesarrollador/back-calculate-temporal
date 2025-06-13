@@ -47,6 +47,18 @@ public class RegisterChat implements Serializable {
     @Column(name = "CHAT_PRINCIPAL", nullable = false)
     private String chatPrincipal;
 
+    @Column(name = "EPM_ND_FIL", nullable = false)
+    private Long empNdFil;
+
+    @Column(name = "CHAT_COMPANY", nullable = false)
+    private String chatCompany;
+
+    @Column(name = "CTO_NUMBER", nullable = false)
+    private Long ctoNumber;
+
+    @Column(name = "CTO_CITY", nullable = false)
+    private String ctoCity;
+
 
     @Serial
     private static final long serialVersionUID = 1L;

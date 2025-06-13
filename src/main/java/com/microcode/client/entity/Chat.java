@@ -31,6 +31,9 @@ public class Chat {
     private String perSigla;
     private String periodPlanilla;
     private Boolean contractActive;
+    public String contractCompany;
+    public String contractCity;
+
 
 
     public Chat() {

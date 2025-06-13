@@ -45,7 +45,14 @@ public class RegisterChatServices implements RegisterChatServicesI {
             reg.setActionId(contentMessage.getActionId());
             reg.setChatPrincipal( codePrincipal);
             reg.setChatIp(ip);
+
+            reg.setEmpNdFil(chat.getEmpNdFil());
+            reg.setChatCompany(chat.getContractCompany());
+            reg.setCtoNumber(chat.getCtoNumber());
+            reg.setCtoCity(chat.getContractCity());
+
             create( reg );
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -67,6 +74,12 @@ public class RegisterChatServices implements RegisterChatServicesI {
                     (contentResponse.getOptions() != null ? " , Options: " + contentResponse.getOptions() : ""));
             reg.setActionId(contentResponse.getActionId());
             reg.setChatIp(ip);
+
+            reg.setEmpNdFil(chat.getEmpNdFil());
+            reg.setChatCompany(chat.getContractCompany());
+            reg.setCtoNumber(chat.getCtoNumber());
+            reg.setCtoCity(chat.getContractCity());
+
             create( reg );
         } catch (Exception e) {
             System.out.println(e.getMessage());
