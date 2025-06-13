@@ -133,6 +133,8 @@ public class ActionsOracleServices {
                 chat.setCtoNumber(contract.getCtoNumero());
                 chat.setPerSigla(contract.getPerSigla());
                 chat.setContractActive(true);
+                chat.setEmpNdFil(contract.getEmpNdFil());
+
             }else{
                 Contract cont = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
                 chat.setEmpNd(cont.getEmpNd());
@@ -142,6 +144,8 @@ public class ActionsOracleServices {
                 chat.setCtoNumber(cont.getCtoNumero());
                 chat.setPerSigla(cont.getPerSigla());
                 chat.setContractActive(false);
+                chat.setEmpNdFil(cont.getEmpNdFil());
+
             }
 
             chatSessionManager.setChatById( chatId, chat );

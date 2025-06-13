@@ -53,4 +53,5 @@ public class Contract implements Serializable {
     @Column(name = "PER_SIGLA")
     private String perSigla;
 
+
 }

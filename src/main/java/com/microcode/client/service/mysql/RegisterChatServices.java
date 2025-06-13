@@ -47,10 +47,7 @@ public class RegisterChatServices implements RegisterChatServicesI {
             reg.setChatIp(ip);
 
             reg.setEmpNdFil(chat.getEmpNdFil());
-            reg.setChatCompany(chat.getContractCompany());
             reg.setCtoNumber(chat.getCtoNumber());
-            reg.setCtoCity(chat.getContractCity());
-
             create( reg );
 
         } catch (Exception e) {
@@ -76,9 +73,7 @@ public class RegisterChatServices implements RegisterChatServicesI {
             reg.setChatIp(ip);
 
             reg.setEmpNdFil(chat.getEmpNdFil());
-            reg.setChatCompany(chat.getContractCompany());
             reg.setCtoNumber(chat.getCtoNumber());
-            reg.setCtoCity(chat.getContractCity());
 
             create( reg );
         } catch (Exception e) {
