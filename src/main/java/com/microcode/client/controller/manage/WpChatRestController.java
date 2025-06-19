@@ -49,10 +49,8 @@ public class WpChatRestController {
 
             if(wsp.getWhatsappDocument() != null && wsp.getWhatsappTypeDocument() != null) {
                 String doc = wsp.getWhatsappDocument();
-                System.out.println("entrar");
 
                 if (!doc.trim().isEmpty()) {
-                    System.out.println("entsasarar");
 
                     Long id = Long.valueOf(doc);
                     Employee employee = employeeServices.findByIds(id, wsp.getWhatsappTypeDocument());
@@ -68,7 +66,7 @@ public class WpChatRestController {
             }
 
 
-            if(wp.getWhatsappIsMail() != null && wp.getWhatsappIsMail().equals("s")){
+            if(wp.getChatCode() != null && wp.getWhatsappIsMail().equals("s") && wp.getActionId() == null){
 
                 // Validar código
                 wp.setChatAuthenticated("s");
