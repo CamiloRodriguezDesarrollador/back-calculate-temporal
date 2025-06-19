@@ -83,7 +83,7 @@ public class WpChatRestController {
             if(wp.getChatAuthenticated() != null && wp.getChatAuthenticated().equals("s") && wsp.getActionId() != null){
                 System.out.println("llega acasasa");
                 System.out.println(wsp.getActionId());
-                switch (wp.getActionId()) {
+                switch (wsp.getActionId()) {
                     case "1":
                         wp.setWhatsappMessage(
                                 "✅ Tu certificado laboral ha sido generado exitosamente y enviado a tu correo electrónico registrado. 📩\n\n" +
