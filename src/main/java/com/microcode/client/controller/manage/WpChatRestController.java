@@ -82,14 +82,17 @@ public class WpChatRestController {
 
             if(wp.getChatAuthenticated() != null && wp.getChatAuthenticated().equals("s") && wsp.getActionId() != null){
                 System.out.println("llega acasasa");
-
+                System.out.println(wsp.getActionId());
                 switch (wsp.getActionId()) {
                     case "1":
                         wp.setWhatsappMessage("Te acabamos de enviar el certificado laboral a tu correo 📨");
+                        break;
                     case "2":
                         wp.setWhatsappMessage("Tu liquidación se encuentra en proceso 👷‍♀️");
+                        break;
                     case "3":
                         wp.setWhatsappMessage("Claro, para realizar el proceso de tus cesantias, te adjuntamos el siguiente instructivo.");
+                        break;
                     default:
                         wp.setWhatsappMessage("Aun no contamos con esa opción, por favor intenta otra.");
                 }
