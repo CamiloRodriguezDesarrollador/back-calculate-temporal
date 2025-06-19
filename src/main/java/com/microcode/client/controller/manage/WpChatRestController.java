@@ -66,7 +66,7 @@ public class WpChatRestController {
             }
 
 
-            if(wsp.getChatCode() != null && wp.getWhatsappIsMail().equals("s") && wsp.getActionId() == null){
+            if(wsp.getChatCode() != null && (wp.getWhatsappIsMail() != null && wp.getWhatsappIsMail().equals("s")) && wsp.getActionId() == null){
 
                 // Validar código
                 wp.setChatAuthenticated("s");
