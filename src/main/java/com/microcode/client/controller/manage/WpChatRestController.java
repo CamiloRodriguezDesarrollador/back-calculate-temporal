@@ -78,7 +78,7 @@ public class WpChatRestController {
                    """);
             }
 
-            if(wp.getChatAuthenticated() != null && wp.getChatAuthenticated().equals("s")){
+            if(wsp.getChatAuthenticated() != null && wsp.getChatAuthenticated().equals("s")){
                 if(wsp.getActionId() == null || wsp.getActionId().isEmpty()){
                     wp.setWhatsappMessage("No hemos entendido tu solicitud 😓");
                 }else{
