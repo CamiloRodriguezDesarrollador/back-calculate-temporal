@@ -83,19 +83,36 @@ public class WpChatRestController {
             if(wp.getChatAuthenticated() != null && wp.getChatAuthenticated().equals("s") && wsp.getActionId() != null){
                 System.out.println("llega acasasa");
                 System.out.println(wsp.getActionId());
-                switch (wsp.getActionId()) {
+                switch (wp.getActionId()) {
                     case "1":
-                        wp.setWhatsappMessage("Te acabamos de enviar el certificado laboral a tu correo 📨");
+                        wp.setWhatsappMessage(
+                                "✅ Tu certificado laboral ha sido generado exitosamente y enviado a tu correo electrónico registrado. 📩\n\n" +
+                                        "Si no lo ves en tu bandeja de entrada, recuerda revisar tu carpeta de spam o correo no deseado."
+                        );
                         break;
+
                     case "2":
-                        wp.setWhatsappMessage("Tu liquidación se encuentra en proceso 👷‍♀️");
+                        wp.setWhatsappMessage(
+                                "🔄 Tu proceso de liquidación ya está en marcha. 👷‍♀️\n\n" +
+                                        "Te notificaremos por este medio y por correo una vez esté finalizado. Agradecemos tu paciencia."
+                        );
                         break;
+
                     case "3":
-                        wp.setWhatsappMessage("Claro, para realizar el proceso de tus cesantias, te adjuntamos el siguiente instructivo.");
+                        wp.setWhatsappMessage(
+                                "📚 Para gestionar tus cesantías, te compartimos el instructivo con los pasos a seguir.\n\n" +
+                                        "Asegúrate de seguir cada paso con atención y no dudes en contactarnos si tienes preguntas."
+                        );
                         break;
+
                     default:
-                        wp.setWhatsappMessage("Aun no contamos con esa opción, por favor intenta otra.");
+                        wp.setWhatsappMessage(
+                                "⚠️ Lo sentimos, aún no contamos con una opción para esa solicitud.\n\n" +
+                                        "Por favor intenta con una opción diferente o escríbenos para ayudarte mejor."
+                        );
+                        break;
                 }
+
             }
 
 
