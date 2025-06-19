@@ -53,7 +53,7 @@ public class WpChatRestController {
                 if (!doc.trim().isEmpty()) {
 
                     Long id = Long.valueOf(doc);
-                    Employee employee = employeeServices.findByIds(id, wsp.getWhatsappTypeDocument());
+                    Employee employee = employeeServices.findByIds(id, "CC");
                     if(employee != null && employee.getEmail() != null){
                         System.out.println("no debe entrar");
                         wp.setWhatsappMail(helperService.generateMail(employee.getEmail().toLowerCase()));
@@ -66,7 +66,7 @@ public class WpChatRestController {
             }
 
 
-            if(wp.getChatCode() != null && wp.getWhatsappIsMail().equals("s") && wp.getActionId() == null){
+            if(wsp.getChatCode() != null && wp.getWhatsappIsMail().equals("s") && wsp.getActionId() == null){
 
                 // Validar código
                 wp.setChatAuthenticated("s");
@@ -78,20 +78,20 @@ public class WpChatRestController {
                    """);
             }
 
-            if(wp.getChatAuthenticated() != null && wp.getChatAuthenticated().equals("s") && wp.getActionId() != null){
-                if(wsp.getActionId() == null || wsp.getActionId().isEmpty()){
-                    wp.setWhatsappMessage("No hemos entendido tu solicitud 😓");
-                }else{
-                    switch (wp.getActionId()) {
-                        case "1":
-                            wp.setWhatsappMessage("Te acabamos de enviar el certificado laboral a tu correo 📨");
-                        case "2":
-                            wp.setWhatsappMessage("Tu liquidación se encuentra en proceso 👷‍♀️");
-                        case "3":
-                            wp.setWhatsappMessage("Claro, para realizar el proceso de tus cesantias, te adjuntamos el siguiente instructivo.");
-                        default:
-                            wp.setWhatsappMessage("Aun no contamos con esa opción, por favor intenta otra.");
-                    }
+            System.out.println("llega aca");
+
+            if(wp.getChatAuthenticated() != null && wp.getChatAuthenticated().equals("s") && wsp.getActionId() != null){
+                System.out.println("llega acasasa");
+
+                switch (wsp.getActionId()) {
+                    case "1":
+                        wp.setWhatsappMessage("Te acabamos de enviar el certificado laboral a tu correo 📨");
+                    case "2":
+                        wp.setWhatsappMessage("Tu liquidación se encuentra en proceso 👷‍♀️");
+                    case "3":
+                        wp.setWhatsappMessage("Claro, para realizar el proceso de tus cesantias, te adjuntamos el siguiente instructivo.");
+                    default:
+                        wp.setWhatsappMessage("Aun no contamos con esa opción, por favor intenta otra.");
                 }
             }
 
