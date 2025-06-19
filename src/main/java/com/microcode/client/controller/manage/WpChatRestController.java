@@ -49,14 +49,18 @@ public class WpChatRestController {
 
             if(wsp.getWhatsappDocument() != null && wsp.getWhatsappTypeDocument() != null) {
                 String doc = wsp.getWhatsappDocument();
+                System.out.println("entrar");
+
                 if (!doc.trim().isEmpty()) {
+                    System.out.println("entsasarar");
+
                     Long id = Long.valueOf(doc);
                     Employee employee = employeeServices.findByIds(id, wsp.getWhatsappTypeDocument());
                     if(employee != null && employee.getEmail() != null){
                         System.out.println("no debe entrar");
-                        wsp.setWhatsappMail(helperService.generateMail(employee.getEmail().toLowerCase()));
+                        wp.setWhatsappMail(helperService.generateMail(employee.getEmail().toLowerCase()));
                     }else {
-                        wsp.setWhatsappMail("sin correo");
+                        wp.setWhatsappMail("sin correo");
                     }
                 }
 
