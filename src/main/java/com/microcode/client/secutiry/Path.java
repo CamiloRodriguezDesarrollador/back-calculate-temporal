@@ -35,6 +35,9 @@ public class Path {
         myRoutesOpen.add(new Path("/api/app", null));
         myRoutesOpen.add(new Path("/api/chat/company", null));
 
+        myRoutesOpen.add(new Path("/api/chat/wp/status", null));
+        myRoutesOpen.add(new Path("/api/chat/wp", null));
+
         myRoutesProtected.add(new Path("/api/chat/action", Collections.singletonList(autConsolePlatform)));
         myRoutesProtected.add(new Path("/api/chat/action/dataTable", Collections.singletonList(autConsolePlatform)));
         myRoutesProtected.add(new Path("/api/chat/action/quantity", Collections.singletonList(autConsolePlatform)));
