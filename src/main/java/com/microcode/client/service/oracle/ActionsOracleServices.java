@@ -13,7 +13,6 @@ import com.microcode.client.entity.ContentResponse;
 import com.microcode.client.entity.Option;
 import com.microcode.client.service.chat.ConsumeChatService;
 import com.microcode.client.service.helper.HelperService;
-import com.microcode.client.service.helper.PdfDownloaderService;
 import com.microcode.client.service.jasper.JasperService;
 import com.microcode.client.service.mysql.ActionServices;
 import com.microcode.client.service.mysql.PrincipalDataServices;
@@ -75,7 +74,7 @@ public class ActionsOracleServices {
         principalDataServices.updateDataPrincipal();
     }
 
-    public final String MAIL_TEST = "cgonzalez@activos.com.co";
+//    public final String MAIL_TEST = "cgonzalez@activos.com.co";
 
     public Chat initialChatIfNull(String chatId){
         chatSessionManager.updateChatActivity(chatId,null);
@@ -179,8 +178,8 @@ public class ActionsOracleServices {
                 String contentMail = String.format(action.getActionRepOkMail(),code);
                 String subject = String.format(action.getActionRepOkMailSubject(),code);
 
-                mailServices.sendMailChat(MAIL_TEST,contentMail,subject,chat.getPrincipalRequest());
-//                mailServices.sendMailVerified(chat.getChatMail(),code,chat.getPrincipalRequest());
+//                mailServices.sendMailChat(MAIL_TEST,contentMail,subject,chat.getPrincipalRequest());
+                mailServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest());
 
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action);
             }
@@ -498,7 +497,7 @@ public class ActionsOracleServices {
                         String subject = String.format(action.getActionRepOkMailSubject(),"Laboral", chat.getNames());
 
                         mailServices.sendMailCertificatesFile(
-                                contentMail, subject, MAIL_TEST, file, "CertificadoLaboral.pdf",chat.getPrincipalRequest()
+                                contentMail, subject, chat.getChatMail(), file, "CertificadoLaboral.pdf",chat.getPrincipalRequest()
                         ).subscribe();
                     return null;
 
@@ -518,7 +517,7 @@ public class ActionsOracleServices {
                         String subjectPay = String.format(action.getActionRepOkMailSubject(),"de pago", chat.getNames());
 
                         mailServices.sendMailCertificatesFile(
-                                contentMailPay, subjectPay, MAIL_TEST, filePay, "CertificacionPago.pdf",chat.getPrincipalRequest()
+                                contentMailPay, subjectPay, chat.getChatMail(), filePay, "CertificacionPago.pdf",chat.getPrincipalRequest()
                         ).subscribe();
                     return null;
 
@@ -556,7 +555,7 @@ public class ActionsOracleServices {
 
                                         try {
                                             mailServices.sendMailCertificatesFile(
-                                                    contentMailDian, subjectDian, MAIL_TEST, certDian, "IngresosRetenciones.pdf", chat.getPrincipalRequest()
+                                                    contentMailDian, subjectDian, chat.getChatMail(), certDian, "IngresosRetenciones.pdf", chat.getPrincipalRequest()
                                             ).subscribe();
                                         } catch (IOException e) {
                                             return;
@@ -582,7 +581,7 @@ public class ActionsOracleServices {
                     String contentMailCcf = String.format(action.getActionRepOkMail(),chat.getNames(),comp.getEmpNd(),nameCompany);
                     String subjectCcf = String.format(action.getActionRepOkMailSubject(),chat.getNames());
 
-                    mailServices.sendMailChat(MAIL_TEST,contentMailCcf,subjectCcf,chat.getPrincipalRequest());
+                    mailServices.sendMailChat(chat.getChatMail(),contentMailCcf,subjectCcf,chat.getPrincipalRequest());
 
                     String mailSend = principalDataServices.getForSiglaAndEmpNd("ccfProvider", comp.getEmpNd());
                     return String.format(action.getActionRespOkMessage(),nameCompany,mailSend);
@@ -634,7 +633,7 @@ public class ActionsOracleServices {
                                     String subjectPlanilla = String.format(action.getActionRepOkMailSubject(), "Planilla", chat.getNames());
 
                                     mailServices.sendMailCertificatesFile(
-                                            contentMailPlanilla, subjectPlanilla, MAIL_TEST, certPlanilla, "Planilla.pdf", chat.getPrincipalRequest()
+                                            contentMailPlanilla, subjectPlanilla, chat.getChatMail(), certPlanilla, "Planilla.pdf", chat.getPrincipalRequest()
                                     ).subscribe();
 
                                     return true;
