@@ -94,6 +94,12 @@ public class HelperService {
         return List.of(860090915L);
     }
 
+    public Long definePrincipalForCodeUnique(Integer companyId){
+        if(companyId == 2) return 800148972L;
+        if(companyId == 3) return 830057687L;
+        return 860090915L;
+    }
+
     public Long defineUniquePrincipalForAuthorized(List<Long> authorized){
         if(authorized.contains(800148972L)) return 2L;
         if(authorized.contains(830057687L)) return 3L;

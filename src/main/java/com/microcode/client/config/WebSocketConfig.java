@@ -24,6 +24,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         "http://localhost:5173",
                         "https://portal.genialw.com",
                         "https://front-chat-842209943869.us-east1.run.app",
+                        "https://front-chat-842209943869.us-east1.run.app",
                         "https://front-chat-2-842209943869.us-east1.run.app",
                         "https://www.activos.com.co",
                         "https://www.serviola.com.co",

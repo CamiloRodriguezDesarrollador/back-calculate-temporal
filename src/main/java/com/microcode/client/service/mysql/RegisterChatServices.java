@@ -31,7 +31,7 @@ public class RegisterChatServices implements RegisterChatServicesI {
     }
 
     @Override
-    public void createForMessage(String chatId, ContentMessage contentMessage, String ip, Integer companyId) {
+    public void createForMessage(String chatId, ContentMessage contentMessage, String ip, Integer companyId, Integer typeChat) {
         Chat chat = chatSessionManager.getChatById(chatId);
         String codePrincipal = helperService.definePrincipalForCode(companyId).toString();
 
@@ -48,6 +48,7 @@ public class RegisterChatServices implements RegisterChatServicesI {
 
             reg.setEmpNdFil(chat.getEmpNdFil());
             reg.setCtoNumber(chat.getCtoNumber());
+            reg.setTypeChat(typeChat);
             create( reg );
 
         } catch (Exception e) {
@@ -56,7 +57,7 @@ public class RegisterChatServices implements RegisterChatServicesI {
     }
 
     @Override
-    public void createForResponse(String chatId, ContentResponse contentResponse, String ip, Integer companyId) {
+    public void createForResponse(String chatId, ContentResponse contentResponse, String ip, Integer companyId, Integer typeChat) {
         Chat chat = chatSessionManager.getChatById(chatId);
         String codePrincipal = helperService.definePrincipalForCode(companyId).toString();
 
@@ -74,6 +75,7 @@ public class RegisterChatServices implements RegisterChatServicesI {
 
             reg.setEmpNdFil(chat.getEmpNdFil());
             reg.setCtoNumber(chat.getCtoNumber());
+            reg.setTypeChat(typeChat);
 
             create( reg );
         } catch (Exception e) {

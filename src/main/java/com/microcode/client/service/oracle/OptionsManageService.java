@@ -19,10 +19,12 @@ public class OptionsManageService {
 
     public static List<Action> actionsPrincipal;
     public static List<Option> optionsBasic;
+    public static List<Option> optionsBasicExternal;
     public static List<Option> optionsEps;
     public static List<Option> optionsBienestar;
     public static List<Option> Bienestar;
     public static List<Option> optionsPrincipal;
+    public static List<Option> optionsPrincipalExternal;
     public static List<Option> optionsDocument;
     public static List<Option> optionsEntities;
     public static List<Option> optionEndChat;
@@ -30,6 +32,10 @@ public class OptionsManageService {
     public static List<Option> optionsPension;
     public static List<Option> optionsInca;
     public static List<Option> optionsCCF;
+    public static List<Option> optionsFedac;
+    public static List<Option> optionsPortal;
+    public static List<Option> optionsCandidato;
+    public static List<Option> optionsClientePotencial;
 
     public static List<PrincipalData> dataActionsPrincipal;
 
@@ -43,6 +49,9 @@ public class OptionsManageService {
 
     public static void updateOptionsBasic(List<Option> options) {
         optionsBasic = options;
+    }
+    public static void updateOptionsBasicExternal(List<Option> options) {
+        optionsBasicExternal = options;
     }
     public static void updateOptionsDocument(List<Option> options) {
         optionsDocument = options;
@@ -62,6 +71,18 @@ public class OptionsManageService {
     public static void updateOptionsCcf(List<Option> options) {
         optionsCCF = options;
     }
+    public static void updateOptionsFedac(List<Option> options) {
+        optionsFedac = options;
+    }
+    public static void updateOptionsClientePotencial(List<Option> options) {
+        optionsClientePotencial = options;
+    }
+    public static void updateOptionsPortal(List<Option> options) {
+        optionsPortal = options;
+    }
+    public static void updateOptionsCandidato(List<Option> options) {
+        optionsCandidato = options;
+    }
     public static void updateOptionEntities(List<Option> options) {
         optionsEntities = options;
     }
@@ -73,6 +94,9 @@ public class OptionsManageService {
     }
     public static void updateOptionsPrincipal(List<Option> options) {
         optionsPrincipal = options;
+    }
+    public static void updateOptionsPrincipalExternal(List<Option> options) {
+        optionsPrincipalExternal = options;
     }
 
     @SuppressWarnings("unchecked")

@@ -1,5 +1,6 @@
 package com.microcode.client.service.oracle;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microcode.client.clients.ConnectExternalServices;
@@ -74,12 +75,53 @@ public class ActionsOracleServices {
         principalDataServices.updateDataPrincipal();
     }
 
-//    public final String MAIL_TEST = "cgonzalez@activos.com.co";
+    public final String MAIL_TEST = "cgonzalez@activos.com.co";
 
     public Chat initialChatIfNull(String chatId){
         chatSessionManager.updateChatActivity(chatId,null);
         return chatSessionManager.getChatById(chatId);
     }
+
+    public ContentResponse getDataUserExternal(Map<String,String> inputs, Action action) throws JsonProcessingException {
+        try{
+
+            String typeDocument = inputs.get("typeIdentity");
+            String document = inputs.get("identity");
+            String name = inputs.get("name");
+            String phone = inputs.get("phone");
+            String email = inputs.get("email");
+            String chatId = inputs.get("chatId");
+            String principalRequest = inputs.get("principalRequest");
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            List<Long> idsPrincipal = objectMapper.readValue(principalRequest, new TypeReference<>() {});
+
+            Chat chat;
+
+            chat = chatSessionManager.getChatById(chatId);
+            if(chat == null) chat = initialChatIfNull(chatId);
+            chat.setChatStart(new Date());
+            chat.setNames(name);
+            chat.setDocument(document);
+            chat.setTypeDocument(typeDocument);
+            chat.setChatMail(email);
+            chat.setChatAuthenticated(false);
+            chat.setPrincipalRequest(idsPrincipal);
+            chat.setEmpNd(idsPrincipal.get(0));
+            chat.setTdcTd("NI");
+
+
+
+            if(name != null && phone != null && email != null && document != null){
+                return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()),OptionsManageService.optionsPrincipalExternal, action);
+            }
+            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()),OptionsManageService.optionsBasicExternal, action);
+        } catch (Exception e) {
+            return ActionsOracleServices.responseWithOptionsParam(error,action);
+        }
+
+    }
+
 
     public ContentResponse getDataUser(Map<String,String> inputs, Action action) {
         try{
@@ -156,9 +198,8 @@ public class ActionsOracleServices {
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return error;
+
         }
-
-
     }
 
     public ContentResponse verifiedMail(Map<String,String> inputs, Action action) {
@@ -178,8 +219,8 @@ public class ActionsOracleServices {
                 String contentMail = String.format(action.getActionRepOkMail(),code);
                 String subject = String.format(action.getActionRepOkMailSubject(),code);
 
-//                mailServices.sendMailChat(MAIL_TEST,contentMail,subject,chat.getPrincipalRequest());
-                mailServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest());
+                mailServices.sendMailChat(MAIL_TEST,contentMail,subject,chat.getPrincipalRequest());
+//                mailServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest());
 
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action);
             }
@@ -404,15 +445,20 @@ public class ActionsOracleServices {
 
     }
 
+
+
 //   Metodo estandar
 
     public ContentResponse methodStandardRedirect(Map<String,String> inputs, Action action) {
         try{
             String chatId = inputs.get("chatId");
+            String typeChat = inputs.get("typeChat");
             Chat chat = chatSessionManager.getChatById(chatId);
 
-            ContentResponse resp = this.validateInitial(chat);
-            if(resp != null) return resp;
+            if(typeChat.equals("1")) {
+                ContentResponse resp = this.validateInitial(chat);
+                if(resp != null) return resp;
+            }
 
             return ContentResponse.buildContentResponseOk(
                     String.format(action.getActionRespOkMessage(), chat.getNames()),
@@ -420,7 +466,7 @@ public class ActionsOracleServices {
                     action);
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return error;
+            return ActionsOracleServices.responseWithOptionsParam(error,action);
         }
     }
 
@@ -429,10 +475,11 @@ public class ActionsOracleServices {
             Action action = actionOriginal.clone();
             String detail = inputs.get("detail");
             String chatId = inputs.get("chatId");
+            String typeChat = inputs.get("typeChat");
+
             Chat chat = chatSessionManager.getChatById(chatId);
 
             if(!actionServices.verifiedRequirementContractActive(chat,action)) return withoutContract;
-
 
             String messageOk = helperService.isPrincipal(chat.getEmpNdFil()) ? action.getActionRespOkMessagePrincipal() : action.getActionRespOkMessage();
 
@@ -440,9 +487,10 @@ public class ActionsOracleServices {
 
             if (validateQuantity != null) return responseWithOptionsParam(validateQuantity, action);
 
-            ContentResponse resp = this.validateInitial(chat);
-            if (resp != null) return resp;
-
+            if(typeChat.equals("1")){
+                ContentResponse resp = this.validateInitial(chat);
+                if (resp != null) return resp;
+            }
 
             if(action.getActionSigla() != null || action.getActionSiglaPrincipal() != null){
                 messageOk = assignPrincipalData(action,chat);
@@ -469,9 +517,10 @@ public class ActionsOracleServices {
             );
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return error;
+            return ActionsOracleServices.responseWithOptionsParam(error,actionOriginal);
         }
     }
+
 
     public Object methodStandardAdditional(String detail, Action action, Chat chat) {
         try{
@@ -693,7 +742,9 @@ public class ActionsOracleServices {
                             }
                             return String.format(action.getActionRespOkMessage(),list,status);
                         }
-
+                case 105 :
+                    String sig = chat.getContractActive() ? "A" : "I";
+                    return principalDataServices.getForSiglaAndEmpNd("pqr"+sig, chat.getEmpNd());
 
             }
             return null;
@@ -745,6 +796,7 @@ public class ActionsOracleServices {
 
         }
         if(action.getActionId()==529) return messageOk;
+
 
 
         String[] siglas =

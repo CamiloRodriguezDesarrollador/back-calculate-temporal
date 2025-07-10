@@ -63,8 +63,9 @@ public class ActionServices implements ActionServicesI {
         OptionsManageService.updateActions(actions);
 
         updateOptionsByType(actions, "principal", OptionsManageService::updateOptionsPrincipal);
-        updateOptionsByType(actions, "principal", OptionsManageService::updateOptionsPrincipal);
+        updateOptionsByType(actions, "principal-external", OptionsManageService::updateOptionsPrincipalExternal);
         updateOptionsByType(actions, "basic", OptionsManageService::updateOptionsBasic);
+        updateOptionsByType(actions, "basic-external", OptionsManageService::updateOptionsBasicExternal);
         updateOptionsById(actions, OptionsManageService::updateOptionEndChat);
         updateOptionsByType(actions, "documents", OptionsManageService::updateOptionsDocument);
         updateOptionsByType(actions, "eps", OptionsManageService::updateOptionsEps);
@@ -72,6 +73,10 @@ public class ActionServices implements ActionServicesI {
         updateOptionsByType(actions, "pension", OptionsManageService::updateOptionsPension);
         updateOptionsByType(actions, "incapacidades", OptionsManageService::updateOptionsInca);
         updateOptionsByType(actions, "ccf", OptionsManageService::updateOptionsCcf);
+        updateOptionsByType(actions, "fedac", OptionsManageService::updateOptionsFedac);
+        updateOptionsByType(actions, "portal-hv", OptionsManageService::updateOptionsPortal);
+        updateOptionsByType(actions, "candidato", OptionsManageService::updateOptionsCandidato);
+        updateOptionsByType(actions, "cliente-potencial", OptionsManageService::updateOptionsClientePotencial   );
         updateOptionsByType(actions, "liq", OptionsManageService::updateOptionsLiq);
         updateOptionsByType(actions, "entities", OptionsManageService::updateOptionEntities);
 

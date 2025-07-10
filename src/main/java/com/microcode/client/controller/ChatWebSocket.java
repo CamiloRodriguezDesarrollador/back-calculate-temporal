@@ -34,10 +34,11 @@ public class ChatWebSocket {
     private final RegisterChatServices registerChatServices;
     private final ActionsOracleServices actionsOracleServices;
 
-    @MessageMapping("/chat/{chatId}/{companyId}")
+    @MessageMapping("/chat/{chatId}/{companyId}/{typeChat}")
     @SendTo("/api/chat/company/chat/{chatId}")
     public ContentResponse greeting(@DestinationVariable String chatId,
                                     @DestinationVariable Integer companyId,
+                                    @DestinationVariable Integer typeChat,
                                     ContentMessage message,
                                     SimpMessageHeaderAccessor headerAccessor)
             {
@@ -51,18 +52,17 @@ public class ChatWebSocket {
             if (message == null || message.getActionId() == null) return Salt.wrapContentResponde(ActionsOracleServices.responseWithOptionsParam(error,action));
             ContentMessage messageUnwrapped = Salt.unwrapContentMessage(message);
             chatSessionManager.updateChatActivity(chatId, messageUnwrapped);
-            registerChatServices.createForMessage(chatId,messageUnwrapped,clientIp, companyId);
-
+            registerChatServices.createForMessage(chatId,messageUnwrapped,clientIp, companyId,typeChat);
             action =  actionServices.getActionForId(messageUnwrapped.getActionId());
-
-
             Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
             messageUnwrapped.getChatMessage().put("chatId", chatId);
             messageUnwrapped.getChatMessage().put("principalRequest", principalRequest.toString());
+            messageUnwrapped.getChatMessage().put("typeChat", typeChat.toString());
             ContentResponse resp = (ContentResponse) methodAction.invoke(actionsOracleServices, messageUnwrapped.getChatMessage(), action);
-            registerChatServices.createForResponse(chatId,resp,clientIp, companyId);
+            registerChatServices.createForResponse(chatId,resp,clientIp, companyId,typeChat);
             ContentResponse responseWrap = ContentResponse.cloneContentResponse(resp);
             if (responseWrap != null) responseWrap.setActionMessage(Salt.wrapMessage(resp.getActionMessage()));
+
             return responseWrap;
 
         }
