@@ -42,6 +42,8 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
     public String eplNd = "39655785";
     public String tdcTdEpl = "CC";
     public Long contract = 597706L;
+    public Long empNdFil = 860090915L;
+    public String typeChat = "1";
     public String detail = "597706-860090915-NI";
 
     @BeforeEach
@@ -510,11 +512,180 @@ public class ChatWebSocketTest implements WebSocketMessageBrokerConfigurer {
         mockMessage.setChatMessage(chatMessage);
 
         ContentResponse resp = (ContentResponse) methodAction.invoke(actionsOracleServices, mockMessage.getChatMessage(), action);
+        assertNotNull(resp);
+        assertNotEquals(resp.getActionType(),"error");
+    }
+
+    @Test
+    public void getFedacInformationContact() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Chat chat = new Chat();
+        Map<String, String> chatMessage = new HashMap<>();
+        chat.setChatId(String.valueOf(UUID.randomUUID()));
+        Chat chatMockup = actionsOracleServices.initialChatIfNull(chat.getChatId());
+        chatMockup.setEmpNd(empNdFil);
+        chatMockup.setChatStart(new Date());
+        chatMockup.setChatDateAuthorized(new Date());
+        chatMockup.setChatAuthenticated(true);
+
+        ContentMessage mockMessage = new ContentMessage();
+        mockMessage.setActionId(539);
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
+        Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
+        chatMockup.setDocument(eplNd);
+        chatMockup.setTypeDocument(tdcTdEpl);
+        chatMessage.put("detail", detail);
+        chatMessage.put("chatId", chat.getChatId());
+        chatMessage.put("typeChat", typeChat);
+        mockMessage.setChatMessage(chatMessage);
+
+        ContentResponse resp = (ContentResponse) methodAction.invoke(actionsOracleServices, mockMessage.getChatMessage(), action);
+        assertNotNull(resp);
+        assertNotEquals(resp.getActionType(),"error");
 
     }
 
 
+    @Test
+    public void getFedacInformationConvenio() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Chat chat = new Chat();
+        Map<String, String> chatMessage = new HashMap<>();
+        chat.setChatId(String.valueOf(UUID.randomUUID()));
+        Chat chatMockup = actionsOracleServices.initialChatIfNull(chat.getChatId());
+        chatMockup.setEmpNd(empNdFil);
+        chatMockup.setChatStart(new Date());
+        chatMockup.setChatDateAuthorized(new Date());
+        chatMockup.setChatAuthenticated(true);
+
+        ContentMessage mockMessage = new ContentMessage();
+        mockMessage.setActionId(540);
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
+        Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
+        chatMockup.setDocument(eplNd);
+        chatMockup.setTypeDocument(tdcTdEpl);
+        chatMessage.put("detail", detail);
+        chatMessage.put("chatId", chat.getChatId());
+        chatMessage.put("typeChat", typeChat);
+        mockMessage.setChatMessage(chatMessage);
+
+        ContentResponse resp = (ContentResponse) methodAction.invoke(actionsOracleServices, mockMessage.getChatMessage(), action);
+        assertNotNull(resp);
+        assertNotEquals(resp.getActionType(),"error");
+
+    }
 
 
+    @Test
+    public void getFedacInformationOptico() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Chat chat = new Chat();
+        Map<String, String> chatMessage = new HashMap<>();
+        chat.setChatId(String.valueOf(UUID.randomUUID()));
+        Chat chatMockup = actionsOracleServices.initialChatIfNull(chat.getChatId());
+        chatMockup.setEmpNd(empNdFil);
+        chatMockup.setChatStart(new Date());
+        chatMockup.setChatDateAuthorized(new Date());
+        chatMockup.setChatAuthenticated(true);
+
+        ContentMessage mockMessage = new ContentMessage();
+        mockMessage.setActionId(541);
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
+        Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
+        chatMockup.setDocument(eplNd);
+        chatMockup.setTypeDocument(tdcTdEpl);
+        chatMessage.put("detail", detail);
+        chatMessage.put("chatId", chat.getChatId());
+        chatMessage.put("typeChat", typeChat);
+        mockMessage.setChatMessage(chatMessage);
+
+        ContentResponse resp = (ContentResponse) methodAction.invoke(actionsOracleServices, mockMessage.getChatMessage(), action);
+        assertNotNull(resp);
+        assertNotEquals(resp.getActionType(),"error");
+
+    }
+
+    @Test
+    public void getInformationPortal() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Chat chat = new Chat();
+        Map<String, String> chatMessage = new HashMap<>();
+        chat.setChatId(String.valueOf(UUID.randomUUID()));
+        Chat chatMockup = actionsOracleServices.initialChatIfNull(chat.getChatId());
+        chatMockup.setEmpNd(empNdFil);
+        chatMockup.setChatStart(new Date());
+        chatMockup.setChatDateAuthorized(new Date());
+        chatMockup.setChatAuthenticated(true);
+
+        ContentMessage mockMessage = new ContentMessage();
+        mockMessage.setActionId(206);
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
+        Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
+        chatMockup.setDocument(eplNd);
+        chatMockup.setTypeDocument(tdcTdEpl);
+        chatMessage.put("detail", detail);
+        chatMessage.put("chatId", chat.getChatId());
+        chatMessage.put("typeChat", typeChat);
+        mockMessage.setChatMessage(chatMessage);
+
+        ContentResponse resp = (ContentResponse) methodAction.invoke(actionsOracleServices, mockMessage.getChatMessage(), action);
+        assertNotNull(resp);
+        assertNotEquals(resp.getActionType(),"error");
+
+    }
+
+    @Test
+    public void getInformationClientPot() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Chat chat = new Chat();
+        Map<String, String> chatMessage = new HashMap<>();
+        chat.setChatId(String.valueOf(UUID.randomUUID()));
+        Chat chatMockup = actionsOracleServices.initialChatIfNull(chat.getChatId());
+        chatMockup.setEmpNd(empNdFil);
+        chatMockup.setChatStart(new Date());
+        chatMockup.setChatDateAuthorized(new Date());
+        chatMockup.setChatAuthenticated(true);
+
+        ContentMessage mockMessage = new ContentMessage();
+        mockMessage.setActionId(213);
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
+        Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
+        chatMockup.setDocument(eplNd);
+        chatMockup.setTypeDocument(tdcTdEpl);
+        chatMessage.put("detail", detail);
+        chatMessage.put("chatId", chat.getChatId());
+        chatMessage.put("typeChat", typeChat);
+        mockMessage.setChatMessage(chatMessage);
+
+        ContentResponse resp = (ContentResponse) methodAction.invoke(actionsOracleServices, mockMessage.getChatMessage(), action);
+        assertNotNull(resp);
+        assertNotEquals(resp.getActionType(),"error");
+
+    }
+
+    @Test
+    public void getInformationProvider() throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Chat chat = new Chat();
+        Map<String, String> chatMessage = new HashMap<>();
+        chat.setChatId(String.valueOf(UUID.randomUUID()));
+        Chat chatMockup = actionsOracleServices.initialChatIfNull(chat.getChatId());
+        chatMockup.setEmpNd(empNdFil);
+        chatMockup.setChatStart(new Date());
+        chatMockup.setChatDateAuthorized(new Date());
+        chatMockup.setChatAuthenticated(true);
+
+        ContentMessage mockMessage = new ContentMessage();
+        mockMessage.setActionId(204);
+        Action action = actionServices.getActionForId(mockMessage.getActionId());
+        Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
+        chatMockup.setDocument(eplNd);
+        chatMockup.setTypeDocument(tdcTdEpl);
+        chatMessage.put("detail", detail);
+        chatMessage.put("chatId", chat.getChatId());
+        chatMessage.put("typeChat", typeChat);
+        mockMessage.setChatMessage(chatMessage);
+
+        ContentResponse resp = (ContentResponse) methodAction.invoke(actionsOracleServices, mockMessage.getChatMessage(), action);
+        assertNotNull(resp);
+        assertNotEquals(resp.getActionType(),"error");
+
+    }
+
+    
 }
 
