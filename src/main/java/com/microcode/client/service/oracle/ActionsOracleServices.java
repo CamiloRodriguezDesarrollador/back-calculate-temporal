@@ -461,6 +461,9 @@ public class ActionsOracleServices {
                 if(resp != null) return resp;
             }
 
+            if(!actionServices.verifiedRequirementContractActive(chat,action))
+                return ActionsOracleServices.responseWithOptionsParam(withoutContract,action);
+
             return ContentResponse.buildContentResponseOk(
                     String.format(action.getActionRespOkMessage(), chat.getNames()),
                     OptionsManageService.getOptionsByActionWithName(action.getActionOption()),
@@ -511,9 +514,12 @@ public class ActionsOracleServices {
 
             quantityChatServices.createQuantityForAction(action,chat,detail,chat.getEmpNd().toString());
 
+
+            List<Option> options = OptionsManageService.getOptionsByActionWithName(action.getActionOption());
+
             return ContentResponse.buildContentResponseOk(
                     messageOk,
-                    OptionsManageService.getOptionsByActionWithName(action.getActionOption()),
+                    options,
                     action
             );
         } catch (Exception e) {
