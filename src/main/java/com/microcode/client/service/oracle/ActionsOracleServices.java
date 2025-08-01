@@ -76,7 +76,7 @@ public class ActionsOracleServices {
     }
 
 //    public final String MAIL_TEST = "cgonzalez@activos.com.co";
-    public final String MAIL_TEST = "yriascos@activos.com.co";
+//    public final String MAIL_TEST = "yriascos@activos.com.co";
 
     public Chat initialChatIfNull(String chatId){
         chatSessionManager.updateChatActivity(chatId,null);
@@ -220,8 +220,8 @@ public class ActionsOracleServices {
                 String contentMail = String.format(action.getActionRepOkMail(),code);
                 String subject = String.format(action.getActionRepOkMailSubject(),code);
 
-                mailServices.sendMailChat(MAIL_TEST,contentMail,subject,chat.getPrincipalRequest());
-//                mailServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest());
+//                mailServices.sendMailChat(MAIL_TEST,contentMail,subject,chat.getPrincipalRequest());
+                mailServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest());
 
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action);
             }

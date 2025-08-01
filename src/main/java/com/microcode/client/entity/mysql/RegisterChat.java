@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name="plcht_register_chat_desa")
+@Table(name="plcht_register_chat")
 @Getter
 @Setter
 public class RegisterChat implements Serializable {
@@ -56,6 +56,8 @@ public class RegisterChat implements Serializable {
     @Column(name = "TYPE_CHAT")
     private Integer typeChat;
 
+    @Column(name = "CTO_ACTIVE")
+    private String ctoActive;
 
     @Serial
     private static final long serialVersionUID = 1L;

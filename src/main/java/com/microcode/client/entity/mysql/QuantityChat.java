@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name="plcht_quantity_chat_desa")
+@Table(name="plcht_quantity_chat")
 @Getter
 @Setter
 public class QuantityChat implements Serializable {

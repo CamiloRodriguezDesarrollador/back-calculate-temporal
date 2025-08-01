@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name="plcht_principal_data_desa")
+@Table(name="plcht_principal_data")
 @Getter
 @Setter
 @ToString
