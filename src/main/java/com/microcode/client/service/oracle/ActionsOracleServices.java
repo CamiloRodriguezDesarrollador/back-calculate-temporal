@@ -740,10 +740,12 @@ public class ActionsOracleServices {
 
                             String status;
                             if(detail.equals("Pendientes")){
-                                String responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
-                                if(responsible == null) responsible = principalDataServices.getForSiglaAndEmpNd("extension", 0L);
+                                String resp;
+                                Responsible responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
+                                if(responsible == null) resp = principalDataServices.getForSiglaAndEmpNd("extension", 0L);
+                                else resp = responsible.getRinMail().toLowerCase();
                                 status = principalDataServices.getForSiglaAndEmpNd(detail.toLowerCase(), 0L);
-                                status = String.format(status,responsible);
+                                status = String.format(status,resp);
                             }else{
                                 status = principalDataServices.getForSiglaAndEmpNd(detail.toLowerCase(), 0L);
                             }
@@ -752,6 +754,20 @@ public class ActionsOracleServices {
                 case 105 :
                     String sig = chat.getContractActive() ? "A" : "I";
                     return principalDataServices.getForSiglaAndEmpNd("pqr"+sig, chat.getEmpNd());
+
+                case 549 :
+                    if(helperService.isPrincipal(chat.getEmpNdFil())) return String.format(action.getActionRespOkMessagePrincipal(), chat.getNames());
+                    String textActivities = connectExternalServices.getDataAppsheets();
+                    if(textActivities == null) return action.getActionRespFailAction();
+                    String mailResp;
+                    Responsible responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
+                    if(responsible == null) {
+                        mailResp = principalDataServices.getForSiglaAndEmpNd("bienestar", 0L);
+                    }
+                    else {
+                        mailResp = responsible.getRinMail().toLowerCase();
+                    };
+                    return String.format(textActivities, chat.getNames(),mailResp);
 
             }
             return null;
@@ -794,10 +810,10 @@ public class ActionsOracleServices {
                 return  String.format(action.getActionRespOkMessagePrincipal() ,  val);
             }
             else{
-                String responsible;
+                Responsible responsible;
                 responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
                 if(responsible != null)
-                    return  String.format(messageOk ,  List.of(responsible).toArray());
+                    return  String.format(messageOk ,  List.of(responsible.getRinMail().toLowerCase()).toArray());
 
             }
 

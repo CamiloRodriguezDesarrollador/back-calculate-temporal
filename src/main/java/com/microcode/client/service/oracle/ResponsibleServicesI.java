@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface ResponsibleServicesI {
 
-    String findByCompany(String tdcTdFil,  Long empNdFil);
+    Responsible findByCompany(String tdcTdFil,  Long empNdFil);
 
 }

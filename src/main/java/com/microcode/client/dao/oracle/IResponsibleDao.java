@@ -8,7 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 public interface IResponsibleDao extends CrudRepository<Responsible, Long> {
 
     @Query(value = """
-        SELECT LOWER(a.rinMail)
+        SELECT a
         FROM Responsible a
         LEFT JOIN CompanyAgreement b
         ON a.empAcuCodigo = b.empAcuCodigo
@@ -26,6 +26,6 @@ public interface IResponsibleDao extends CrudRepository<Responsible, Long> {
         FETCH FIRST 1 ROWS ONLY
 
         """)
-    String findForTdcFilAndEmpNdFil(String tdcTdFil,  Long empNdFil);
+    Responsible findForTdcFilAndEmpNdFil(String tdcTdFil,  Long empNdFil);
 
 }

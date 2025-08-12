@@ -29,4 +29,7 @@ public class Responsible implements Serializable {
 
     @Column(name = "TCA_CODIGO")
     private Long tcaCodigo;
+
+    @Column(name = "RIN_NOMBRE")
+    private String rinNombre;
 }

@@ -1,9 +1,10 @@
 package com.microcode.client.clients;
 
-import com.microcode.client.entity.clients.Authorization;
-import com.microcode.client.secutiry.Env;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -11,8 +12,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-
-import java.util.List;
 
 
 @Service
@@ -58,6 +57,45 @@ public class ConnectExternalServices {
             System.out.println("Excepción en connectUrl: " + e.getClass() + " - " + e.getMessage());
             return null;
         }
+    }
+
+    public String getDataAppsheets() {
+        String jsonBody = """
+        {
+          "Action": "Find",
+          "Properties": {},
+          "Rows": [
+            {
+              "id": "1"
+            }
+          ]
+        }
+        """;
+
+        try {
+            String rawResponse = this.webClient.post()
+                    .uri("https://api.appsheet.com/api/v2/apps/e1ff3b19-9e78-424b-90e8-bb53b008f9ef/tables/TeoBienestar/records")
+                    .header("ApplicationAccessKey", "V2-4cj01-H7tDy-X7vFK-Q25Le-cM7yc-uWfNC-sQ83B-JLRRA")
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
+                    .bodyValue(jsonBody)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+
+            ObjectMapper mapper = new ObjectMapper();
+            JsonNode root = mapper.readTree(rawResponse);
+
+            if (root.isArray() && !root.isEmpty() && root.get(0).has("Actividad")) {
+                return root.get(0).get("Actividad").asText();
+            } else {
+                return null;
+            }
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+
     }
 
     public void ping() {
