@@ -51,13 +51,13 @@ public class JasperService {
     }
 
 
-    public byte[] getCertificateJob(Long empNd, String tdcTd, Long ctoNumber) {
+    public byte[] getCertificateJob(Long empNd, String tdcTd, Long ctoNumber, String prom) {
         try {
 
             JasperReport cachedReportJob = certJobReportInitial;
 
             TypeNovCompany typ = typeNovServices.findByIds(empNd, tdcTd, 10L);
-            CertificateJob cert = certificatesService.getDataCertificatedJob(typ.getTneCodigo(), ctoNumber, "N", "QUIEN INTERESE");
+            CertificateJob cert = certificatesService.getDataCertificatedJob(typ.getTneCodigo(), ctoNumber, prom, "QUIEN INTERESE");
             Map<String, Object> hm = new HashMap<>();
             hm.put("P_NOM_EMPRESA_PPAL", cert.getNombreEmpresaPrincipal());
             hm.put("P_ND_EMPRESA_PPAL", cert.getEmpresaNd());

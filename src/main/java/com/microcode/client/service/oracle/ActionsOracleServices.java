@@ -211,8 +211,8 @@ public class ActionsOracleServices {
             chat.setChatStart(new Date());
 
             if (isMailCorrect.equals("Y")) {
-//                String code = "123456";
-                String code = helperService.generateCode();
+                String code = "123456";
+//                String code = helperService.generateCode();
                 chat.setChatCode(code);
                 chat.setChatAttempts(1);
                 chat.setChatDateCode(new Date());
@@ -288,17 +288,31 @@ public class ActionsOracleServices {
             List<Option> options = new ArrayList<>(List.of());
             List<String> labels = List.of("Último contrato", "Contrato Anterior");
 
-            for (int i = 0; i < contracts.size() && i < 2; i++) {
+            for (int i = 0; i < contracts.size() && i < labels.size(); i++) {
                 var contract = contracts.get(i);
+                String baseValue = contract.getCtoNumero()+"-"+contract.getEmpNd()+"-"+contract.getTdcTd();
+
+                // Normal
                 options.add(
                         new Option(
                                 action.getActionRespOkAction(),
-                                labels.get(i),
-                                contract.getCtoNumero()+"-"+contract.getEmpNd()+"-"+contract.getTdcTd(),
-                                contract.getCtoNumero()+"-"+contract.getEmpNd()+"-"+contract.getTdcTd()
+                                "📄 " + labels.get(i),
+                                baseValue + "-N",
+                                baseValue + "-N"
+                        )
+                );
+
+                // Con salario promedio (con negrilla en el texto)
+                options.add(
+                        new Option(
+                                action.getActionRespOkAction(),
+                                "📊 " + labels.get(i) + " con <b style='font-size:12px'>Salario Promedio</b>",
+                                baseValue + "-S",
+                                baseValue + "-S"
                         )
                 );
             }
+
 
             Action actionBack = actionServices.getActionForId(1004);
             options.add(
@@ -431,9 +445,24 @@ public class ActionsOracleServices {
 
                 quantityChatServices.createQuantityForAction(action,chat,"0", chat.getEmpNd().toString());
 
+                List<Option> options = new ArrayList<>(
+                        OptionsManageService.getOptionsByActionWithName(action.getActionOption())
+                );
+
+                if (action.getActionRedirect() != null) {
+                    options.add(0,
+                            new Option(
+                                    action.getActionRedirect(),
+                                    "Regresar al menú anterior \uD83D\uDD19",
+                                    null,
+                                    null
+                            )
+                    );
+                }
+
                 return ContentResponse.buildContentResponseOk(
                         String.format(messageOk,val),
-                        OptionsManageService.optionsBasic,
+                        options,
                         action
                 );
             }
@@ -515,7 +544,21 @@ public class ActionsOracleServices {
             quantityChatServices.createQuantityForAction(action,chat,detail,chat.getEmpNd().toString());
 
 
-            List<Option> options = OptionsManageService.getOptionsByActionWithName(action.getActionOption());
+            List<Option> options = new ArrayList<>(
+                    OptionsManageService.getOptionsByActionWithName(action.getActionOption())
+            );
+
+            if (action.getActionRedirect() != null) {
+                options.add(0,
+                        new Option(
+                                action.getActionRedirect(),
+                                "Regresar al menú anterior \uD83D\uDD19",
+                                null,
+                                null
+                        )
+                );
+            }
+
 
             return ContentResponse.buildContentResponseOk(
                     messageOk,
@@ -537,13 +580,15 @@ public class ActionsOracleServices {
                         Long contract = Long.parseLong(part[0]);
                         Long empNd = Long.parseLong(part[1]);
                         String tdcTd = part[2];
+                        String prom = part[3];
 
                         Contract contJob = contractServices.findForCtoNumber(contract, empNd, tdcTd, chat.getPrincipalRequest());
 
                         byte[] file = jasperService.getCertificateJob(
                                 contJob.getEmpNd(),
                                 contJob.getTdcTd(),
-                                contract
+                                contract,
+                                prom
                         );
 
                         if (file == null) return error;

@@ -82,6 +82,9 @@ public class Action implements Serializable, Cloneable {
     @Column(name = "ACT_SIGLA_PPAL", length = 50, nullable = false)
     private String actionSiglaPrincipal;
 
+    @Column(name = "ACT_REDIRECT", length = 50, nullable = false)
+    private Integer actionRedirect;
+
     @Column(name = "AUD_DATE" ,length = 10)
     @Temporal(TemporalType.TIMESTAMP)
     private Date audDate;
