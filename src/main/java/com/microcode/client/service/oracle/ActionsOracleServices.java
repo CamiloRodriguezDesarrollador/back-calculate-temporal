@@ -211,8 +211,8 @@ public class ActionsOracleServices {
             chat.setChatStart(new Date());
 
             if (isMailCorrect.equals("Y")) {
-                String code = "123456";
-//                String code = helperService.generateCode();
+//                String code = "123456";
+                String code = helperService.generateCode();
                 chat.setChatCode(code);
                 chat.setChatAttempts(1);
                 chat.setChatDateCode(new Date());
