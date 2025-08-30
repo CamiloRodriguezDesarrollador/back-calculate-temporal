@@ -5,19 +5,20 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microcode.client.clients.ConnectExternalServices;
 import com.microcode.client.clients.MailServices;
-import com.microcode.client.entity.QuantityResponse;
+import com.microcode.client.entity.general.QuantityResponse;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.entity.oracle.*;
 import com.microcode.client.service.chat.ChatSessionManager;
-import com.microcode.client.entity.Chat;
-import com.microcode.client.entity.ContentResponse;
-import com.microcode.client.entity.Option;
+import com.microcode.client.entity.general.Chat;
+import com.microcode.client.entity.general.ContentResponse;
+import com.microcode.client.entity.general.Option;
 import com.microcode.client.service.chat.ConsumeChatService;
 import com.microcode.client.service.helper.HelperService;
 import com.microcode.client.service.jasper.JasperService;
 import com.microcode.client.service.mysql.ActionServices;
 import com.microcode.client.service.mysql.PrincipalDataServices;
 import com.microcode.client.service.mysql.QuantityChatServices;
+import com.microcode.client.service.mysql.QuestionServices;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -68,11 +69,13 @@ public class ActionsOracleServices {
     private final IncapacityServices incapacityServices;
     private final LibIngServices libIngServices;
     private final ConnectExternalServices connectExternalServices;
+    private final QuestionServices questionServices;
 
     @PostConstruct
     public void init() {
         actionServices.updateTypesChat();
         principalDataServices.updateDataPrincipal();
+        questionServices.updateQuestionCalification();
     }
 
 //    public final String MAIL_TEST = "cgonzalez@activos.com.co";
@@ -114,15 +117,14 @@ public class ActionsOracleServices {
 
 
             if(name != null && phone != null && email != null && document != null){
-                return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()),OptionsManageService.optionsPrincipalExternal, action);
+                return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()),OptionsManageService.optionsPrincipalExternal, action,null);
             }
-            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()),OptionsManageService.optionsBasicExternal, action);
+            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()),OptionsManageService.optionsBasicExternal, action,null);
         } catch (Exception e) {
             return ActionsOracleServices.responseWithOptionsParam(error,action);
         }
 
     }
-
 
     public ContentResponse getDataUser(Map<String,String> inputs, Action action) {
         try{
@@ -146,11 +148,11 @@ public class ActionsOracleServices {
             Long docSearch = Long.valueOf(document);
             Employee employee = employeeService.findByIds(docSearch,typeDocument);
             if (employee == null)
-                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), typeDocument, document),null, action);
+                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), typeDocument, document),null, action,null);
             List<Contract> contracts = contractServices.findByIds(employee.getEplNd(), employee.getTdcTd(),idsPrincipal);
 
             if(contracts == null || contracts.isEmpty())
-                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), typeDocument, document),null, action);
+                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), typeDocument, document),null, action,null);
 
 
             if(employee.getEmail() == null) return ContentResponse.buildNotMail(null);
@@ -195,7 +197,7 @@ public class ActionsOracleServices {
             String mailUser = helperService.generateMail(employee.getEmail().toLowerCase());
             mailServices.ping();
             connectExternalServices.ping();
-            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), mailUser),null, action);
+            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), mailUser),null, action,null);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return error;
@@ -223,10 +225,10 @@ public class ActionsOracleServices {
 //                mailServices.sendMailChat(MAIL_TEST,contentMail,subject,chat.getPrincipalRequest());
                 mailServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest());
 
-                return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action);
+                return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action,null);
             }
 
-            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), null, action);
+            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), null, action,null);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return error;
@@ -257,7 +259,7 @@ public class ActionsOracleServices {
                 chat.setChatAuthenticated(true);
                 chat.setChatDateAuthorized(new Date());
                 chatSessionManager.setChatById( chatId, chat );
-                return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), chat.getNames()),OptionsManageService.optionsPrincipal, action);
+                return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), chat.getNames()),OptionsManageService.optionsPrincipal, action,null);
 
             }
 
@@ -265,7 +267,7 @@ public class ActionsOracleServices {
 
             chat.setChatAttempts(chat.getChatAttempts()+1);
             int att = chat.getChatAttempts()-4;
-            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(),att*-1),null, action);
+            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(),att*-1),null, action,null);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return error;
@@ -283,7 +285,7 @@ public class ActionsOracleServices {
             List<Contract> contracts = contractServices.findByIds(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
 
             if(contracts == null || contracts.isEmpty())
-                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),OptionsManageService.optionsDocument, action);
+                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),OptionsManageService.optionsDocument, action,null);
 
             List<Option> options = new ArrayList<>(List.of());
             List<String> labels = List.of("Último contrato", "Contrato Anterior");
@@ -324,7 +326,7 @@ public class ActionsOracleServices {
                     )
             );
 
-            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), chat.getNames()),options, action);
+            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), chat.getNames()),options, action,null);
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return error;
@@ -381,7 +383,7 @@ public class ActionsOracleServices {
             if(resp != null) return resp;
 
             if(detail == null)
-                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), chat.getNames()),OptionsManageService.optionsDocument, action);
+                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), chat.getNames()),OptionsManageService.optionsDocument, action,null);
 
             chat.setPeriodPlanilla(detail);
 
@@ -408,7 +410,7 @@ public class ActionsOracleServices {
                     )
             );
 
-            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), chat.getNames()),options, action);
+            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), chat.getNames()),options, action,null);
         } catch (Exception e) {
             return error;
         }
@@ -463,7 +465,8 @@ public class ActionsOracleServices {
                 return ContentResponse.buildContentResponseOk(
                         String.format(messageOk,val),
                         options,
-                        action
+                        action,
+                        null
                 );
             }
 
@@ -474,7 +477,6 @@ public class ActionsOracleServices {
         }
 
     }
-
 
 
 //   Metodo estandar
@@ -496,7 +498,10 @@ public class ActionsOracleServices {
             return ContentResponse.buildContentResponseOk(
                     String.format(action.getActionRespOkMessage(), chat.getNames()),
                     OptionsManageService.getOptionsByActionWithName(action.getActionOption()),
-                    action);
+                    action,
+                    OptionsManageService.questionsCalification
+
+            );
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ActionsOracleServices.responseWithOptionsParam(error,action);
@@ -563,14 +568,14 @@ public class ActionsOracleServices {
             return ContentResponse.buildContentResponseOk(
                     messageOk,
                     options,
-                    action
+                    action,
+                    null
             );
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return ActionsOracleServices.responseWithOptionsParam(error,actionOriginal);
         }
     }
-
 
     public Object methodStandardAdditional(String detail, Action action, Chat chat) {
         try{
@@ -610,7 +615,7 @@ public class ActionsOracleServices {
                                 detail
                         );
                         if (filePay == null)
-                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action);
+                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action,null);
                         filePay = jasperService.protectPdfWithPassword(filePay, chat.getDocument());
 
 
@@ -625,7 +630,7 @@ public class ActionsOracleServices {
                 case 505:
                         if(!helperService.getDateCertificateAvailable()){
                             String message = principalDataServices.getForSiglaAndEmpNd("dianNotDisp", 0L);
-                            return ContentResponse.buildContentResponseOk(message, OptionsManageService.optionsBasic, action);
+                            return ContentResponse.buildContentResponseOk(message, OptionsManageService.optionsBasic, action,null);
                         }
 
                         Contract contractYear =  contractServices.findForYear(
@@ -675,7 +680,7 @@ public class ActionsOracleServices {
                     if(comp == null || chat.getCtoNumber() == null) return ContentResponse.buildContentResponseFail(
                             String.format(action.getActionRespFailMessage()),
                             OptionsManageService.optionsCCF,
-                            action
+                            action,null
                     );
                     String nameCompany = comp.getEmpNombre();
 
@@ -721,7 +726,7 @@ public class ActionsOracleServices {
                         );
                         System.out.println(codePlanilla);
                         if (codePlanilla == null)
-                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action);
+                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action,null);
                         //
 
 
@@ -753,7 +758,7 @@ public class ActionsOracleServices {
 
                         System.out.println(incapacities);
                         if(incapacities.isEmpty()){
-                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(),detail.toLowerCase()), OptionsManageService.optionsInca, action);
+                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(),detail.toLowerCase()), OptionsManageService.optionsInca, action,null);
                         }else{
                             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
                             String list = """
@@ -893,7 +898,7 @@ public class ActionsOracleServices {
 
     private ContentResponse getContentResponse(Action action, Chat chat, List<String> dates, Integer actionIdReturn) {
         if(dates == null || dates.isEmpty())
-            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action);
+            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action,null);
         List<Option> options = new ArrayList<>(List.of());
 
         for (String label : dates) {
@@ -916,7 +921,7 @@ public class ActionsOracleServices {
                 )
         );
 
-        return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), chat.getNames()),options, action);
+        return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), chat.getNames()),options, action,null);
     }
 
 

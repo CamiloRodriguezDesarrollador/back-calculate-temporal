@@ -34,6 +34,7 @@ public class Path {
 
         myRoutesOpen.add(new Path("/api/app", null));
         myRoutesOpen.add(new Path("/api/chat/company", null));
+        myRoutesOpen.add(new Path("/api/chat/action", null));
 
         myRoutesOpen.add(new Path("/api/chat/wp/status", null));
         myRoutesOpen.add(new Path("/api/chat/wp", null));

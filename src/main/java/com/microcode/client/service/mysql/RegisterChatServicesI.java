@@ -1,7 +1,7 @@
 package com.microcode.client.service.mysql;
 
-import com.microcode.client.entity.ContentMessage;
-import com.microcode.client.entity.ContentResponse;
+import com.microcode.client.entity.general.ContentMessage;
+import com.microcode.client.entity.general.ContentResponse;
 import com.microcode.client.entity.mysql.RegisterChat;
 
 import java.util.List;

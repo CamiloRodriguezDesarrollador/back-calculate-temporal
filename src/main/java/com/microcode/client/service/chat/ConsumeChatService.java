@@ -1,6 +1,6 @@
 package com.microcode.client.service.chat;
 
-import com.microcode.client.entity.ContentResponse;
+import com.microcode.client.entity.general.ContentResponse;
 import com.microcode.client.service.mysql.Salt;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;

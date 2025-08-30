@@ -1,9 +1,9 @@
 package com.microcode.client.service.mysql;
 
 import com.microcode.client.dao.mysql.IRegisterChatDao;
-import com.microcode.client.entity.Chat;
-import com.microcode.client.entity.ContentMessage;
-import com.microcode.client.entity.ContentResponse;
+import com.microcode.client.entity.general.Chat;
+import com.microcode.client.entity.general.ContentMessage;
+import com.microcode.client.entity.general.ContentResponse;
 import com.microcode.client.entity.mysql.RegisterChat;
 import com.microcode.client.service.chat.ChatSessionManager;
 import com.microcode.client.service.helper.HelperService;

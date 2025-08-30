@@ -1,4 +1,4 @@
-package com.microcode.client.entity;
+package com.microcode.client.entity.general;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,6 +16,7 @@ public class ContentMessage {
     private String chatOwnerMessage;
     private Map<String,String> chatMessage;
     private Integer actionId;
+
 
     @Override
     public String toString() {
@@ -47,7 +48,5 @@ public class ContentMessage {
         }
         return chatMessageString.toString();
     }
-
-
 
 }

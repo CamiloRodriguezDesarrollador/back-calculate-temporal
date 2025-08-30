@@ -1,8 +1,8 @@
 package com.microcode.client.controller;
 
-import com.microcode.client.entity.Chat;
-import com.microcode.client.entity.ContentMessage;
-import com.microcode.client.entity.ContentResponse;
+import com.microcode.client.entity.general.Chat;
+import com.microcode.client.entity.general.ContentMessage;
+import com.microcode.client.entity.general.ContentResponse;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.service.mysql.ActionServices;
 import com.microcode.client.service.oracle.ActionsOracleServices;

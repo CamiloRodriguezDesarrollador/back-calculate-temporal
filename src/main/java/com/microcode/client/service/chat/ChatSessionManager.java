@@ -1,8 +1,8 @@
 package com.microcode.client.service.chat;
 
-import com.microcode.client.entity.Chat;
-import com.microcode.client.entity.ContentMessage;
-import com.microcode.client.entity.QuantityResponse;
+import com.microcode.client.entity.general.Chat;
+import com.microcode.client.entity.general.ContentMessage;
+import com.microcode.client.entity.general.QuantityResponse;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.entity.mysql.QuantityChat;
 import com.microcode.client.service.mysql.QuantityChatServices;
@@ -52,8 +52,6 @@ public class ChatSessionManager {
                 .findFirst()
                 .orElse(null);
     }
-
-
 
 
     public boolean isAuthorized(String chatId){
@@ -149,7 +147,6 @@ public class ChatSessionManager {
     public boolean validateAttemptsCode(Chat chat) {
         return chat.getChatAttempts() >= 3;
     }
-
 
 
     public QuantityResponse validityQuantityRequest(Action action, Chat chat, String detail, String actionPrincipal ) {

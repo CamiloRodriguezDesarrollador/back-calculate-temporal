@@ -112,4 +112,9 @@ public class ActionRestController {
         return "not_found";
     }
 
+    @PostMapping("/ping")
+    public boolean ping() {
+        return true;
+    }
+
 }

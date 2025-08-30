@@ -1,7 +1,7 @@
 package com.microcode.client.service.mysql;
 
 import com.microcode.client.dao.mysql.IQuantityChatDao;
-import com.microcode.client.entity.Chat;
+import com.microcode.client.entity.general.Chat;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.entity.mysql.QuantityChat;
 import lombok.AllArgsConstructor;

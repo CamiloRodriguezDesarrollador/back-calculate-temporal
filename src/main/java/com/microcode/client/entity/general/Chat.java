@@ -1,4 +1,4 @@
-package com.microcode.client.entity;
+package com.microcode.client.entity.general;
 
 import lombok.*;
 

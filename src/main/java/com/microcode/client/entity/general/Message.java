@@ -1,14 +1,8 @@
-package com.microcode.client.entity;
+package com.microcode.client.entity.general;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Date;
-import java.util.UUID;
 
 @Getter
 @Setter

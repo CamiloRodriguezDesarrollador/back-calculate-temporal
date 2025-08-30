@@ -1,9 +1,9 @@
 package com.microcode.client.service.mysql;
 
 import com.microcode.client.dao.mysql.IActionDao;
-import com.microcode.client.entity.Chat;
-import com.microcode.client.entity.ContentResponse;
-import com.microcode.client.entity.Option;
+import com.microcode.client.entity.general.Chat;
+import com.microcode.client.entity.general.ContentResponse;
+import com.microcode.client.entity.general.Option;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.service.oracle.ActionsOracleServices;
 import com.microcode.client.service.oracle.OptionsManageService;
@@ -105,7 +105,8 @@ public class ActionServices implements ActionServicesI {
                         secondParam,
                         a.getActionRespOkRequest(),
                         a.getActionRespOkAction(),
-                        a.getActionType()
+                        a.getActionType(),
+                        null
                 ))
                 .orElse(null);
     }

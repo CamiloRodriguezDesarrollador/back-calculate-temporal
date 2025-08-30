@@ -1,8 +1,9 @@
 package com.microcode.client.service.oracle;
 
-import com.microcode.client.entity.Option;
+import com.microcode.client.entity.general.Option;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.entity.mysql.PrincipalData;
+import com.microcode.client.entity.mysql.Question;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,6 +37,7 @@ public class OptionsManageService {
     public static List<Option> optionsPortal;
     public static List<Option> optionsCandidato;
     public static List<Option> optionsClientePotencial;
+    public static List<Question> questionsCalification;
 
     public static List<PrincipalData> dataActionsPrincipal;
 
@@ -45,6 +47,9 @@ public class OptionsManageService {
     }
     public static void updateDataActionsPrincipal(List<PrincipalData> dataActions) {
         dataActionsPrincipal = dataActions;
+    }
+    public static void updateQuestionsCalification(List<Question> questions) {
+        questionsCalification = questions;
     }
 
     public static void updateOptionsBasic(List<Option> options) {

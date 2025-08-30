@@ -1,16 +1,14 @@
 package com.microcode.client.controller.manage;
 
+import com.microcode.client.entity.general.Chat;
+import com.microcode.client.entity.general.ContentResponse;
 import com.microcode.client.service.chat.ChatSessionManager;
-import com.microcode.client.entity.*;
 import com.microcode.client.service.chat.ConsumeChatService;
 import com.microcode.client.service.oracle.CertificatesService;
 import com.microcode.client.service.oracle.OptionsManageService;
 import lombok.AllArgsConstructor;
-import net.sf.jasperreports.engine.JRException;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.MalformedURLException;
-import java.sql.SQLException;
 import java.util.concurrent.ConcurrentMap;
 
 @RestController
