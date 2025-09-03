@@ -4,18 +4,27 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Getter
 @Setter
 @Service
 public class Env {
 
-    private static final ThreadLocal<String> currentToken = ThreadLocal.withInitial(() -> null);
     private static final ThreadLocal<Integer> currentClient = ThreadLocal.withInitial(() -> null);
     private static final ThreadLocal<Integer> currentUser = ThreadLocal.withInitial(() -> null);
-    private static final ThreadLocal<Integer> currentType = ThreadLocal.withInitial(() -> null);
-    private static final ThreadLocal<Integer> currentPermission = ThreadLocal.withInitial(() -> null);
     private static final ThreadLocal<String> currentMail = ThreadLocal.withInitial(() -> null);
+    private static final ThreadLocal<Integer> currentType = ThreadLocal.withInitial(() -> null);
+    private static final ThreadLocal<String> currentToken = ThreadLocal.withInitial(() -> null);
+
+    public static String getCurrentToken() {
+        return currentToken.get();
+    }
+
+    public static void setCurrentToken(String token) {
+        currentToken.set(token);
+    }
+
 
     public static String getCurrentMail() {
         return currentMail.get();
@@ -23,13 +32,6 @@ public class Env {
 
     public static void setCurrentMail(String mail) {
         currentMail.set(mail);
-    }
-    public static String getCurrentToken() {
-        return currentToken.get();
-    }
-
-    public static void setCurrentToken(String token) {
-        currentToken.set(token);
     }
 
     public static Integer getCurrentClient() {
@@ -44,6 +46,10 @@ public class Env {
         return currentUser.get();
     }
 
+    public static void setCurrentUser(Integer user) {
+        currentUser.set(user);
+    }
+
     public static Integer getCurrentType() {
         return currentType.get();
     }
@@ -51,25 +57,27 @@ public class Env {
     public static void setCurrentType(Integer user) {
         currentType.set(user);
     }
-
-
-    public static void setCurrentUser(Integer user) {
-        currentUser.set(user);
-    }
-
-    public static Integer getCurrentPermission() {
-        return currentPermission.get();
-    }
-
-    public static void setCurrentPermission(Integer permission) {
-        currentPermission.set(permission);
-    }
     public static void clearAll() {
-        currentToken.remove();
         currentClient.remove();
         currentUser.remove();
         currentMail.remove();
-        currentPermission.remove();
+        currentType.remove();
+    }
+
+    public static WebClient.Builder withCurrentHeaders(WebClient.Builder builder) {
+        if (getCurrentUser() != null) {
+            builder.defaultHeader("X-Current-User", getCurrentUser().toString());
+        }
+        if (getCurrentMail() != null) {
+            builder.defaultHeader("X-Current-Mail", getCurrentMail());
+        }
+        if (getCurrentClient() != null) {
+            builder.defaultHeader("X-Current-Client", getCurrentClient().toString());
+        }
+        if (getCurrentType() != null) {
+            builder.defaultHeader("X-Current-Type", getCurrentType().toString());
+        }
+        return builder;
     }
 
 

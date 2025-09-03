@@ -8,7 +8,6 @@ import com.microcode.client.service.mysql.RegexService;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.*;
-import com.microcode.client.secutiry.Handler.RequireMail;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -49,7 +48,6 @@ public class ActionRestController {
     }
 
     @PostMapping("/create")
-    @RequireMail
     public String create(@RequestBody Action act ){
         try{
             if (!regexService.isActionCorrect(act)) return "incorrect_fields";

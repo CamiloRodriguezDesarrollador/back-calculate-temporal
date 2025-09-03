@@ -3,7 +3,6 @@ package com.microcode.client.controller.manage;
 import com.microcode.client.entity.mysql.QuantityChat;
 import com.microcode.client.service.mysql.QuantityChatServices;
 import lombok.AllArgsConstructor;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

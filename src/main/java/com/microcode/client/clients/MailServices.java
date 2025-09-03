@@ -1,5 +1,6 @@
 package com.microcode.client.clients;
 
+import com.microcode.client.secutiry.Env;
 import com.microcode.client.service.helper.HelperService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -23,8 +24,7 @@ public class MailServices {
     public HelperService helperService;
 
     public MailServices() {
-        this.webClient = WebClient.builder()
-                .build();
+        this.webClient = Env.withCurrentHeaders(WebClient.builder()).build();
         this.helperService = new HelperService();
     }
 
@@ -70,24 +70,6 @@ public class MailServices {
 
         return this.webClient.post()
                 .uri(urlMail + "/sendMailCertificatesFile")
-                .bodyValue(body)
-                .retrieve()
-                .bodyToMono(String.class)
-                .onErrorResume(RestClientException.class, ex -> Mono.empty());
-    }
-
-    public Mono<String> sendMailCertificates(String contentMail, String subject ,String emailTo, String filename,
-                                             List<Long> authorized) throws IOException {
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("contentMail", contentMail);
-        body.add("subject", subject);
-        body.add("emailTo", emailTo);
-
-        Long principalAuthorized = helperService.defineUniquePrincipalForAuthorized(authorized);
-        body.add("principalAuthorized", principalAuthorized);
-
-        return this.webClient.post()
-                .uri(urlMail + "/sendMailCertificates")
                 .bodyValue(body)
                 .retrieve()
                 .bodyToMono(String.class)

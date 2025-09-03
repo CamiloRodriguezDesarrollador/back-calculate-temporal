@@ -2,7 +2,6 @@ package com.microcode.client.controller.manage;
 
 import com.microcode.client.entity.mysql.PrincipalData;
 import com.microcode.client.secutiry.Env;
-import com.microcode.client.secutiry.Handler.RequireMail;
 import com.microcode.client.service.mysql.PrincipalDataServices;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -34,7 +33,6 @@ public class PrincipalDataRestController {
 
 
     @PostMapping("/create")
-    @RequireMail
     public String create(@RequestBody PrincipalData act ){
         PrincipalData principalData = principalDataServices.findByEmpNdSigla(act.getEmpNd(),act.getPrincipalSigla());
         if (principalData == null) {
