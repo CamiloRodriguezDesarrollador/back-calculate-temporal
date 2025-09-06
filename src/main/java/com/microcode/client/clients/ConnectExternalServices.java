@@ -1,10 +1,6 @@
 package com.microcode.client.clients;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -19,7 +15,7 @@ public class ConnectExternalServices {
 
 
     @Value("${connect.external.api.url}")
-    public String urlAuthorization;
+    public String urlConnect;
 
     public WebClient webClient;
 
@@ -38,7 +34,7 @@ public class ConnectExternalServices {
         params.add("url", url);
         try {
             return this.webClient.post()
-                    .uri(urlAuthorization + "/connect")
+                    .uri(urlConnect + "/connect")
                     .bodyValue(params)
                     .exchangeToMono(response -> {
                         System.out.println("Status code: " + response.statusCode());
@@ -62,7 +58,7 @@ public class ConnectExternalServices {
     public String getDataAppsheets() {
         try {
             return this.webClient.post()
-                    .uri(urlAuthorization + "/connect-appsheets")
+                    .uri(urlConnect + "/connect-appsheets")
                     .retrieve()
                     .bodyToMono(String.class)
                     .block();
@@ -114,7 +110,7 @@ public class ConnectExternalServices {
     public void ping() {
         try{
             this.webClient.post()
-                    .uri(urlAuthorization + "/ping")
+                    .uri(urlConnect + "/ping")
                     .retrieve()
                     .bodyToMono(Void.class)
                     .onErrorResume(RestClientException.class, ex -> Mono.empty()).subscribe();

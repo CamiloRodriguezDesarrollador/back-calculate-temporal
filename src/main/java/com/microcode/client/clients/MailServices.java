@@ -24,7 +24,6 @@ public class MailServices {
     public HelperService helperService;
 
     public MailServices() {
-        this.webClient = Env.withCurrentHeaders(WebClient.builder()).build();
         this.helperService = new HelperService();
     }
 
