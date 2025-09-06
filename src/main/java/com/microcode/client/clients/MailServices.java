@@ -20,7 +20,6 @@ public class MailServices {
     @Value("${mail.api.url}")
     public String urlMail;
 
-    public WebClient webClient;
     public HelperService helperService;
 
     public MailServices() {
@@ -28,6 +27,7 @@ public class MailServices {
     }
 
     public void sendMailChat(String emailTo, String contentMail, String subject, List<Long>  authorized) {
+        WebClient webClient = Env.withCurrentHeaders(WebClient.builder()).build();
 
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
         params.add("emailTo", emailTo);
@@ -37,7 +37,7 @@ public class MailServices {
         Long principalAuthorized = helperService.defineUniquePrincipalForAuthorized(authorized);
         params.add("principalAuthorized", principalAuthorized);
         try{
-            this.webClient.post()
+            webClient.post()
                     .uri(urlMail + "/sendMailChat")
                     .bodyValue(params)
                     .retrieve()
@@ -50,6 +50,8 @@ public class MailServices {
 
     public Mono<String> sendMailCertificatesFile(String contentMail, String subject , String emailTo, byte[] fileBytes, String filename,
                                                  List<Long> authorized) throws IOException {
+        WebClient webClient = Env.withCurrentHeaders(WebClient.builder()).build();
+
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("contentMail", contentMail);
         body.add("subject", subject);
@@ -67,7 +69,7 @@ public class MailServices {
             }
         });
 
-        return this.webClient.post()
+        return webClient.post()
                 .uri(urlMail + "/sendMailCertificatesFile")
                 .bodyValue(body)
                 .retrieve()
@@ -77,8 +79,10 @@ public class MailServices {
 
 
     public void ping() {
+        WebClient webClient = Env.withCurrentHeaders(WebClient.builder()).build();
+
         try{
-            this.webClient.post()
+            webClient.post()
                     .uri(urlMail + "/ping")
                     .retrieve()
                     .bodyToMono(Void.class)
