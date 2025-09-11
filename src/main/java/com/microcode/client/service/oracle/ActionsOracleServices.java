@@ -389,7 +389,7 @@ public class ActionsOracleServices {
 
             List<Option> options = new ArrayList<>(List.of());
 
-            for (String label : List.of("Sin IBC","Con IBC")) {
+            for (String label : List.of("Sin IBC:"+detail,"Con IBC:"+detail)) {
                 options.add(
                         new Option(
                                 action.getActionRespOkAction(),
@@ -717,7 +717,7 @@ public class ActionsOracleServices {
                     return String.format(val,chat.getNames() );
 
                 case 535 :
-                        Long typeFormat = detail.equals("Sin IBC") ? 0L : 1L;
+                        Long typeFormat = detail.contains("Sin IBC") ? 0L : 1L;
                         System.out.println(typeFormat);
                         System.out.println(chat.getPeriodPlanilla());
                         Long codePlanilla = certificatesService.getDataCertificatePlanilla(
