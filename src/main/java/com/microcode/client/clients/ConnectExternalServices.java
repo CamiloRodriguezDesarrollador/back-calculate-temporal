@@ -55,6 +55,18 @@ public class ConnectExternalServices {
         }
     }
 
+    public Boolean connectHtmlPlanilla(String endpoint, String xmlInput) {
+        try {
+            return this.webClient.get()
+                    .uri(urlConnect + "/connect-html-planilla?endpoint=" + endpoint + "&xmlInput=" + xmlInput)
+                    .retrieve()
+                    .bodyToMono(Boolean.class)
+                    .block();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     public String getDataAppsheets() {
         try {
             return this.webClient.post()

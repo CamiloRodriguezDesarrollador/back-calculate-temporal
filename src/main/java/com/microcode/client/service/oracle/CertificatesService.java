@@ -1,5 +1,6 @@
 package com.microcode.client.service.oracle;
 
+import com.microcode.client.clients.ConnectExternalServices;
 import com.microcode.client.clients.MailServices;
 import com.microcode.client.entity.oracle.*;
 import com.microcode.client.service.helper.HelperService;
@@ -40,8 +41,8 @@ import java.util.*;
 public class CertificatesService {
 
     private final JdbcTemplate jdbcTemplate;
-    private final MailServices mailServices;
     private final HelperService helperService;
+    private final ConnectExternalServices connectExternalServices;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -383,7 +384,8 @@ public class CertificatesService {
 
             if (error == null || error.isEmpty() || error.equals("K")) {
                 String xmlInput = helperService.clobToString(xmlInputClob);
-                if (!getContentHTML(endpoint, xmlInput)) return null;
+                if (!connectExternalServices.connectHtmlPlanilla(endpoint, xmlInput)) return null;
+                System.out.println("Aca:" + tpqCode);
                 return tpqCode;
 
             }
@@ -396,32 +398,6 @@ public class CertificatesService {
         }
     }
 
-    public boolean getContentHTML(String endpoint, String xmlInput ) {
-
-        try {
-            endpoint = URLEncoder.encode(endpoint, StandardCharsets.UTF_8);
-            xmlInput = URLEncoder.encode(xmlInput, StandardCharsets.UTF_8);
-
-            URL url = new URL("http://apps.activos.com.co/JADP0007/ServletRespuestaSOAP?END_POINT=" + endpoint + "&XML_INPUT=" + xmlInput);
-            URLConnection uc = url.openConnection();
-            uc.connect();
-
-            BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
-            String inputLine;
-            StringBuilder content = new StringBuilder();
-
-            while ((inputLine = in.readLine()) != null) {
-                content.append(inputLine).append("\n");
-            }
-            in.close();
-            System.out.println(content);
-            return !content.toString().contains("Error") && !content.toString().contains("Exception");
-
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
-            return false;
-        }
-    }
 
 
 
