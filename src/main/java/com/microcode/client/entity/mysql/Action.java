@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name="plcht_action_desa")
+@Table(name="plcht_action")
 @Getter
 @Setter
 @ToString
