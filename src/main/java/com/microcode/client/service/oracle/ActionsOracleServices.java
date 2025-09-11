@@ -389,7 +389,7 @@ public class ActionsOracleServices {
 
             List<Option> options = new ArrayList<>(List.of());
 
-            for (String label : List.of("Sin IBC:"+detail,"Con IBC:"+detail)) {
+            for (String label : List.of("Sin IBC del periodo "+detail,"Sin IBC del periodo "+detail)) {
                 options.add(
                         new Option(
                                 action.getActionRespOkAction(),
