@@ -443,7 +443,7 @@ public class ActionsOracleServices {
                 if (validateQuantity != null) return responseWithOptionsParam(validateQuantity, action);
 
                 String messageOk = principalDataServices.getForSiglaAndEmpNd("plantaIncapacidad", 0L);
-                String val = principalDataServices.getForSiglaAndEmpNd("urlSiteJob", chat.getEmpNd());
+                String val = principalDataServices.getForSiglaAndEmpNd("urlSitioTrabajador", chat.getEmpNd());
 
                 quantityChatServices.createQuantityForAction(action,chat,"0", chat.getEmpNd().toString());
 
@@ -812,7 +812,7 @@ public class ActionsOracleServices {
                     String mailResp;
                     Responsible responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
                     if(responsible == null) {
-                        mailResp = principalDataServices.getForSiglaAndEmpNd("bienestar", 0L);
+                        mailResp = principalDataServices.getForSiglaAndEmpNd("whatsappBienestar", 0L);
                     }
                     else {
                         mailResp = responsible.getRinMail().toLowerCase();
@@ -854,9 +854,8 @@ public class ActionsOracleServices {
 
         if(action.getActionId()==524){
             if( histConstantServices.findIfHaveConstant(chat.getEmpNdFil()) ){
-                System.out.println("entra aca");
                 action.setActionRespOkMessage(action.getActionRespOkMessagePrincipal());
-                String val = principalDataServices.getForSiglaAndEmpNd("urlSiteJob", chat.getEmpNd());
+                String val = principalDataServices.getForSiglaAndEmpNd("urlSitioTrabajador", chat.getEmpNd());
                 return  String.format(action.getActionRespOkMessagePrincipal() ,  val);
             }
             else{
