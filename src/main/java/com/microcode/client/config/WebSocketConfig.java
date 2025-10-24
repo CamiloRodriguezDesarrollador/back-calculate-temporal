@@ -28,7 +28,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
                         "https://front-chat-2-842209943869.us-east1.run.app",
                         "https://www.activos.com.co",
                         "https://www.serviola.com.co",
-                        "https://www.atecno.com.co"
+                        "https://www.atecno.com.co",
+                        "https://front-chat-consumer-871565840020.us-east1.run.app"
                 )
         ;
     }
