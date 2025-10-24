@@ -32,7 +32,7 @@ public class ChatRestController {
                             @RequestParam String requestType,
                             @RequestParam String options) {
         ContentResponse contentResponse = new ContentResponse();
-        contentResponse.setOptions(OptionsManageService.getOptionsByActionWithName(options));
+//        contentResponse.setOptions(OptionsManageService.getOptionsByActionWithName(options));
         contentResponse.setActionMessage(message);
         contentResponse.setActionRequest(requestType);
         consumeChatService.sendMessageToChat(chatId, contentResponse);

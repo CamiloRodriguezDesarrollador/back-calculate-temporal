@@ -4,6 +4,7 @@ import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.secutiry.Env;
 import com.microcode.client.service.mysql.ActionServices;
 import com.microcode.client.service.mysql.PrincipalDataServices;
+import com.microcode.client.service.mysql.QuestionServices;
 import com.microcode.client.service.mysql.RegexService;
 import lombok.AllArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -19,6 +20,7 @@ public class ActionRestController {
 
     private final PrincipalDataServices principalDataServices;
     private ActionServices actionServices;
+    private QuestionServices questionServices;
     private RegexService regexService;
 
     @PostMapping("/dataTable")
@@ -40,6 +42,7 @@ public class ActionRestController {
         try {
             actionServices.updateTypesChat();
             principalDataServices.updateDataPrincipal();
+            questionServices.updateQuestionCalification();
 
             return true;
         } catch (Exception e) {

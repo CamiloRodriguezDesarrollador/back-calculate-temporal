@@ -50,6 +50,7 @@ public class ActionsOracleServices {
     private final CertificatesService certificatesService;
     private final HelperService helperService;
     private final ActionServices actionServices;
+    private final OptionsManageService optionsManageService;
 
     public static ContentResponse unauthorized;
     public static ContentResponse notFound;
@@ -63,7 +64,6 @@ public class ActionsOracleServices {
     private final HistNovServices histNovServices;
     private final ConsumeChatService consumeChatService;
     private final ContributionNovServices contributionNovServices;
-    private final OptionsManageService optionsManageService;
     private final PrincipalDataServices principalDataServices;
     private final HistConstantServices histConstantServices;
     private final IncapacityServices incapacityServices;
@@ -121,7 +121,7 @@ public class ActionsOracleServices {
             }
             return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()),OptionsManageService.optionsBasicExternal, action,null);
         } catch (Exception e) {
-            return ActionsOracleServices.responseWithOptionsParam(error,action);
+            return this.responseWithOptionsParam(error,action);
         }
 
     }
@@ -195,8 +195,8 @@ public class ActionsOracleServices {
             chatSessionManager.setChatById( chatId, chat );
 
             String mailUser = helperService.generateMail(employee.getEmail().toLowerCase());
-            mailServices.ping();
-            connectExternalServices.ping();
+//            mailServices.ping();
+//            connectExternalServices.ping();
             return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), mailUser),null, action,null);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -213,8 +213,8 @@ public class ActionsOracleServices {
             chat.setChatStart(new Date());
 
             if (isMailCorrect.equals("Y")) {
-//                String code = "123456";
-                String code = helperService.generateCode();
+                String code = "123456";
+//                String code = helperService.generateCode();
                 chat.setChatCode(code);
                 chat.setChatAttempts(1);
                 chat.setChatDateCode(new Date());
@@ -223,7 +223,7 @@ public class ActionsOracleServices {
                 String subject = String.format(action.getActionRepOkMailSubject(),code);
 
 //                mailServices.sendMailChat(MAIL_TEST,contentMail,subject,chat.getPrincipalRequest());
-                mailServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest());
+//                mailServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest());
 
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action,null);
             }
@@ -448,7 +448,7 @@ public class ActionsOracleServices {
                 quantityChatServices.createQuantityForAction(action,chat,"0", chat.getEmpNd().toString());
 
                 List<Option> options = new ArrayList<>(
-                        OptionsManageService.getOptionsByActionWithName(action.getActionOption())
+                        optionsManageService.getOptionsByActionWithOption(action.getActionOption())
                 );
 
                 if (action.getActionRedirect() != null) {
@@ -493,18 +493,18 @@ public class ActionsOracleServices {
             }
 
             if(!actionServices.verifiedRequirementContractActive(chat,action))
-                return ActionsOracleServices.responseWithOptionsParam(withoutContract,action);
+                return this.responseWithOptionsParam(withoutContract,action);
 
             return ContentResponse.buildContentResponseOk(
                     String.format(action.getActionRespOkMessage(), chat.getNames()),
-                    OptionsManageService.getOptionsByActionWithName(action.getActionOption()),
+                    optionsManageService.getOptionsByActionWithOption(action.getActionOption()),
                     action,
                     OptionsManageService.questionsCalification
 
             );
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return ActionsOracleServices.responseWithOptionsParam(error,action);
+            return this.responseWithOptionsParam(error,action);
         }
     }
 
@@ -546,11 +546,14 @@ public class ActionsOracleServices {
                 }
             }
 
+
             quantityChatServices.createQuantityForAction(action,chat,detail,chat.getEmpNd().toString());
 
-
+            System.out.println(action.getActionId());
+            System.out.println(action.getActionRedirect());
+            System.out.println(action.getActionOption());
             List<Option> options = new ArrayList<>(
-                    OptionsManageService.getOptionsByActionWithName(action.getActionOption())
+                    optionsManageService.getOptionsByActionWithOption(action.getActionOption())
             );
 
             if (action.getActionRedirect() != null) {
@@ -564,7 +567,6 @@ public class ActionsOracleServices {
                 );
             }
 
-
             return ContentResponse.buildContentResponseOk(
                     messageOk,
                     options,
@@ -573,7 +575,7 @@ public class ActionsOracleServices {
             );
         } catch (Exception e) {
             System.out.println(e.getMessage());
-            return ActionsOracleServices.responseWithOptionsParam(error,actionOriginal);
+            return this.responseWithOptionsParam(error,actionOriginal);
         }
     }
 
@@ -884,13 +886,13 @@ public class ActionsOracleServices {
         return  String.format(messageOk ,  values.toArray());
     }
 
-    public static ContentResponse responseWithOptionsParam(ContentResponse response, Action action){
+    public ContentResponse responseWithOptionsParam(ContentResponse response, Action action){
         ContentResponse responseClone = ContentResponse.cloneContentResponse(response);
         if(action == null || action.getActionOptionError() == null) {
             responseClone.setOptions(OptionsManageService.optionsPrincipal);
             return responseClone;
         }
-        List<Option> options =  OptionsManageService.getOptionsByActionWithName(action.getActionOptionError());
+        List<Option> options =  optionsManageService.getOptionsByActionWithOption(action.getActionOptionError());
         responseClone.setOptions(options);
         return responseClone;
     }

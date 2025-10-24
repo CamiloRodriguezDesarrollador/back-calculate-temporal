@@ -4,6 +4,7 @@ import com.microcode.client.entity.general.Option;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.entity.mysql.PrincipalData;
 import com.microcode.client.entity.mysql.Question;
+import com.microcode.client.service.mysql.ActionServices;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,6 +18,8 @@ import java.util.List;
 @Setter
 @Getter
 public class OptionsManageService {
+
+    public final ActionServices actionServices;
 
     public static List<Action> actionsPrincipal;
     public static List<Option> optionsBasic;
@@ -114,6 +117,10 @@ public class OptionsManageService {
             System.out.println(e.getMessage());
             return List.of();
         }
+    }
+
+    public List<Option> getOptionsByActionWithOption(String type) {
+        return actionServices.updateOptionsByType(type,null);
     }
 
 

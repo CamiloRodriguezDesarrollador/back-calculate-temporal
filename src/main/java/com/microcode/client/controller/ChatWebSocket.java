@@ -51,7 +51,7 @@ public class ChatWebSocket {
 //            Thread.sleep(5000);
             String clientIp = (String) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("clientIp");
 
-            if (message == null || message.getActionId() == null) return Salt.wrapContentResponde(ActionsOracleServices.responseWithOptionsParam(error,action));
+            if (message == null || message.getActionId() == null) return Salt.wrapContentResponde(actionsOracleServices.responseWithOptionsParam(error,action));
             ContentMessage messageUnwrapped = Salt.unwrapContentMessage(message);
             chatSessionManager.updateChatActivity(chatId, messageUnwrapped);
             registerChatServices.createForMessage(chatId,messageUnwrapped,clientIp, companyId,typeChat);
@@ -74,7 +74,7 @@ public class ChatWebSocket {
             Chat chat = chatSessionManager.getChatById(chatId);
             if (chat == null) responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.unauthorized);
             else if(chat.getChatAuthenticated() == null || !chat.getChatAuthenticated()) responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.unauthorized);
-            else responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.responseWithOptionsParam(notFound,action));
+            else responseWrap = ContentResponse.cloneContentResponse(actionsOracleServices.responseWithOptionsParam(notFound,action));
             return Salt.wrapContentResponde(responseWrap);
         }
 

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
@@ -23,7 +24,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class ActionServices implements ActionServicesI {
 
-    private final IActionDao actionDao;
+    public final IActionDao actionDao;
 
     @Override
     public void create(Action action) {
@@ -62,41 +63,44 @@ public class ActionServices implements ActionServicesI {
         List<Action> actions = actionDao.findByActionStatus("A");
         OptionsManageService.updateActions(actions);
 
-        updateOptionsByType(actions, "principal", OptionsManageService::updateOptionsPrincipal);
-        updateOptionsByType(actions, "principal-external", OptionsManageService::updateOptionsPrincipalExternal);
-        updateOptionsByType(actions, "basic", OptionsManageService::updateOptionsBasic);
-        updateOptionsByType(actions, "basic-external", OptionsManageService::updateOptionsBasicExternal);
-        updateOptionsById(actions, OptionsManageService::updateOptionEndChat);
-        updateOptionsByType(actions, "documents", OptionsManageService::updateOptionsDocument);
-        updateOptionsByType(actions, "eps", OptionsManageService::updateOptionsEps);
-        updateOptionsByType(actions, "bienestar", OptionsManageService::updateOptionsBienestar);
-        updateOptionsByType(actions, "pension", OptionsManageService::updateOptionsPension);
-        updateOptionsByType(actions, "incapacidades", OptionsManageService::updateOptionsInca);
-        updateOptionsByType(actions, "ccf", OptionsManageService::updateOptionsCcf);
-        updateOptionsByType(actions, "fedac", OptionsManageService::updateOptionsFedac);
-        updateOptionsByType(actions, "portal-hv", OptionsManageService::updateOptionsPortal);
-        updateOptionsByType(actions, "candidato", OptionsManageService::updateOptionsCandidato);
-        updateOptionsByType(actions, "cliente-potencial", OptionsManageService::updateOptionsClientePotencial   );
-        updateOptionsByType(actions, "liq", OptionsManageService::updateOptionsLiq);
-        updateOptionsByType(actions, "entities", OptionsManageService::updateOptionEntities);
+        updateOptionsByType("principal", OptionsManageService::updateOptionsPrincipal);
+        updateOptionsByType( "principal-external", OptionsManageService::updateOptionsPrincipalExternal);
+        updateOptionsByType("basic", OptionsManageService::updateOptionsBasic);
+        updateOptionsByType("basic-external", OptionsManageService::updateOptionsBasicExternal);
+        updateOptionsById(OptionsManageService::updateOptionEndChat);
+//        updateOptionsByType(actions, "documents", OptionsManageService::updateOptionsDocument);
+//        updateOptionsByType(actions, "eps", OptionsManageService::updateOptionsEps);
+//        updateOptionsByType(actions, "bienestar", OptionsManageService::updateOptionsBienestar);
+//        updateOptionsByType(actions, "pension", OptionsManageService::updateOptionsPension);
+//        updateOptionsByType(actions, "incapacidades", OptionsManageService::updateOptionsInca);
+//        updateOptionsByType(actions, "ccf", OptionsManageService::updateOptionsCcf);
+//        updateOptionsByType(actions, "fedac", OptionsManageService::updateOptionsFedac);
+//        updateOptionsByType(actions, "portal-hv", OptionsManageService::updateOptionsPortal);
+//        updateOptionsByType(actions, "candidato", OptionsManageService::updateOptionsCandidato);
+//        updateOptionsByType(actions, "cliente-potencial", OptionsManageService::updateOptionsClientePotencial   );
+        updateOptionsByType("liq", OptionsManageService::updateOptionsLiq);
+//        updateOptionsByType(actions, "entities", OptionsManageService::updateOptionEntities);
 
         List<Option> optionsUnit = new ArrayList<>();
         optionsUnit.addAll(OptionsManageService.optionsPrincipal);
         optionsUnit.addAll(OptionsManageService.optionEndChat);
 
-        ActionsOracleServices.unauthorized = buildResponse(actions, "unauthorized", null);
-        ActionsOracleServices.notFound = buildResponse(actions, "notFound", optionsUnit);
-        ActionsOracleServices.noAction = buildResponse(actions, "noAction", optionsUnit);
-        ActionsOracleServices.timeOut = buildResponse(actions, "timeOut", null);
-        ActionsOracleServices.error = buildResponse(actions, "error", optionsUnit);
-        ActionsOracleServices.quantityMax = buildResponse(actions, "quantityMax", optionsUnit);
-        ActionsOracleServices.maxAttempts = buildResponse(actions, "maxAttempts", null);
-        ActionsOracleServices.withoutContract = buildResponse(actions, "withoutContract", optionsUnit);
-        ActionsOracleServices.otherSessionActive = buildResponse(actions, "otherSessionActive", null);
+        ActionsOracleServices.unauthorized = buildResponse("unauthorized", null);
+        ActionsOracleServices.notFound = buildResponse( "notFound", optionsUnit);
+        ActionsOracleServices.noAction = buildResponse( "noAction", optionsUnit);
+        ActionsOracleServices.timeOut = buildResponse( "timeOut", null);
+        ActionsOracleServices.error = buildResponse( "error", optionsUnit);
+        ActionsOracleServices.quantityMax = buildResponse( "quantityMax", optionsUnit);
+        ActionsOracleServices.maxAttempts = buildResponse( "maxAttempts", null);
+        ActionsOracleServices.withoutContract = buildResponse( "withoutContract", optionsUnit);
+        ActionsOracleServices.otherSessionActive = buildResponse( "otherSessionActive", null);
 
     }
 
-    private static ContentResponse buildResponse(List<Action> actions, String actionName, List<Option> secondParam) {
+    public ContentResponse buildResponse(String actionName, List<Option> secondParam) {
+
+        List<Action> actions = actionDao.findByActionStatus("A");
+
         return actions.stream()
                 .filter(a -> actionName.equals(a.getActionNameFunction()))
                 .findFirst()
@@ -111,18 +115,25 @@ public class ActionServices implements ActionServicesI {
                 .orElse(null);
     }
 
-    private static void updateOptionsByType(List<Action> actions,String type,Consumer<List<Option>> updater ) {
+    public List<Option> updateOptionsByType(String type, Consumer<List<Option>> updater) {
+        List<Action> actions = actionDao.findByActionStatus("A");
+
         List<Option> options = actions.stream()
                 .filter(a -> type.equalsIgnoreCase(a.getActionType()))
+                .sorted(Comparator.comparing(Action::getActionOrder))
                 .map(a -> new Option(a.getActionId(), a.getActionMessage(), null, a.getActionId().toString()))
                 .collect(Collectors.toList());
 
-        updater.accept(options);
+        if(updater != null) updater.accept(options);
+        return options;
     }
 
-    private static void updateOptionsById(List<Action> actions, Consumer<List<Option>> updater ) {
+    public void updateOptionsById( Consumer<List<Option>> updater ) {
+        List<Action> actions = actionDao.findByActionStatus("A");
+
         List<Option> options = actions.stream()
                 .filter(a -> ((Integer) 1000).equals(a.getActionId()))
+                .sorted(Comparator.comparing(Action::getActionOrder))
                 .map(a -> new Option(a.getActionId(), a.getActionMessage(), null, a.getActionId().toString()))
                 .collect(Collectors.toList());
 
