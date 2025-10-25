@@ -11,6 +11,7 @@ import com.microcode.client.service.mysql.RegisterChatServices;
 import com.microcode.client.service.mysql.Salt;
 import com.microcode.client.service.oracle.ActionsOracleServices;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -25,6 +26,7 @@ import java.util.Objects;
 
 import static com.microcode.client.service.oracle.ActionsOracleServices.*;
 
+@Slf4j
 @Controller
 @AllArgsConstructor
 @Component
@@ -48,7 +50,6 @@ public class ChatWebSocket {
         try{
             List<Long> principalRequest = helperService.definePrincipalForCode(companyId);
 
-//            Thread.sleep(5000);
             String clientIp = (String) Objects.requireNonNull(headerAccessor.getSessionAttributes()).get("clientIp");
 
             if (message == null || message.getActionId() == null) return Salt.wrapContentResponde(actionsOracleServices.responseWithOptionsParam(error,action));
@@ -69,7 +70,7 @@ public class ChatWebSocket {
 
         }
         catch (Exception e){
-            System.out.println(e.getMessage());
+            log.error("Error con el chatId {} : {}" , chatId, e.getMessage());
             ContentResponse responseWrap;
             Chat chat = chatSessionManager.getChatById(chatId);
             if (chat == null) responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.unauthorized);
