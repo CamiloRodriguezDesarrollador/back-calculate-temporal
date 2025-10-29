@@ -807,19 +807,19 @@ public class ActionsOracleServices {
                     String sig = chat.getContractActive() ? "A" : "I";
                     return principalDataServices.getForSiglaAndEmpNd("pqr"+sig, chat.getEmpNd());
 
-                case 549 :
-                    if(helperService.isPrincipal(chat.getEmpNdFil())) return String.format(action.getActionRespOkMessagePrincipal(), chat.getNames());
-                    String textActivities = connectExternalServices.getDataAppsheets();
-                    if(textActivities == null) return action.getActionRespFailAction();
-                    String mailResp;
-                    Responsible responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
-                    if(responsible == null) {
-                        mailResp = principalDataServices.getForSiglaAndEmpNd("whatsappBienestar", 0L);
-                    }
-                    else {
-                        mailResp = responsible.getRinMail().toLowerCase();
-                    };
-                    return String.format(textActivities, chat.getNames(),mailResp);
+//                case 549 :
+//                    if(helperService.isPrincipal(chat.getEmpNdFil())) return String.format(action.getActionRespOkMessagePrincipal(), chat.getNames());
+//                    String textActivities = connectExternalServices.getDataAppsheets();
+//                    if(textActivities == null) return action.getActionRespFailAction();
+//                    String mailResp;
+//                    Responsible responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
+//                    if(responsible == null) {
+//                        mailResp = principalDataServices.getForSiglaAndEmpNd("whatsappBienestar", 0L);
+//                    }
+//                    else {
+//                        mailResp = responsible.getRinMail().toLowerCase();
+//                    };
+//                    return String.format(textActivities, chat.getNames(),mailResp);
 
             }
             return null;
