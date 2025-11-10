@@ -285,7 +285,7 @@ public class ActionsOracleServices {
             List<Contract> contracts = contractServices.findByIds(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
 
             if(contracts == null || contracts.isEmpty())
-                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),OptionsManageService.optionsDocument, action,null);
+                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),optionsManageService.getOptionsByActionWithOption(action.getActionOptionError()), action,null);
 
             List<Option> options = new ArrayList<>(List.of());
             List<String> labels = List.of("Último contrato", "Contrato Anterior");
@@ -383,7 +383,9 @@ public class ActionsOracleServices {
             if(resp != null) return resp;
 
             if(detail == null)
-                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), chat.getNames()),OptionsManageService.optionsDocument, action,null);
+                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), chat.getNames()),
+                        optionsManageService.getOptionsByActionWithOption(action.getActionOptionError())
+                        , action,null);
 
             chat.setPeriodPlanilla(detail);
 
@@ -617,7 +619,8 @@ public class ActionsOracleServices {
                                 detail
                         );
                         if (filePay == null)
-                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action,null);
+                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),
+                                    optionsManageService.getOptionsByActionWithOption(action.getActionOptionError()), action,null);
                         filePay = jasperService.protectPdfWithPassword(filePay, chat.getDocument());
 
 
@@ -681,7 +684,7 @@ public class ActionsOracleServices {
 
                     if(comp == null || chat.getCtoNumber() == null) return ContentResponse.buildContentResponseFail(
                             String.format(action.getActionRespFailMessage()),
-                            OptionsManageService.optionsCCF,
+                            optionsManageService.getOptionsByActionWithOption(action.getActionOptionError()),
                             action,null
                     );
                     String nameCompany = comp.getEmpNombre();
@@ -728,7 +731,9 @@ public class ActionsOracleServices {
                         );
                         System.out.println(codePlanilla);
                         if (codePlanilla == null)
-                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action,null);
+                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),
+                                    optionsManageService.getOptionsByActionWithOption(action.getActionOptionError())
+                                    , action,null);
                         //
 
 
@@ -760,7 +765,9 @@ public class ActionsOracleServices {
 
                         System.out.println(incapacities);
                         if(incapacities.isEmpty()){
-                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(),detail.toLowerCase()), OptionsManageService.optionsInca, action,null);
+                            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(),detail.toLowerCase()),
+                                    optionsManageService.getOptionsByActionWithOption(action.getActionOptionError())
+                                    , action,null);
                         }else{
                             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
                             String list = """
