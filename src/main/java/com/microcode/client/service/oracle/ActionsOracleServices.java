@@ -898,8 +898,10 @@ public class ActionsOracleServices {
     }
 
     private ContentResponse getContentResponse(Action action, Chat chat, List<String> dates, Integer actionIdReturn) {
+        List<Option> optionsError = optionsManageService.getOptionsByActionWithOption(action.getActionOptionError());
         if(dates == null || dates.isEmpty())
-            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()), OptionsManageService.optionsDocument, action,null);
+            return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),
+                    optionsError, action,null);
         List<Option> options = new ArrayList<>(List.of());
 
         for (String label : dates) {
