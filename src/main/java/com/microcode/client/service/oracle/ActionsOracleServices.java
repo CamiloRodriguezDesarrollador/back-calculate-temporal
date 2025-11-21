@@ -104,22 +104,36 @@ public class ActionsOracleServices {
 
             chat = chatSessionManager.getChatById(chatId);
             if(chat == null) chat = initialChatIfNull(chatId);
+
+            chat.setTypeChat(2);
+
             chat.setChatStart(new Date());
-            chat.setNames(name);
-            chat.setDocument(document);
-            chat.setTypeDocument(typeDocument);
-            chat.setChatMail(email);
+            if(name != null) chat.setNames(name);
+            if(document != null) chat.setDocument(document);
+            if(typeDocument != null) chat.setTypeDocument(typeDocument);
+            if(email != null) chat.setChatMail(email);
+            if(phone != null) chat.setChatPhone(phone);
+
             chat.setChatAuthenticated(false);
             chat.setPrincipalRequest(idsPrincipal);
             chat.setEmpNd(idsPrincipal.get(0));
             chat.setTdcTd("NI");
 
 
-
-            if(name != null && phone != null && email != null && document != null){
+            if(chat.getNames() != null && chat.getChatPhone() != null && chat.getChatMail() != null && chat.getDocument() != null && chat.getTypeDocument() != null ){
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()),OptionsManageService.optionsPrincipalExternal, action,null);
             }
-            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()),OptionsManageService.optionsBasicExternal, action,null);
+
+            List<String> missing = new ArrayList<>();
+            if (chat.getTypeDocument() == null || chat.getTypeDocument().isBlank()) missing.add("Tipo de documento");
+            if (chat.getDocument() == null || chat.getDocument().isBlank())         missing.add("Numero de documento");
+            if (chat.getNames() == null || chat.getNames().isBlank())                 missing.add("Nombres");
+            if (chat.getChatPhone() == null || chat.getChatPhone().isBlank())               missing.add("Celular");
+            if (chat.getChatMail() == null || chat.getChatMail().isBlank())               missing.add("Correo electrónico");
+
+            String message = "Por favor enviame los siguientes campos: " + String.join(", ", missing);
+
+            return ContentResponse.buildContentResponseOk(message,null, action,null);
         } catch (Exception e) {
             return this.responseWithOptionsParam(error,action);
         }
@@ -140,6 +154,9 @@ public class ActionsOracleServices {
 
             chat = chatSessionManager.getChatById(chatId);
             if(chat == null) chat = initialChatIfNull(chatId);
+            chat.setDocument(document);
+            chat.setTypeDocument(typeDocument);
+            chat.setTypeChat(1);
 
             if (typeDocument == null || document == null) return notFound;
 
@@ -164,8 +181,7 @@ public class ActionsOracleServices {
             String firstName = employee.getEmplName() != null ? employee.getEmplName() : "";
             String lastName = employee.getEmpLastName() != null ? employee.getEmpLastName() : "";
             chat.setNames(firstName + " " + lastName);
-            chat.setDocument(document);
-            chat.setTypeDocument(typeDocument);
+
             chat.setChatMail(employee.getEmail());
             chat.setChatAuthenticated(false);
             chat.setPrincipalRequest(idsPrincipal);
@@ -486,10 +502,9 @@ public class ActionsOracleServices {
     public ContentResponse methodStandardRedirect(Map<String,String> inputs, Action action) {
         try{
             String chatId = inputs.get("chatId");
-            String typeChat = inputs.get("typeChat");
             Chat chat = chatSessionManager.getChatById(chatId);
 
-            if(typeChat.equals("1")) {
+            if(chat.getTypeChat() == 1){
                 ContentResponse resp = this.validateInitial(chat);
                 if(resp != null) return resp;
             }
@@ -515,7 +530,6 @@ public class ActionsOracleServices {
             Action action = actionOriginal.clone();
             String detail = inputs.get("detail");
             String chatId = inputs.get("chatId");
-            String typeChat = inputs.get("typeChat");
 
             Chat chat = chatSessionManager.getChatById(chatId);
 
@@ -527,7 +541,7 @@ public class ActionsOracleServices {
 
             if (validateQuantity != null) return responseWithOptionsParam(validateQuantity, action);
 
-            if(typeChat.equals("1")){
+            if(chat.getTypeChat() == 1){
                 ContentResponse resp = this.validateInitial(chat);
                 if (resp != null) return resp;
             }

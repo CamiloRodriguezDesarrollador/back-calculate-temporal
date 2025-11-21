@@ -60,7 +60,6 @@ public class ChatWebSocket {
             Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
             messageUnwrapped.getChatMessage().put("chatId", chatId);
             messageUnwrapped.getChatMessage().put("principalRequest", principalRequest.toString());
-            messageUnwrapped.getChatMessage().put("typeChat", typeChat.toString());
             ContentResponse resp = (ContentResponse) methodAction.invoke(actionsOracleServices, messageUnwrapped.getChatMessage(), action);
             registerChatServices.createForResponse(chatId,resp,clientIp, companyId,typeChat);
             ContentResponse responseWrap = ContentResponse.cloneContentResponse(resp);
@@ -78,7 +77,6 @@ public class ChatWebSocket {
             else responseWrap = ContentResponse.cloneContentResponse(actionsOracleServices.responseWithOptionsParam(notFound,action));
             return Salt.wrapContentResponde(responseWrap);
         }
-
     }
 
 

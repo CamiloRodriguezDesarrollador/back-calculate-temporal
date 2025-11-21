@@ -17,6 +17,7 @@ public class Chat {
     private String typeDocument;
     private String document;
     private String chatMail;
+    private String chatPhone;
     private Date chatStart;
     private Date chatDateAuthorized;
     private String names;
@@ -31,6 +32,7 @@ public class Chat {
     private String perSigla;
     private String periodPlanilla;
     private Boolean contractActive;
+    private Integer typeChat;
 
 
     public Chat() {
