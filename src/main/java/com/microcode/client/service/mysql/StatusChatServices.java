@@ -5,6 +5,8 @@ import com.microcode.client.entity.mysql.StatusChat;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 @AllArgsConstructor
 public class StatusChatServices implements StatusChatServicesI {
@@ -14,7 +16,15 @@ public class StatusChatServices implements StatusChatServicesI {
 
     @Override
     public void create(StatusChat statusChat) {
-        statusChatDao.save(statusChat);
+        StatusChat status = statusChatDao.findByChatId(statusChat.getChatId());
+        if (status != null) {
+            status.setChatMessage(status.getChatMessage());
+            status.setChatOptions(status.getChatOptions());
+            status.setAudDate(new Date());
+            statusChatDao.save(status);
+        }else {
+            statusChatDao.save(statusChat);
+        }
     }
 
     @Override
