@@ -23,9 +23,9 @@ import static com.microcode.client.service.oracle.ActionsOracleServices.error;
 import static com.microcode.client.service.oracle.ActionsOracleServices.notFound;
 
 @Slf4j
-@RestController("/api/chat/wp")
+@RequestMapping("/api/chat/wp")
 @AllArgsConstructor
-@Component
+@RestController
 public class WhatsappController {
 
     private final HelperService helperService;
