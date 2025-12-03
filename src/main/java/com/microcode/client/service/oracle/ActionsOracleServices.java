@@ -213,7 +213,18 @@ public class ActionsOracleServices {
             String mailUser = helperService.generateMail(employee.getEmail().toLowerCase());
             mailServices.ping();
             connectExternalServices.ping();
-            return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), mailUser),null, action,null);
+            if(chat.getDocument() != null && chat.getTypeDocument() != null ){
+                return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), mailUser),null, action,null);
+            }
+
+            List<String> missing = new ArrayList<>();
+            if (chat.getTypeDocument() == null || chat.getTypeDocument().isBlank()) missing.add("Tipo de documento");
+            if (chat.getDocument() == null || chat.getDocument().isBlank())         missing.add("Numero de documento");
+
+            String message = "Por favor enviame los siguientes campos: " + String.join(", ", missing);
+
+            return ContentResponse.buildContentResponseOk(message,null, action,null);
+
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return error;
