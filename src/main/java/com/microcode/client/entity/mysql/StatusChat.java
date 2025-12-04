@@ -28,12 +28,13 @@ public class StatusChat implements Serializable, Cloneable {
     @Column(name = "CHT_OPTIONS", length = 2000)
     private String chatOptions;
 
+    @Column(name = "CHT_HISTORY")
+    private Boolean isHistory;
+
     @Column(name = "AUD_DATE" ,length = 10)
     @Temporal(TemporalType.TIMESTAMP)
     private Date audDate;
 
-    @Transient
-    private Boolean isHistory;
 
     @PrePersist
     public void prePersist() {

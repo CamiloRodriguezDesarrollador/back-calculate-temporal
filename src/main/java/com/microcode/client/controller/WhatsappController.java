@@ -121,6 +121,16 @@ public class WhatsappController {
                     .isHistory(false)
                     .build();
 
+
+//            chatSessionManager.setChatById(
+//                    chatId,
+//                    Chat.builder()
+//                            .chatId(chatId)
+//                            .chatStart(new Date())
+//                            .empNd(empNd)
+//                            .build()
+//            );
+
             statusChatServices.create(status);
             return status;
 

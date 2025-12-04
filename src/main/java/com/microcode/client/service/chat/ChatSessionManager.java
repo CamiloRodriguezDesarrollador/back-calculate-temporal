@@ -111,7 +111,6 @@ public class ChatSessionManager {
             if (partialChat.getContractActive() != null)
                 existingChat.setContractActive(partialChat.getContractActive());
 
-
             return existingChat;
         });
     }
