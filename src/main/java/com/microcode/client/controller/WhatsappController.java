@@ -63,7 +63,9 @@ public class WhatsappController {
                         .chatMessage("Intenta mas tarde.")
                         .chatOptions(null)
                         .audDate(new Date())
+                        .chatAction(typeChat == 1L ? 1 : 200)
                         .isHistory("S")
+                        .chatType(typeChat)
                         .build()
                 );
                 return response;
@@ -92,6 +94,8 @@ public class WhatsappController {
                             )
                             .audDate(new Date())
                             .isHistory("S")
+                            .chatAction(typeChat == 1L ? 1 : 200)
+                            .chatType(typeChat)
                             .build()
             );
 
