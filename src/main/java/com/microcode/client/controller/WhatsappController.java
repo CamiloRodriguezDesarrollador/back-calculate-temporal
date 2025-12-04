@@ -102,6 +102,7 @@ public class WhatsappController {
                             .chatId(chatId)
                             .chatMessage(responseWrap.toString())
                             .chatOptions(options.isEmpty() ? null : options.toString())
+                            .chatAction(typeChat == 1L ? 1 : 200)
                             .audDate(new Date())
                             .isHistory("S")
                             .build()
