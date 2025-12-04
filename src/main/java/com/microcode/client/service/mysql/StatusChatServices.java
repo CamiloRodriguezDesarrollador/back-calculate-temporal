@@ -18,10 +18,14 @@ public class StatusChatServices implements StatusChatServicesI {
     public void create(StatusChat statusChat) {
         StatusChat status = statusChatDao.findByChatId(statusChat.getChatId());
         if (status != null) {
-            status.setChatMessage(status.getChatMessage());
-            status.setChatOptions(status.getChatOptions());
-            status.setAudDate(new Date());
-            statusChatDao.save(status);
+            statusChatDao.save(
+                    StatusChat.builder()
+                            .chatId(statusChat.getChatId())
+                            .chatMessage(statusChat.getChatMessage())
+                            .chatOptions(statusChat.getChatOptions())
+                            .audDate(new Date())
+                            .build()
+            );
         }else {
             statusChatDao.save(statusChat);
         }
