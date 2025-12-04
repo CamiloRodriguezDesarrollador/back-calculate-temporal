@@ -9,6 +9,7 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @ToString
+@Builder
 public class Chat {
 
     private String chatId;

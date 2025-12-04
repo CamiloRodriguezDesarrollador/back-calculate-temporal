@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Method;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -97,7 +98,8 @@ public class WhatsappController {
 
     @GetMapping("/status")
     public StatusChat getStatusChat(
-            @RequestParam String chatId
+            @RequestParam String chatId,
+            @RequestParam Long empNd
     ){
         Chat chat = chatSessionManager.getChatById(chatId);
         if(chat == null){
@@ -106,12 +108,25 @@ public class WhatsappController {
                     new Option(200, "🏡 Cliente / Proveedor / Candidato",  null, null)
             );
 
-            return StatusChat.builder()
+            StatusChat status = StatusChat.builder()
                     .chatId(chatId)
                     .chatMessage("¡Hola 👋! Soy Teo tu asistente virtual. ¡Estoy aquí para ayudarte! 😊" +
                             "Elige si eres trabajador, extrabajador, cliente, o candidato para una ayuda personalizada.")
                     .chatOptions(options.toString())
                     .build();
+
+
+            chatSessionManager.setChatById(
+                        chatId,
+                            Chat.builder()
+                                .chatId(chatId)
+                                .chatStart(new Date())
+                                .empNd(empNd)
+                                .build());
+
+            statusChatServices.create(status);
+            return status;
+
         }
 
         return statusChatServices.findChatById(chatId);
