@@ -105,8 +105,8 @@ public class WhatsappController {
             @RequestParam String chatId,
             @RequestParam Long empNd
     ){
-        Chat chat = chatSessionManager.getChatById(chatId);
-        if(chat == null){
+        StatusChat currentStatus = statusChatServices.findChatById(chatId);
+        if(currentStatus == null){
             List<Option> options = List.of(
                     new Option(1,   "👷 Trabajador / Extrabajador",        null, null),
                     new Option(200, "🏡 Cliente / Proveedor / Candidato",  null, null)
@@ -121,22 +121,12 @@ public class WhatsappController {
                     .isHistory(false)
                     .build();
 
-
-            chatSessionManager.setChatById(
-                        chatId,
-                        Chat.builder()
-                            .chatId(chatId)
-                            .chatStart(new Date())
-                            .empNd(empNd)
-                            .build()
-            );
-
             statusChatServices.create(status);
             return status;
 
         }
 
-        return statusChatServices.findChatById(chatId);
+        return currentStatus;
     }
 
 
