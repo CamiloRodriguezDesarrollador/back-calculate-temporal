@@ -96,7 +96,7 @@ public class WhatsappController {
             if ("check".equals(responseWrap.getActionRequest())) {
                 options = optionsYesOrNot;
             }
-            if ("optionsNumber".equals(responseWrap.getActionRequest())) {
+            else if ("number".equals(responseWrap.getActionRequest())) {
                 options = optionsNumber;
             } else {
                 options = (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty())
