@@ -46,6 +46,15 @@ public class WhatsappController {
         Integer companyId = chatBody.getCompanyId();
         Integer typeChat = chatBody.getTypeChat();
         ContentMessage message = chatBody.getMessage();
+
+        if(typeChat == null ){
+            if(message.getActionId() == 1){
+                typeChat = 1;
+            }else if(message.getActionId() == 200){
+                typeChat = 2;
+            }
+        }
+
         try{
 
             log.info("ChatId: {}" , chatId);
@@ -111,6 +120,7 @@ public class WhatsappController {
                             .chatMessage(responseWrap.toString())
                             .chatOptions(options.isEmpty() ? null : options.toString())
                             .chatAction(typeChat == 1L ? 1 : 200)
+                            .chatType(typeChat)
                             .audDate(new Date())
                             .isHistory("S")
                             .build()
