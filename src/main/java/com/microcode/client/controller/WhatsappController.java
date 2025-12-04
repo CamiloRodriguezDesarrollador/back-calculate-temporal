@@ -135,7 +135,7 @@ public class WhatsappController {
             return status;
 
         }
-
+        currentStatus.setIsHistory("S");
         return currentStatus;
     }
 
