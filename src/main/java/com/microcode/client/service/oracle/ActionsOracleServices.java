@@ -23,6 +23,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -37,6 +38,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Setter
 @Getter
+@Slf4j
 public class ActionsOracleServices {
 
     private final EmployeeServices employeeService;
@@ -135,6 +137,7 @@ public class ActionsOracleServices {
 
             return ContentResponse.buildContentResponseOk(message,null, action,null);
         } catch (Exception e) {
+            log.error("Error {} " , e);
             return this.responseWithOptionsParam(error,action);
         }
 

@@ -47,6 +47,10 @@ public class WhatsappController {
         ContentMessage message = chatBody.getMessage();
         try{
 
+            log.info("ChatId: {}" , chatId);
+            log.info("TypeChat: {}" , typeChat.toString());
+            log.info("Message: {}" , message);
+
             List<Long> principalRequest = helperService.definePrincipalForCode(companyId);
 
             if (message == null || message.getActionId() == null) {
