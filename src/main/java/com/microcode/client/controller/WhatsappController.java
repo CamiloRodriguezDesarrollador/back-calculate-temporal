@@ -75,6 +75,7 @@ public class WhatsappController {
             chatSessionManager.updateChatActivity(chatId, message);
             registerChatServices.createForMessage(chatId,message,"WP", companyId,typeChat);
             action =  actionServices.getActionForId(message.getActionId());
+            log.info("Action {}" ,action);
             Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
             message.getChatMessage().put("chatId", chatId);
             message.getChatMessage().put("principalRequest", principalRequest.toString());
