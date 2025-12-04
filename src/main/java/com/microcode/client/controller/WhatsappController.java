@@ -78,19 +78,17 @@ public class WhatsappController {
             ContentResponse resp = (ContentResponse) methodAction.invoke(actionsOracleServices, message.getChatMessage(), action);
             registerChatServices.createForResponse(chatId,resp,"WP", companyId,typeChat);
             ContentResponse responseWrap = ContentResponse.cloneContentResponse(resp);
-            if (responseWrap != null) responseWrap.setActionMessage(Salt.wrapMessage(resp.getActionMessage()));
 
             assert responseWrap != null;
             statusChatServices.create(
                     StatusChat.builder()
                             .chatId(chatId)
-                            .chatMessage(resp.toString())
+                            .chatMessage(responseWrap.toString())
                             .chatOptions(responseWrap.getOptions().toString())
                             .audDate(new Date())
                             .isHistory("S")
                             .build()
             );
-
 
             return responseWrap;
 
