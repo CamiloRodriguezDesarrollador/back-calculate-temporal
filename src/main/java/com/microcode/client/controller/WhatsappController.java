@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Method;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -88,24 +89,21 @@ public class WhatsappController {
 
             List<Option> options;
 
-            if (responseWrap.getActionRequest().equals("check") ) {
+            if ("check".equals(responseWrap.getActionRequest())) {
                 options = optionsYesOrNot;
             } else {
                 options = (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty())
                         ? responseWrap.getOptions()
-                        : null;
+                        : Collections.emptyList();
             }
 
-            assert options != null;
             statusChatServices.create(
                     StatusChat.builder()
                             .chatId(chatId)
                             .chatMessage(responseWrap.toString())
-                            .chatOptions(options.toString())
+                            .chatOptions(options.isEmpty() ? null : options.toString())
                             .audDate(new Date())
                             .isHistory("S")
-                            .chatAction(typeChat == 1L ? 1 : 200)
-                            .chatType(typeChat)
                             .build()
             );
 

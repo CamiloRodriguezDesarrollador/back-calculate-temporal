@@ -273,8 +273,13 @@ public class ActionsOracleServices {
     public ContentResponse verified(Map<String,String> inputs, Action action) {
         try{
 
-            String codeVerified = inputs.get("codeVerification");
+            String code = inputs.get("codeVerification");
+            String detail = inputs.get("detail");
             String chatId = inputs.get("chatId");
+
+            String codeVerified = (code != null && !code.isBlank())
+                    ? code
+                    : detail;
 
             Chat chat = chatSessionManager.getChatById(chatId);
             if(chatSessionManager.validateTimeCode(chat)) return timeOut;
