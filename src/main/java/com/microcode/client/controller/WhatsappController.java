@@ -58,7 +58,7 @@ public class WhatsappController {
                         .chatId(chatId)
                         .chatOptions(response.getOptions().toString())
                         .audDate(new Date())
-                        .isHistory(true)
+                        .isHistory("S")
                         .build()
                 );
                 return response;
@@ -81,7 +81,7 @@ public class WhatsappController {
                             .chatId(chatId)
                             .chatOptions(responseWrap.getOptions().toString())
                             .audDate(new Date())
-                            .isHistory(true)
+                            .isHistory("S")
                             .build()
             );
 
@@ -118,7 +118,7 @@ public class WhatsappController {
                             "Elige si eres trabajador, extrabajador, cliente, o candidato para una ayuda personalizada.")
                     .chatOptions(options.toString())
                     .audDate(new Date())
-                    .isHistory(false)
+                    .isHistory("N")
                     .build();
 
 

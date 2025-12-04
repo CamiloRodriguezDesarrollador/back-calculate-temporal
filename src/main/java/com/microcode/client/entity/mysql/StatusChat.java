@@ -29,7 +29,7 @@ public class StatusChat implements Serializable, Cloneable {
     private String chatOptions;
 
     @Column(name = "CHT_HISTORY")
-    private Boolean isHistory;
+    private String isHistory;
 
     @Column(name = "AUD_DATE" ,length = 10)
     @Temporal(TemporalType.TIMESTAMP)
