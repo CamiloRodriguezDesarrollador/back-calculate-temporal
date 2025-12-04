@@ -16,20 +16,19 @@ public class StatusChatServices implements StatusChatServicesI {
 
     @Override
     public void create(StatusChat statusChat) {
-        StatusChat status = statusChatDao.findByChatId(statusChat.getChatId());
-        if (status != null) {
-            statusChatDao.save(
-                    StatusChat.builder()
-                            .chatId(statusChat.getChatId())
-                            .chatMessage(statusChat.getChatMessage())
-                            .chatOptions(statusChat.getChatOptions())
-                            .audDate(new Date())
-                            .build()
-            );
-        }else {
+        StatusChat existing = statusChatDao.findByChatId(statusChat.getChatId());
+
+        if (existing != null) {
+            existing.setChatMessage(statusChat.getChatMessage());
+            existing.setChatOptions(statusChat.getChatOptions());
+            existing.setAudDate(new Date());
+
+            statusChatDao.save(existing);
+        } else {
             statusChatDao.save(statusChat);
         }
     }
+
 
     @Override
     public StatusChat findChatById(String chatId) {
