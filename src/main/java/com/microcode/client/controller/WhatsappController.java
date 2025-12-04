@@ -61,7 +61,7 @@ public class WhatsappController {
                     StatusChat.builder()
                         .chatId(chatId)
                         .chatMessage("Intenta mas tarde.")
-                        .chatOptions(response.getOptions().toString())
+                        .chatOptions(null)
                         .audDate(new Date())
                         .isHistory("S")
                         .build()
@@ -80,11 +80,16 @@ public class WhatsappController {
             ContentResponse responseWrap = ContentResponse.cloneContentResponse(resp);
 
             assert responseWrap != null;
+
             statusChatServices.create(
                     StatusChat.builder()
                             .chatId(chatId)
                             .chatMessage(responseWrap.toString())
-                            .chatOptions(responseWrap.getOptions().toString())
+                            .chatOptions(
+                                    (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty())
+                                            ? responseWrap.getOptions().toString()
+                                            : null
+                            )
                             .audDate(new Date())
                             .isHistory("S")
                             .build()
