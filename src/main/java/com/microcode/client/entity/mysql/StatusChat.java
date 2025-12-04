@@ -9,7 +9,7 @@ import java.util.Date;
 import java.util.Map;
 
 @Entity
-@Table(name="plcht_principal_data")
+@Table(name="plcht_status_chat")
 @Getter
 @Setter
 @ToString
