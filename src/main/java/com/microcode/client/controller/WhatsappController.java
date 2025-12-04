@@ -57,6 +57,7 @@ public class WhatsappController {
                     StatusChat.builder()
                         .chatId(chatId)
                         .chatOptions(response.getOptions().toString())
+                        .audDate(new Date())
                         .build()
                 );
                 return response;
@@ -78,6 +79,7 @@ public class WhatsappController {
                     StatusChat.builder()
                             .chatId(chatId)
                             .chatOptions(responseWrap.getOptions().toString())
+                            .audDate(new Date())
                             .build()
             );
 
@@ -113,16 +115,18 @@ public class WhatsappController {
                     .chatMessage("¡Hola 👋! Soy Teo tu asistente virtual. ¡Estoy aquí para ayudarte! 😊" +
                             "Elige si eres trabajador, extrabajador, cliente, o candidato para una ayuda personalizada.")
                     .chatOptions(options.toString())
+                    .audDate(new Date())
                     .build();
 
 
             chatSessionManager.setChatById(
                         chatId,
-                            Chat.builder()
-                                .chatId(chatId)
-                                .chatStart(new Date())
-                                .empNd(empNd)
-                                .build());
+                        Chat.builder()
+                            .chatId(chatId)
+                            .chatStart(new Date())
+                            .empNd(empNd)
+                            .build()
+            );
 
             statusChatServices.create(status);
             return status;

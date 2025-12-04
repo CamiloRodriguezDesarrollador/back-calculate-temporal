@@ -20,7 +20,6 @@ public class StatusChat implements Serializable, Cloneable {
 
     @Id
     @Column(name = "CHT_ID")
-    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private String chatId;
 
     @Column(name = "CHT_MESSAGE", length = 2000)
