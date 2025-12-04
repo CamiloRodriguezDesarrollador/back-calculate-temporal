@@ -81,17 +81,27 @@ public class WhatsappController {
             registerChatServices.createForResponse(chatId,resp,"WP", companyId,typeChat);
             ContentResponse responseWrap = ContentResponse.cloneContentResponse(resp);
 
-            assert responseWrap != null;
+            List<Option> optionsYesOrNot = List.of(
+                    new Option(2,   "Si",        "Y" ,null),
+                    new Option(2, "No",  "N", null)
+            );
 
+            List<Option> options;
+
+            if (responseWrap.getActionRequest().equals("check")) {
+                options = optionsYesOrNot;
+            } else {
+                options = (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty())
+                        ? responseWrap.getOptions()
+                        : null;
+            }
+
+            assert options != null;
             statusChatServices.create(
                     StatusChat.builder()
                             .chatId(chatId)
                             .chatMessage(responseWrap.toString())
-                            .chatOptions(
-                                    (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty())
-                                            ? responseWrap.getOptions().toString()
-                                            : null
-                            )
+                            .chatOptions(options.toString())
                             .audDate(new Date())
                             .isHistory("S")
                             .chatAction(typeChat == 1L ? 1 : 200)
