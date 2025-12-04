@@ -133,11 +133,15 @@ public class ActionsOracleServices {
             if (chat.getChatPhone() == null || chat.getChatPhone().isBlank())               missing.add("Celular");
             if (chat.getChatMail() == null || chat.getChatMail().isBlank())               missing.add("Correo electrónico");
 
-            String message = "Por favor enviame los siguientes campos: " + String.join(", ", missing);
+            boolean isFirstTime = missing.size() == 5;
+
+            String message = isFirstTime
+                    ? "Por favor envíame los siguientes datos 🙏✨:\n• " + String.join("\n• ", missing) + " 😊"
+                    : "Aún me hacen falta estos datos para continuar 🙏📝:\n• " + String.join("\n• ", missing) + " 😊";
 
             return ContentResponse.buildContentResponseOk(message,null, action,null);
         } catch (Exception e) {
-            log.error("Error {} " , e);
+            log.error("Error {} " , e.getMessage());
             return this.responseWithOptionsParam(error,action);
         }
 
@@ -167,7 +171,11 @@ public class ActionsOracleServices {
                 if (chat.getTypeDocument() == null || chat.getTypeDocument().isBlank()) missing.add("Tipo de documento");
                 if (chat.getDocument() == null || chat.getDocument().isBlank())         missing.add("Numero de documento");
 
-                String message = "Por favor enviame los siguientes campos: " + String.join(", ", missing);
+                boolean isFirstTime = missing.size() == 2;
+
+                String message = isFirstTime
+                        ? "Por favor envíame estos datos 🙏✨:\n• " + String.join("\n• ", missing) + " 😊"
+                        : "Aún necesito estos datos para continuar 📝🙏:\n• " + String.join("\n• ", missing) + " 😊";
 
                 return ContentResponse.buildContentResponseOk(message,null, action,null);
             }
