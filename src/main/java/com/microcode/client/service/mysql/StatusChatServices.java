@@ -20,6 +20,8 @@ public class StatusChatServices implements StatusChatServicesI {
     public void create(StatusChat statusChat) {
         StatusChat existing = statusChatDao.findByChatId(statusChat.getChatId());
         if (existing != null) {
+            existing.setChatType(statusChat.getChatType());
+            existing.setChatAction(statusChat.getChatAction());
             existing.setChatMessage(statusChat.getChatMessage());
             existing.setChatOptions(statusChat.getChatOptions());
             existing.setAudDate(new Date());

@@ -88,7 +88,7 @@ public class WhatsappController {
 
             List<Option> options;
 
-            if (responseWrap.getActionRequest().equals("check")) {
+            if (responseWrap.getActionRequest().equals("check") ) {
                 options = optionsYesOrNot;
             } else {
                 options = (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty())
@@ -143,7 +143,6 @@ public class WhatsappController {
                     .audDate(new Date())
                     .isHistory("N")
                     .build();
-
 
 //            chatSessionManager.setChatById(
 //                    chatId,
