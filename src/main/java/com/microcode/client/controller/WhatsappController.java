@@ -60,6 +60,7 @@ public class WhatsappController {
                 statusChatServices.create(
                     StatusChat.builder()
                         .chatId(chatId)
+                        .chatMessage("Intenta mas tarde.")
                         .chatOptions(response.getOptions().toString())
                         .audDate(new Date())
                         .isHistory("S")
@@ -83,6 +84,7 @@ public class WhatsappController {
             statusChatServices.create(
                     StatusChat.builder()
                             .chatId(chatId)
+                            .chatMessage(resp.toString())
                             .chatOptions(responseWrap.getOptions().toString())
                             .audDate(new Date())
                             .isHistory("S")
