@@ -116,6 +116,7 @@ public class WhatsappController {
                             "Elige si eres trabajador, extrabajador, cliente, o candidato para una ayuda personalizada.")
                     .chatOptions(options.toString())
                     .audDate(new Date())
+                    .isHistory(false)
                     .build();
 
 

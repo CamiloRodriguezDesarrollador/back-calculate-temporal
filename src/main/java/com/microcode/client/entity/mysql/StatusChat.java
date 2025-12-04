@@ -32,6 +32,8 @@ public class StatusChat implements Serializable, Cloneable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date audDate;
 
+    @Transient
+    private Boolean isHistory;
 
     @PrePersist
     public void prePersist() {
