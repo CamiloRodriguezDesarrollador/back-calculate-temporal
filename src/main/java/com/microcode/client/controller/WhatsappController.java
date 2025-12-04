@@ -58,6 +58,7 @@ public class WhatsappController {
                         .chatId(chatId)
                         .chatOptions(response.getOptions().toString())
                         .audDate(new Date())
+                        .isHistory(true)
                         .build()
                 );
                 return response;
@@ -80,6 +81,7 @@ public class WhatsappController {
                             .chatId(chatId)
                             .chatOptions(responseWrap.getOptions().toString())
                             .audDate(new Date())
+                            .isHistory(true)
                             .build()
             );
 
