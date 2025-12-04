@@ -87,10 +87,17 @@ public class WhatsappController {
                     new Option(2, "No",  "N", null)
             );
 
+            List<Option> optionsNumber = List.of(
+                    new Option(50,   "Enviame el codio de verificación",        null ,null)
+            );
+
             List<Option> options;
 
             if ("check".equals(responseWrap.getActionRequest())) {
                 options = optionsYesOrNot;
+            }
+            if ("optionsNumber".equals(responseWrap.getActionRequest())) {
+                options = optionsNumber;
             } else {
                 options = (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty())
                         ? responseWrap.getOptions()
