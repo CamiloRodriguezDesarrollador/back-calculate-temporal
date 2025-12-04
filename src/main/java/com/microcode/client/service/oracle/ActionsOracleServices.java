@@ -236,12 +236,18 @@ public class ActionsOracleServices {
 
     public ContentResponse verifiedMail(Map<String,String> inputs, Action action) {
         try {
-            String isMailCorrect = inputs.get("isMailCorrect");
             String chatId = inputs.get("chatId");
             Chat chat = chatSessionManager.getChatById(chatId);
             chat.setChatStart(new Date());
 
-            if (isMailCorrect.equals("Y")) {
+            String isMailCorrect = inputs.get("isMailCorrect");
+            String detail = inputs.get("detail");
+
+            String mailFlag = (isMailCorrect != null && !isMailCorrect.isBlank())
+                    ? isMailCorrect
+                    : detail;
+
+            if (mailFlag.equals("Y")) {
 //                String code = "123456";
                 String code = helperService.generateCode();
                 chat.setChatCode(code);
