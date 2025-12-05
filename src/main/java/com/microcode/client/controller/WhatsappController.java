@@ -7,12 +7,10 @@ import com.microcode.client.service.chat.ChatSessionManager;
 import com.microcode.client.service.helper.HelperService;
 import com.microcode.client.service.mysql.ActionServices;
 import com.microcode.client.service.mysql.RegisterChatServices;
-import com.microcode.client.service.mysql.Salt;
 import com.microcode.client.service.mysql.StatusChatServices;
 import com.microcode.client.service.oracle.ActionsOracleServices;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Method;
@@ -21,7 +19,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static com.microcode.client.service.oracle.ActionsOracleServices.error;
 import static com.microcode.client.service.oracle.ActionsOracleServices.notFound;
 
 @Slf4j
@@ -54,6 +51,15 @@ public class WhatsappController {
                 default -> null;
             };
         }
+
+        statusChatServices.create(
+                StatusChat.builder()
+                        .chatId(chatId)
+                        .chatStatus("P")
+                        .audDate(new Date())
+                        .isHistory("S")
+                        .build()
+        );
 
 
         try{
@@ -95,17 +101,21 @@ public class WhatsappController {
                         : Collections.emptyList();
             };
 
-            statusChatServices.create(
-                    StatusChat.builder()
-                            .chatId(chatId)
-                            .chatMessage(responseWrap.toString())
-                            .chatOptions(options.isEmpty() ? null : options.toString())
-                            .chatAction(typeChat == 1L ? 1 : 200)
-                            .chatType(typeChat)
-                            .audDate(new Date())
-                            .isHistory("S")
-                            .build()
-            );
+            if(!responseWrap.getActionRequest().equals("error"))
+                statusChatServices.create(
+                        StatusChat.builder()
+                                .chatId(chatId)
+                                .chatMessage(responseWrap.toString())
+                                .chatOptions(options.isEmpty() ? null : options.toString())
+                                .chatAction(typeChat == 1L ? 1 : 200)
+                                .chatType(typeChat)
+                                .audDate(new Date())
+                                .chatStatus("C")
+                                .isHistory("S")
+                                .build()
+                );
+
+
 
             return responseWrap;
 

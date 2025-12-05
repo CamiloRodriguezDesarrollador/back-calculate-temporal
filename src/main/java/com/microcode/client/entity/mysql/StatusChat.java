@@ -37,6 +37,9 @@ public class StatusChat implements Serializable, Cloneable {
     @Column(name = "CHT_TYPE")
     private Integer chatType;
 
+    @Column(name = "CHT_STATUS")
+    private String chatStatus;
+
     @Column(name = "AUD_DATE" ,length = 10)
     @Temporal(TemporalType.TIMESTAMP)
     private Date audDate;

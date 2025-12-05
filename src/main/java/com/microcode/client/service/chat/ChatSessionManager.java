@@ -6,6 +6,7 @@ import com.microcode.client.entity.general.QuantityResponse;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.entity.mysql.QuantityChat;
 import com.microcode.client.service.mysql.QuantityChatServices;
+import com.microcode.client.service.mysql.StatusChatServices;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -32,6 +33,7 @@ public class ChatSessionManager {
     private final ConcurrentMap<String, Chat> activeChats = new ConcurrentHashMap<>();
     private final HttpServletRequest request;
     private final QuantityChatServices quantityChatServices;
+    private final StatusChatServices statusChatServices;
 
     public void updateChatActivity(String chatId, ContentMessage message) {
         try {
@@ -117,13 +119,19 @@ public class ChatSessionManager {
 
     public boolean validateTime(Chat chat) {
         Date lastModified = chat.getChatDateAuthorized();
-        if (lastModified == null && validateTimeStart(chat)) activeChats.remove(chat.getChatId());
+        if (lastModified == null && validateTimeStart(chat)){
+            activeChats.remove(chat.getChatId());
+            statusChatServices.delete(chat.getChatId());
+        }
         if (lastModified == null) return true;
         Date now = new Date();
         long diffInMillis = now.getTime() - lastModified.getTime();
         long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillis);
         boolean validate = diffInMinutes > 5;
-        if(validate) activeChats.remove(chat.getChatId());
+        if(validate){
+            activeChats.remove(chat.getChatId());
+            statusChatServices.delete(chat.getChatId());
+        }
         return validate;
     }
 

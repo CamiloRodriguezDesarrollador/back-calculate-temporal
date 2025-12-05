@@ -22,14 +22,21 @@ public class StatusChatServices implements StatusChatServicesI {
         if (existing != null) {
             if(statusChat.getChatType() != null) existing.setChatType(statusChat.getChatType());
             if(statusChat.getChatAction() != null) existing.setChatAction(statusChat.getChatAction());
-            existing.setChatMessage(statusChat.getChatMessage());
-            existing.setChatOptions(statusChat.getChatOptions());
+            if(statusChat.getChatMessage() != null) existing.setChatMessage(statusChat.getChatMessage());
+            if(statusChat.getChatOptions() != null) existing.setChatOptions(statusChat.getChatOptions());
+            if(statusChat.getIsHistory() != null) existing.setIsHistory(statusChat.getIsHistory());
+            existing.setChatStatus(statusChat.getChatStatus());
             existing.setAudDate(new Date());
             statusChatDao.save(existing);
         } else {
-            log.info("Grabando status chat {}", statusChat.toString());
+            log.info("Grabando status chat {}", statusChat);
             statusChatDao.save(statusChat);
         }
+    }
+
+    @Override
+    public void delete(String chatId) {
+        statusChatDao.deleteById(chatId);
     }
 
 
