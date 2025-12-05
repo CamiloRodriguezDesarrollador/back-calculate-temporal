@@ -165,7 +165,7 @@ public class ActionsOracleServices {
             if(typeDocument != null) chat.setTypeDocument(typeDocument);
             chat.setTypeChat(1);
 
-            if (typeDocument == null || document == null)
+            if (chat.getTypeDocument() == null || chat.getDocument()  == null)
             {
                 List<String> missing = new ArrayList<>();
                 if (chat.getTypeDocument() == null || chat.getTypeDocument().isBlank()) missing.add("Tipo de documento");
@@ -175,14 +175,14 @@ public class ActionsOracleServices {
 
                 String message = isFirstTime
                         ? "Por favor envíame estos datos 🙏✨:\n• " + String.join("\n• ", missing) + " 😊"
-                        : "Aún necesito estos datos para continuar 📝🙏:\n• " + String.join("\n• ", missing) + " 😊";
+                        : "Aún me hacen falta estos datos para continuar 📝🙏:\n• " + String.join("\n• ", missing) + " 😊";
 
                 return ContentResponse.buildContentResponseOk(message,null, action,null);
             }
 
             chat.setChatStart(new Date());
 
-            Long docSearch = Long.valueOf(document);
+            Long docSearch = Long.valueOf(chat.getDocument());
             Employee employee = employeeService.findByIds(docSearch,typeDocument);
             if (employee == null)
                 return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), typeDocument, document),null, action,null);
