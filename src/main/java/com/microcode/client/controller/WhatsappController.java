@@ -107,7 +107,6 @@ public class WhatsappController {
                             .build()
             );
 
-            responseWrap.setActionId(null);
             return responseWrap;
 
         }

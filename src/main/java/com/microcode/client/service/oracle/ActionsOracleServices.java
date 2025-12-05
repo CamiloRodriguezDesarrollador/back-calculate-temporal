@@ -161,8 +161,8 @@ public class ActionsOracleServices {
 
             chat = chatSessionManager.getChatById(chatId);
             if(chat == null) chat = initialChatIfNull(chatId);
-            chat.setDocument(document);
-            chat.setTypeDocument(typeDocument);
+            if(document != null) chat.setDocument(document);
+            if(typeDocument != null) chat.setTypeDocument(typeDocument);
             chat.setTypeChat(1);
 
             if (typeDocument == null || document == null)
