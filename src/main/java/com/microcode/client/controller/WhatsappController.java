@@ -84,24 +84,26 @@ public class WhatsappController {
             registerChatServices.createForResponse(chatId,resp,"WP", companyId,typeChat);
             ContentResponse responseWrap = ContentResponse.cloneContentResponse(resp);
 
-            List<Option> optionsYesOrNot = List.of(
-                    new Option(2, "Si", "Y", null),
-                    new Option(2, "No", "N", null)
-            );
 
-            List<Option> optionsNumber = List.of(
-                    new Option(50, "Enviame el código de verificación", null, null)
-            );
 
-            List<Option> options = switch (responseWrap.getActionRequest()) {
-                case "check"  -> optionsYesOrNot;
-                case "number" -> optionsNumber;
-                default       -> (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty())
-                        ? responseWrap.getOptions()
-                        : Collections.emptyList();
-            };
+            if(!responseWrap.getActionRequest().equals("error")){
+                List<Option> optionsYesOrNot = List.of(
+                        new Option(2, "Si", "Y", null),
+                        new Option(2, "No", "N", null)
+                );
 
-            if(!responseWrap.getActionRequest().equals("error"))
+                List<Option> optionsNumber = List.of(
+                        new Option(50, "Enviame el código de verificación", null, null)
+                );
+
+                List<Option> options = switch (responseWrap.getActionRequest()) {
+                    case "check"  -> optionsYesOrNot;
+                    case "number" -> optionsNumber;
+                    default       -> (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty())
+                            ? responseWrap.getOptions()
+                            : Collections.emptyList();
+                };
+
                 statusChatServices.create(
                         StatusChat.builder()
                                 .chatId(chatId)
@@ -114,6 +116,7 @@ public class WhatsappController {
                                 .isHistory("S")
                                 .build()
                 );
+            }
 
 
 
