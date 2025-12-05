@@ -123,7 +123,10 @@ public class WhatsappController {
                 );
             }
 
-
+            if(action.getActionId() == 1000 || action.getActionId() == 225){
+                statusChatServices.delete(chatId);
+                chatSessionManager.deleteChatId(chatId);
+            }
 
             return responseWrap;
 

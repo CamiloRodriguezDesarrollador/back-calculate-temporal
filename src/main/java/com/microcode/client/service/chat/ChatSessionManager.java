@@ -185,6 +185,9 @@ public class ChatSessionManager {
         return new QuantityResponse(dateLast,isOver);
     }
 
+    public void deleteChatId(String chatId){
+        activeChats.remove(chatId);
+    }
 
     @Scheduled(fixedRate = 600000) // 600000ms = 10 minutos
     public void validateInactiveChats(){

@@ -136,8 +136,8 @@ public class ActionsOracleServices {
             boolean isFirstTime = missing.size() == 5;
 
             String message = isFirstTime
-                    ? "Por favor envíame los siguientes datos 🙏✨:\n• " + String.join("\n• ", missing) + " 😊"
-                    : "Aún me hacen falta estos datos para continuar 🙏📝:\n• " + String.join("\n• ", missing) + " 😊";
+                    ? "Por favor envíame los siguientes datos ✨:\n• " + String.join("\n• ", missing) + " 😊"
+                    : "Aún me hacen falta estos datos para continuar 📝:\n• " + String.join("\n• ", missing) + " 😊";
 
             return ContentResponse.buildContentResponseOk(message,null, action,null);
         } catch (Exception e) {
@@ -177,8 +177,8 @@ public class ActionsOracleServices {
                 boolean isFirstTime = missing.size() == 2;
 
                 String message = isFirstTime
-                        ? "Por favor envíame estos datos 🙏✨:\n• " + String.join("\n• ", missing) + " 😊"
-                        : "Aún me hacen falta estos datos para continuar 📝🙏:\n• " + String.join("\n• ", missing) + " 😊";
+                        ? "Por favor envíame estos datos ✨:\n• " + String.join("\n• ", missing) + " 😊"
+                        : "Aún me hacen falta estos datos para continuar 📝:\n• " + String.join("\n• ", missing) + " 😊";
 
                 return ContentResponse.buildContentResponseOk(message,null, action,null);
             }
