@@ -160,6 +160,9 @@ public class ActionsOracleServices {
             Chat chat;
 
             chat = chatSessionManager.getChatById(chatId);
+
+            log.info("Chat: {}" ,chat);
+
             if(chat == null) chat = initialChatIfNull(chatId);
             if(document != null) chat.setDocument(document);
             if(typeDocument != null) chat.setTypeDocument(typeDocument);
@@ -183,13 +186,14 @@ public class ActionsOracleServices {
             chat.setChatStart(new Date());
 
             Long docSearch = Long.valueOf(chat.getDocument());
-            Employee employee = employeeService.findByIds(docSearch,typeDocument);
+            Employee employee = employeeService.findByIds(docSearch,chat.getTypeDocument());
+
             if (employee == null)
-                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), typeDocument, document),null, action,null);
+                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), chat.getTypeDocument(), chat.getDocument()),null, action,null);
             List<Contract> contracts = contractServices.findByIds(employee.getEplNd(), employee.getTdcTd(),idsPrincipal);
 
             if(contracts == null || contracts.isEmpty())
-                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), typeDocument, document),null, action,null);
+                return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage(), chat.getTypeDocument(), chat.getDocument()),null, action,null);
 
 
             if(employee.getEmail() == null) return ContentResponse.buildNotMail(null);
