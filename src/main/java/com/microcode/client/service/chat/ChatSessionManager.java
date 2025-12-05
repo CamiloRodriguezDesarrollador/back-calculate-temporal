@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 @EnableScheduling
 public class ChatSessionManager {
 
+    private static final Logger log = LoggerFactory.getLogger(ChatSessionManager.class);
     private final ConcurrentMap<String, Chat> activeChats = new ConcurrentHashMap<>();
     private final HttpServletRequest request;
     private final QuantityChatServices quantityChatServices;
@@ -185,6 +188,7 @@ public class ChatSessionManager {
 
     @Scheduled(fixedRate = 600000) // 600000ms = 10 minutos
     public void validateInactiveChats(){
+        log.info("Iniciando borrado de chats.");
         for(Chat chat : activeChats.values()) {
             this.validateTime(chat);
         }

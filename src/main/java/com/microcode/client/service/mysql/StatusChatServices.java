@@ -36,6 +36,7 @@ public class StatusChatServices implements StatusChatServicesI {
 
     @Override
     public void delete(String chatId) {
+        log.info("Entra a status chat {} " , chatId);
         statusChatDao.deleteById(chatId);
     }
 
