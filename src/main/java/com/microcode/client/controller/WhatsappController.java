@@ -87,9 +87,14 @@ public class WhatsappController {
 
 
             if(!responseWrap.getActionRequest().equals("error")){
+
+                Chat chat = chatSessionManager.getChatById(chatId);
+
+                boolean content = chat.getDocument() != null && chat.getTypeDocument() != null;
+
                 List<Option> optionsYesOrNot = List.of(
-                        new Option(2, "Si", "Y", null),
-                        new Option(2, "No", "N", null)
+                        new Option(content ? 2 : 1, "Si", "Y", null),
+                        new Option(content ? 2 : 1, "No", "N", null)
                 );
 
                 List<Option> optionsNumber = List.of(
