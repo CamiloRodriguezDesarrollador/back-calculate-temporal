@@ -22,6 +22,11 @@ public class ChatRestController {
 
     @GetMapping("/active/chats")
     public ConcurrentMap<String, Chat> getActiveChats() {
+        return chatSessionManager.getActiveChats();
+    }
+
+    @GetMapping("/active/chats-wp")
+    public ConcurrentMap<String, Chat> getActiveChatsWp() {
 
         ConcurrentMap<String, Chat> chats = chatSessionManager.getActiveChats();
 

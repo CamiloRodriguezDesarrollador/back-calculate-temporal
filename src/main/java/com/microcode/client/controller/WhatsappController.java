@@ -141,10 +141,12 @@ public class WhatsappController {
 
     @GetMapping("/status")
     public StatusChat getStatusChat(
-            @RequestParam String chatId
+            @RequestParam String chatId,
+            @RequestParam Integer companyId
     ){
         StatusChat currentStatus = statusChatServices.findChatById(chatId);
         if(currentStatus == null){
+
             List<Option> options = List.of(
                     new Option(1,   "👷 Trabajador / Extrabajador",        null, null),
                     new Option(200, "🏡 Cliente / Proveedor / Candidato",  null, null)
@@ -156,13 +158,17 @@ public class WhatsappController {
                             "*¡Hola 👋!* Soy *Teo*, tu asistente virtual 🤖✨.\n" +
                                     "¡Estoy aquí para ayudarte! 😊\n\n" +
                                     "*Por favor elige una de las siguientes opciones:* 🙌\n\n" +
-                                    "1️⃣ *👷 Trabajador / Extrabajador*\n" +
-                                    "2️⃣ *🏡 Cliente / Proveedor / Candidato*"
+                                    "1. 👷 Trabajador / Extrabajador\n" +
+                                    "2. 🏡 Cliente / Proveedor / Candidato"
                     )
                     .chatOptions(options.toString())
                     .audDate(new Date())
                     .isHistory("N")
                     .build();
+
+            ContentResponse contentResponse = new ContentResponse();
+            contentResponse.setActionMessage(status.getChatMessage());
+            registerChatServices.createForResponse(chatId,contentResponse,"WP", companyId,null);
 
             statusChatServices.create(status);
             return status;
@@ -171,16 +177,6 @@ public class WhatsappController {
         currentStatus.setIsHistory("S");
         return currentStatus;
     }
-
-    @PostMapping("/inactive-session")
-    public void inactive(
-            @RequestBody ChatBody chatBody)
-    {
-        statusChatServices.delete(chatBody.getChatId());
-        chatSessionManager.deleteChatId(chatBody.getChatId());
-    }
-
-
 
 
 
