@@ -1,5 +1,6 @@
 package com.microcode.client.entity.general;
 
+import com.microcode.client.service.chat.ChatSessionManager;
 import lombok.*;
 
 import java.util.Date;
@@ -36,10 +37,17 @@ public class Chat {
     private Integer typeChat;
 
 
+    @Setter
+    @Getter
+    private ChatSessionManager manager;
+
     public Chat() {
     }
     public Chat(String chatId) {
         this.chatId = chatId;
     }
 
+    public boolean isChatStatus() {
+        return manager.validateTime(this);
+    }
 }
