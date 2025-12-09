@@ -22,7 +22,12 @@ public class ChatRestController {
 
     @GetMapping("/active/chats")
     public ConcurrentMap<String, Chat> getActiveChats() {
-        return chatSessionManager.getActiveChats();
+
+        ConcurrentMap<String, Chat> chats = chatSessionManager.getActiveChats();
+
+        chats.forEach((id, chat) -> chat.setChatActive(chatSessionManager.validateTime(chat)));
+
+        return chats;
     }
 
     @PostMapping("/sendMessageChatId")
