@@ -14,10 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.microcode.client.service.oracle.ActionsOracleServices.notFound;
 
@@ -173,6 +170,14 @@ public class WhatsappController {
         }
         currentStatus.setIsHistory("S");
         return currentStatus;
+    }
+
+    @PostMapping("/inactive-session")
+    public void inactive(
+            @RequestBody ChatBody chatBody)
+    {
+        statusChatServices.delete(chatBody.getChatId());
+        chatSessionManager.deleteChatId(chatBody.getChatId());
     }
 
 
