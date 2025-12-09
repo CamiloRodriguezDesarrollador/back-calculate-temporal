@@ -37,4 +37,10 @@ public class Chat {
     private boolean chatActive;
 
 
+    public Chat() {
+    }
+    public Chat(String chatId) {
+        this.chatId = chatId;
+    }
+
 }
