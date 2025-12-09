@@ -121,6 +121,7 @@ public class ChatSessionManager {
     }
 
     public boolean validateTime(Chat chat) {
+        log.info("Validando chat {}, Fecha inicio: {}, Fecha Authenticación: {}" , chat.getChatId(), chat.getChatStart(), chat.getChatAuthenticated());
         Date lastModified = chat.getChatDateAuthorized();
         if (lastModified == null && validateTimeStart(chat)){
             activeChats.remove(chat.getChatId());
