@@ -121,11 +121,12 @@ public class ChatSessionManager {
     }
 
     public boolean validateTime(Chat chat) {
-        log.info("Validando chat {}, Fecha inicio: {}, Fecha Authenticación: {}" , chat.getChatId(), chat.getChatStart(), chat.getChatAuthenticated());
+        log.info("Validando chat {}, Fecha inicio: {}, Fecha Authenticación: {}" , chat.getChatId(), chat.getChatStart(), chat.getChatDateAuthorized());
         Date lastModified = chat.getChatDateAuthorized();
         if (lastModified == null && validateTimeStart(chat)){
             activeChats.remove(chat.getChatId());
             statusChatServices.delete(chat.getChatId());
+            return true;
         }
         if (lastModified == null) return true;
         Date now = new Date();
@@ -135,8 +136,9 @@ public class ChatSessionManager {
         if(validate){
             activeChats.remove(chat.getChatId());
             statusChatServices.delete(chat.getChatId());
+            return true;
         }
-        return validate;
+        return false;
     }
 
     public boolean validateTimeCode(Chat chat) {
