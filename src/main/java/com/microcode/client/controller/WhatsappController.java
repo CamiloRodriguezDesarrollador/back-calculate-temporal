@@ -178,6 +178,14 @@ public class WhatsappController {
         return currentStatus;
     }
 
+    @PostMapping("/inactive-session")
+    public void inactive(
+            @RequestBody ChatBody chatBody)
+    {
+        statusChatServices.delete(chatBody.getChatId());
+        chatSessionManager.deleteChatId(chatBody.getChatId());
+    }
+
 
 
 }

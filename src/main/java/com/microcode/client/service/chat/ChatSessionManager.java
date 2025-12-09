@@ -136,9 +136,8 @@ public class ChatSessionManager {
         if(validate){
             activeChats.remove(chat.getChatId());
             statusChatServices.delete(chat.getChatId());
-            return true;
         }
-        return false;
+        return validate;
     }
 
     public boolean validateTimeCode(Chat chat) {
