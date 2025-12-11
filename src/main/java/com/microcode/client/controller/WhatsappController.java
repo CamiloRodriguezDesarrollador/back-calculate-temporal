@@ -98,14 +98,16 @@ public class WhatsappController {
                         new Option(50, "Enviame el código de verificación", null, null)
                 );
 
-                if(responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty()){
+                if (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty()) {
                     List<Option> optionsTemporal = responseWrap.getOptions();
                     for (int i = 0; i < optionsTemporal.size(); i++) {
                         Option opt = optionsTemporal.get(i);
-                        opt.setActionMessage((i + 1) + ". " + opt.getActionMessage());
+                        String msg = opt.getActionMessage().replaceFirst("^\\d+\\.\\s*", "");
+                        opt.setActionMessage((i + 1) + ". " + msg);
                     }
                     responseWrap.setOptions(optionsTemporal);
                 }
+
 
                 List<Option> options = switch (responseWrap.getActionRequest()) {
                     case "check"  -> optionsYesOrNot;
