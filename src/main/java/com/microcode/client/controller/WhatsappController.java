@@ -98,6 +98,15 @@ public class WhatsappController {
                         new Option(50, "Enviame el código de verificación", null, null)
                 );
 
+                if(responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty()){
+                    List<Option> optionsTemporal = responseWrap.getOptions();
+                    for (int i = 0; i < optionsTemporal.size(); i++) {
+                        Option opt = optionsTemporal.get(i);
+                        opt.setActionMessage((i + 1) + ". " + opt.getActionMessage());
+                    }
+                    responseWrap.setOptions(optionsTemporal);
+                }
+
                 List<Option> options = switch (responseWrap.getActionRequest()) {
                     case "check"  -> optionsYesOrNot;
                     case "number" -> optionsNumber;
@@ -105,6 +114,8 @@ public class WhatsappController {
                             ? responseWrap.getOptions()
                             : Collections.emptyList();
                 };
+
+
 
                 statusChatServices.create(
                         StatusChat.builder()
@@ -125,14 +136,7 @@ public class WhatsappController {
                 chatSessionManager.deleteChatId(chatId);
             }
 
-            if(responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty()){
-                List<Option> options = responseWrap.getOptions();
-                for (int i = 0; i < options.size(); i++) {
-                    Option opt = options.get(i);
-                    opt.setActionMessage((i + 1) + ". " + opt.getActionMessage());
-                }
-                responseWrap.setOptions(options);
-            }
+
 
             return responseWrap;
 
@@ -178,6 +182,7 @@ public class WhatsappController {
             ContentResponse contentResponse = new ContentResponse();
             contentResponse.setActionMessage(status.getChatMessage());
             registerChatServices.createForResponse(chatId,contentResponse,"WP", companyId,null);
+
 
             statusChatServices.create(status);
             return status;
