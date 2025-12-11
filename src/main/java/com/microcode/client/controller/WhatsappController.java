@@ -175,7 +175,7 @@ public class WhatsappController {
                                     "*Por favor elige una de las siguientes opciones:* 🙌\n\n" +
                                     "1. 👷 Trabajador / Extrabajador\n" +
                                     "2. 🏡 Cliente / Proveedor / Candidato\n\n"+
-                                    "Al continuar das autorización para el tratamientos de datos personales de acuerdo con la Política de datos. https://www.activos.com.co/cmsa/wp-content/uploads/2025/03/ME03-V1-MANUAL-POLITICAS-DE-PROTECCION-DE-DATOS-ACTIVOS-SAS-28Ene2025_compressed.pdf"
+                                    "Al continuar das autorización para el tratamientos de datos personales de acuerdo con la Política de datos. https://acortar.link/R9SJX6"
                     )
                     .chatOptions(options.toString())
                     .audDate(new Date())
