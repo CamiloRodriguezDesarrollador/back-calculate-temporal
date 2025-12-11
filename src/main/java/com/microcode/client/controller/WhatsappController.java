@@ -125,6 +125,13 @@ public class WhatsappController {
                 chatSessionManager.deleteChatId(chatId);
             }
 
+            List<Option> options = responseWrap.getOptions();
+            for (int i = 0; i < options.size(); i++) {
+                Option opt = options.get(i);
+                opt.setActionMessage((i + 1) + ". " + opt.getActionMessage());
+            }
+            responseWrap.setOptions(options);
+
             return responseWrap;
 
         }
