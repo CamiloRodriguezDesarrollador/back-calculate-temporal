@@ -155,8 +155,8 @@ public class WhatsappController {
         if(currentStatus == null){
 
             List<Option> options = List.of(
-                    new Option(1,   "👷 Trabajador / Extrabajador",        null, null),
-                    new Option(200, "🏡 Cliente / Proveedor / Candidato",  null, null)
+                    new Option(1,   "1. 👷 Trabajador / Extrabajador",        null, null),
+                    new Option(200, "2. 🏡 Cliente / Proveedor / Candidato",  null, null)
             );
 
             StatusChat status = StatusChat.builder()
