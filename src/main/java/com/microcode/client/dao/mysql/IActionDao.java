@@ -13,7 +13,7 @@ public interface IActionDao extends CrudRepository<Action, Long> {
 
     List<Action> findByActionTypeAndActionStatus(String actionType, String status);
 
-    List<Action> findByActionStatus(String status);
+    List<Action> findByActionStatusOrderByActionId(String status);
 
     Action findByActionMessageAndActionStatus(String actionMessage, String status);
 

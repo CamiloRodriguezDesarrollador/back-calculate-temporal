@@ -60,7 +60,7 @@ public class ActionServices implements ActionServicesI {
     }
 
     public void updateTypesChat(){
-        List<Action> actions = actionDao.findByActionStatus("A");
+        List<Action> actions = actionDao.findByActionStatusOrderByActionId("A");
         OptionsManageService.updateActions(actions);
 
         updateOptionsByType("principal", OptionsManageService::updateOptionsPrincipal);
@@ -99,7 +99,7 @@ public class ActionServices implements ActionServicesI {
 
     public ContentResponse buildResponse(String actionName, List<Option> secondParam) {
 
-        List<Action> actions = actionDao.findByActionStatus("A");
+        List<Action> actions = actionDao.findByActionStatusOrderByActionId("A");
 
         return actions.stream()
                 .filter(a -> actionName.equals(a.getActionNameFunction()))
@@ -116,15 +116,11 @@ public class ActionServices implements ActionServicesI {
     }
 
     public List<Option> updateOptionsByType(String type, Consumer<List<Option>> updater) {
-        List<Action> actions = actionDao.findByActionStatus("A");
+        List<Action> actions = actionDao.findByActionStatusOrderByActionId("A");
 
         List<Option> options = actions.stream()
                 .filter(a -> type.equalsIgnoreCase(a.getActionType()))
-                .sorted(
-                        Comparator
-                                .comparing(Action::getActionOrder)
-                                .thenComparing(Action::getActionId)
-                )
+                .sorted(Comparator.comparing(Action::getActionOrder))
                 .map(a -> new Option(a.getActionId(), a.getActionMessage(), null, a.getActionId().toString()))
                 .collect(Collectors.toList());
 
@@ -133,7 +129,7 @@ public class ActionServices implements ActionServicesI {
     }
 
     public void updateOptionsById( Consumer<List<Option>> updater ) {
-        List<Action> actions = actionDao.findByActionStatus("A");
+        List<Action> actions = actionDao.findByActionStatusOrderByActionId("A");
 
         List<Option> options = actions.stream()
                 .filter(a -> ((Integer) 1000).equals(a.getActionId()))
