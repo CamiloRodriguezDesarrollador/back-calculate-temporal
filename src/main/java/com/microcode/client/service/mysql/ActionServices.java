@@ -120,7 +120,11 @@ public class ActionServices implements ActionServicesI {
 
         List<Option> options = actions.stream()
                 .filter(a -> type.equalsIgnoreCase(a.getActionType()))
-                .sorted(Comparator.comparing(Action::getActionOrder))
+                .sorted(
+                        Comparator
+                                .comparing(Action::getActionOrder)
+                                .thenComparing(Action::getActionId)
+                )
                 .map(a -> new Option(a.getActionId(), a.getActionMessage(), null, a.getActionId().toString()))
                 .collect(Collectors.toList());
 
