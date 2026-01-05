@@ -32,9 +32,7 @@ public class WhatsappController {
     private final ActionsOracleServices actionsOracleServices;
 
     @PostMapping("/send-message")
-    public ContentResponse greeting(
-            @RequestBody ChatBody chatBody)
-        {
+    public ContentResponse greeting(@RequestBody ChatBody chatBody){
         Action action = new Action();
         String chatId = chatBody.getChatId();
         Integer companyId = chatBody.getCompanyId();
@@ -49,28 +47,16 @@ public class WhatsappController {
             };
         }
 
-        statusChatServices.create(
-                StatusChat.builder()
-                        .chatId(chatId)
-                        .chatStatus("P")
-                        .audDate(new Date())
-                        .isHistory("S")
-                        .build()
-        );
-
+        statusChatServices.createPend(chatId);
 
         try{
 
-            log.info("ChatId: {}" , chatId);
-            log.info("TypeChat: {}" , typeChat);
-            log.info("Message: {}" , message);
-
+            log.info("ChatId: {}, TypeChat: {}, Message: {}" , chatId, typeChat, message);
             List<Long> principalRequest = helperService.definePrincipalForCode(companyId);
-
 
             chatSessionManager.updateChatActivity(chatId, message);
             registerChatServices.createForMessage(chatId,message,"WP", companyId,typeChat);
-            assert message != null;
+            if (message == null) throw new IllegalArgumentException("El mensaje no puede ser null");
 
             action =  actionServices.getActionForId(message.getActionId());
             log.info("Action {}" ,action);
@@ -81,64 +67,16 @@ public class WhatsappController {
             registerChatServices.createForResponse(chatId,resp,"WP", companyId,typeChat);
             ContentResponse responseWrap = ContentResponse.cloneContentResponse(resp);
 
-
-
             if(!responseWrap.getActionRequest().equals("error")){
-
                 Chat chat = chatSessionManager.getChatById(chatId);
-
-                boolean content = chat.getDocument() != null && chat.getTypeDocument() != null;
-
-                List<Option> optionsYesOrNot = List.of(
-                        new Option(content ? 2 : 1, "Si", "Y", null),
-                        new Option(content ? 2 : 1, "No", "N", null)
-                );
-
-                List<Option> optionsNumber = List.of(
-                        new Option(50, "Enviame el código de verificación - Te pueden responder solo con el numero, o 'Es xxx codigo', y la action aca siempre es 50", null, null)
-                );
-
-                if (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty()) {
-                    List<Option> optionsTemporal = responseWrap.getOptions();
-                    for (int i = 0; i < optionsTemporal.size(); i++) {
-                        Option opt = optionsTemporal.get(i);
-                        String msg = opt.getActionMessage().replaceFirst("^\\d+\\.\\s*", "");
-                        opt.setActionMessage((i + 1) + ". " + msg);
-                    }
-                    responseWrap.setOptions(optionsTemporal);
-                }
-
-
-                List<Option> options = switch (responseWrap.getActionRequest()) {
-                    case "check"  -> optionsYesOrNot;
-                    case "number" -> optionsNumber;
-                    default       -> (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty())
-                            ? responseWrap.getOptions()
-                            : Collections.emptyList();
-                };
-
-
-
-                statusChatServices.create(
-                        StatusChat.builder()
-                                .chatId(chatId)
-                                .chatMessage(responseWrap.toString())
-                                .chatOptions(options.isEmpty() ? null : options.toString())
-                                .chatAction(typeChat == 1L ? 1 : 200)
-                                .chatType(typeChat)
-                                .audDate(new Date())
-                                .chatStatus("C")
-                                .isHistory("S")
-                                .build()
-                );
+                StatusChat status = StatusChat.defineStatusStarted(chatId, chat, responseWrap, typeChat );
+                statusChatServices.create(status);
             }
 
             if(action.getActionId() == 1000 || action.getActionId() == 225){
                 statusChatServices.delete(chatId);
                 chatSessionManager.deleteChatId(chatId);
             }
-
-
 
             return responseWrap;
 
@@ -161,35 +99,12 @@ public class WhatsappController {
     ){
         StatusChat currentStatus = statusChatServices.findChatById(chatId);
         if(currentStatus == null){
-
-            List<Option> options = List.of(
-                    new Option(1,   "1. 👷 Trabajador / Extrabajador",        null, null),
-                    new Option(200, "2. 🏡 Cliente / Proveedor / Candidato",  null, null)
-            );
-
-            StatusChat status = StatusChat.builder()
-                    .chatId(chatId)
-                    .chatMessage(
-                            "*¡Hola 👋!* Soy *Teo*, tu asistente virtual 🤖✨.\n" +
-                                    "¡Estoy aquí para ayudarte! 😊\n\n" +
-                                    "*Por favor elige una de las siguientes opciones:* 🙌\n\n" +
-                                    "1. 👷 Trabajador / Extrabajador\n" +
-                                    "2. 🏡 Cliente / Proveedor / Candidato\n\n"+
-                                    "Al continuar das autorización para el tratamientos de datos personales de acuerdo con la Política de datos. https://acortar.link/R9SJX6"
-                    )
-                    .chatOptions(options.toString())
-                    .audDate(new Date())
-                    .isHistory("N")
-                    .build();
-
+            StatusChat status = StatusChat.defineStatusInitial(chatId,companyId );
             ContentResponse contentResponse = new ContentResponse();
             contentResponse.setActionMessage(status.getChatMessage());
             registerChatServices.createForResponse(chatId,contentResponse,"WP", companyId,null);
-
-
             statusChatServices.create(status);
             return status;
-
         }
         currentStatus.setIsHistory("S");
         return currentStatus;

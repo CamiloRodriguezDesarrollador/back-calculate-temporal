@@ -35,6 +35,18 @@ public class StatusChatServices implements StatusChatServicesI {
     }
 
     @Override
+    public void createPend(String chatId) {
+        StatusChat status = StatusChat.builder()
+                .chatId(chatId)
+                .chatStatus("P")
+                .audDate(new Date())
+                .isHistory("S")
+                .build();
+
+        this.create(status);
+    }
+
+    @Override
     public void delete(String chatId) {
         log.info("Entra a status chat {} " , chatId);
         statusChatDao.deleteById(chatId);
