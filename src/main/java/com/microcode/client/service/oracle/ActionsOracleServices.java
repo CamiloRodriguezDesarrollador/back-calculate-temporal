@@ -546,6 +546,11 @@ public class ActionsOracleServices {
             if(!actionServices.verifiedRequirementContractActive(chat,action))
                 return this.responseWithOptionsParam(withoutContract,action);
 
+            if( action.getActionId() == 1000 || action.getActionId() == 225 || action.getActionId() == 1016 || action.getActionId() == 1017 ){
+                statusChatServices.delete(chat.getChatId());
+                chatSessionManager.deleteChatId(chat.getChatId());
+            }
+
             return ContentResponse.buildContentResponseOk(
                     String.format(action.getActionRespOkMessage(), chat.getNames()),
                     optionsManageService.getOptionsByActionWithOption(action.getActionOption()),
@@ -877,10 +882,7 @@ public class ActionsOracleServices {
 
                     return String.format(action.getActionRespOkMessage(),mailResp);
 
-                case 1000, 225, 1016, 1017 :
-                    statusChatServices.delete(chat.getChatId());
-                    chatSessionManager.deleteChatId(chat.getChatId());
-                    return null;
+
             }
             return null;
         }catch (Exception e){
