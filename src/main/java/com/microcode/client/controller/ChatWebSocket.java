@@ -9,6 +9,7 @@ import com.microcode.client.service.helper.HelperService;
 import com.microcode.client.service.mysql.ActionServices;
 import com.microcode.client.service.mysql.RegisterChatServices;
 import com.microcode.client.service.mysql.Salt;
+import com.microcode.client.service.mysql.StatusChatServices;
 import com.microcode.client.service.oracle.ActionsOracleServices;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +65,6 @@ public class ChatWebSocket {
             registerChatServices.createForResponse(chatId,resp,clientIp, companyId,typeChat);
             ContentResponse responseWrap = ContentResponse.cloneContentResponse(resp);
             if (responseWrap != null) responseWrap.setActionMessage(Salt.wrapMessage(resp.getActionMessage()));
-
             return responseWrap;
 
         }
