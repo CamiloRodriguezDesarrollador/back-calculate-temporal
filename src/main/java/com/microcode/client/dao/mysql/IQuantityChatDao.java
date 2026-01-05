@@ -19,7 +19,7 @@ public interface IQuantityChatDao extends CrudRepository<QuantityChat, Long> {
             FROM QuantityChat p
             LEFT JOIN Action pe ON pe.actionId = p.actionId
             WHERE p.actionId = :actionId AND p.document = :document AND p.typeDocument = :typeDocument
-            AND p.actionDetail = :actionDetail
+            AND ( p.actionDetail = :actionDetail or p.actionDetail IS NULL)
             AND p.actionPrincipal = :actionPrincipal
             AND p.audDate BETWEEN :startDate AND :endDate
             ORDER BY p.quantityId DESC
@@ -32,7 +32,7 @@ public interface IQuantityChatDao extends CrudRepository<QuantityChat, Long> {
             FROM QuantityChat p
             LEFT JOIN Action pe ON pe.actionId = p.actionId
             WHERE p.document = :document AND p.typeDocument = :typeDocument
-            AND p.actionDetail = :actionDetail
+            AND ( p.actionDetail = :actionDetail or p.actionDetail IS NULL)
             AND p.actionPrincipal = :actionPrincipal
             AND p.audDate BETWEEN :startDate AND :endDate
             ORDER BY p.quantityId DESC
