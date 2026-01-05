@@ -15,10 +15,7 @@ import com.microcode.client.entity.general.Option;
 import com.microcode.client.service.chat.ConsumeChatService;
 import com.microcode.client.service.helper.HelperService;
 import com.microcode.client.service.jasper.JasperService;
-import com.microcode.client.service.mysql.ActionServices;
-import com.microcode.client.service.mysql.PrincipalDataServices;
-import com.microcode.client.service.mysql.QuantityChatServices;
-import com.microcode.client.service.mysql.QuestionServices;
+import com.microcode.client.service.mysql.*;
 import jakarta.annotation.PostConstruct;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -72,6 +69,7 @@ public class ActionsOracleServices {
     private final LibIngServices libIngServices;
     private final ConnectExternalServices connectExternalServices;
     private final QuestionServices questionServices;
+    private final StatusChatServices statusChatServices;
 
     @PostConstruct
     public void init() {
@@ -879,6 +877,10 @@ public class ActionsOracleServices {
 
                     return String.format(action.getActionRespOkMessage(),mailResp);
 
+                case 1000, 225, 1016, 1017 :
+                    statusChatServices.delete(chat.getChatId());
+                    chatSessionManager.deleteChatId(chat.getChatId());
+                    return null;
             }
             return null;
         }catch (Exception e){
