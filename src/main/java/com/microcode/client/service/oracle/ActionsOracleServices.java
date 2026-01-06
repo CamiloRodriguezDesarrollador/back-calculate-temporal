@@ -72,6 +72,7 @@ public class ActionsOracleServices {
     private final QuestionServices questionServices;
     private final StatusChatServices statusChatServices;
     private final NotifyServices notifyServices;
+    private final EmployeePhoneServices employeePhoneServices;
 
     @PostConstruct
     public void init() {
@@ -235,8 +236,8 @@ public class ActionsOracleServices {
             chatSessionManager.setChatById( chatId, chat );
 
             String mailUser = helperService.generateMail(employee.getEmail().toLowerCase());
-            mailServices.ping();
-            connectExternalServices.ping();
+//            mailServices.ping();
+//            connectExternalServices.ping();
             return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), mailUser),null, action,null);
 
         } catch (Exception e) {
@@ -260,8 +261,8 @@ public class ActionsOracleServices {
                     : detail;
 
             if (mailFlag.equals("Y")) {
-//                String code = "123456";
-                String code = helperService.generateCode();
+                String code = "123456";
+//                String code = helperService.generateCode();
                 chat.setChatCode(code);
                 chat.setChatAttempts(1);
                 chat.setChatDateCode(new Date());
@@ -270,7 +271,7 @@ public class ActionsOracleServices {
                 String subject = String.format(action.getActionRepOkMailSubject(),code);
 
 //                mailServices.sendMailChat(MAIL_TEST,contentMail,subject,chat.getPrincipalRequest());
-                mailServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest());
+//                mailServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest());
 
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action,null);
             }
@@ -869,11 +870,20 @@ public class ActionsOracleServices {
                     return principalDataServices.getForSiglaAndEmpNd("pqr"+sig, chat.getEmpNd());
 
                 case 551 :
+                    List<String> phones;
+                    try {
+                        phones = employeePhoneServices.findByIds(
+                                Long.valueOf(chat.getDocument()), chat.getTypeDocument());
+                    } catch (Exception e) {
+                        phones = null;
+                    }
+
                     String text =
                             "📩 Nueva solicitud de contacto\n\n" +
                                     "👤 *Nombre*: " + chat.getNames() + "\n" +
                                     "🪪 *Documento*: " + chat.getDocument() + "\n" +
                                     "✉️ *Correo*: " + chat.getChatMail() + "\n" +
+                                    "📞 *Teléfonos*: " + phones + "\n" +
                                     "📄 *Estado CTO*: " + (chat.getContractActive() ? "Activo" : "Retirado") + "\n" +
                                     "🏛️ *Principal*: " +  helperService.defineUniquePrincipalForAuthorizedString(chat.getPrincipalRequest()) + "\n" +
                                     "💬 *Mensaje*: " + detail;
