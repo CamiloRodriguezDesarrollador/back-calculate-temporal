@@ -106,6 +106,12 @@ public class HelperService {
         return 1L;
     }
 
+    public String defineUniquePrincipalForAuthorizedString(List<Long> authorized){
+        if(authorized.contains(800148972L)) return "Serviola SAS";
+        if(authorized.contains(830057687L)) return "Atecno SAS";
+        return "Activos SAS ";
+    }
+
     public String clobToString(Clob clob) {
         if (clob == null) return null;
         try (Reader reader = clob.getCharacterStream();

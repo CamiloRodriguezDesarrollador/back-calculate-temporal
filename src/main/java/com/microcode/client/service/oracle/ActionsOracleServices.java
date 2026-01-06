@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microcode.client.clients.ConnectExternalServices;
 import com.microcode.client.clients.MailServices;
+import com.microcode.client.clients.NotifyServices;
 import com.microcode.client.entity.general.QuantityResponse;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.entity.oracle.*;
@@ -70,6 +71,7 @@ public class ActionsOracleServices {
     private final ConnectExternalServices connectExternalServices;
     private final QuestionServices questionServices;
     private final StatusChatServices statusChatServices;
+    private final NotifyServices notifyServices;
 
     @PostConstruct
     public void init() {
@@ -542,9 +544,15 @@ public class ActionsOracleServices {
                 ContentResponse resp = this.validateInitial(chat);
                 if(resp != null) return resp;
             }
+            ContentResponse validateQuantity = validateQuantityOver(action, chat, "redirect",chat.getEmpNd().toString());
+
+            if (validateQuantity != null) return responseWithOptionsParam(validateQuantity, action);
 
             if(!actionServices.verifiedRequirementContractActive(chat,action))
                 return this.responseWithOptionsParam(withoutContract,action);
+
+
+            quantityChatServices.createQuantityForAction(action,chat,"redirect",chat.getEmpNd().toString());
 
             return ContentResponse.buildContentResponseOk(
                     String.format(action.getActionRespOkMessage(), chat.getNames()),
@@ -564,6 +572,7 @@ public class ActionsOracleServices {
             Action action = actionOriginal.clone();
             String detail = inputs.get("detail");
             String chatId = inputs.get("chatId");
+
 
             Chat chat = chatSessionManager.getChatById(chatId);
 
@@ -599,9 +608,6 @@ public class ActionsOracleServices {
 
             quantityChatServices.createQuantityForAction(action,chat,detail,chat.getEmpNd().toString());
 
-            System.out.println(action.getActionId());
-            System.out.println(action.getActionRedirect());
-            System.out.println(action.getActionOption());
             List<Option> options = new ArrayList<>(
                     optionsManageService.getOptionsByActionWithOption(action.getActionOption())
             );
@@ -861,6 +867,19 @@ public class ActionsOracleServices {
                 case 105 :
                     String sig = chat.getContractActive() ? "A" : "I";
                     return principalDataServices.getForSiglaAndEmpNd("pqr"+sig, chat.getEmpNd());
+
+                case 551 :
+                    String text =
+                            "📩 Nueva solicitud de contacto\n\n" +
+                                    "👤 *Nombre*: " + chat.getNames() + "\n" +
+                                    "🪪 *Documento*: " + chat.getDocument() + "\n" +
+                                    "✉️ *Correo*: " + chat.getChatMail() + "\n" +
+                                    "📄 *Estado CTO*: " + (chat.getContractActive() ? "Activo" : "Retirado") + "\n" +
+                                    "🏛️ *Principal*: " +  helperService.defineUniquePrincipalForAuthorizedString(chat.getPrincipalRequest()) + "\n" +
+                                    "💬 *Mensaje*: " + detail;
+
+                    notifyServices.notifyChatApps(text);
+                    return null;
 
                 case 549 :
                     if(helperService.isPrincipal(chat.getEmpNdFil())) return String.format(action.getActionRespOkMessagePrincipal());
