@@ -236,8 +236,8 @@ public class ActionsOracleServices {
             chatSessionManager.setChatById( chatId, chat );
 
             String mailUser = helperService.generateMail(employee.getEmail().toLowerCase());
-//            mailServices.ping();
-//            connectExternalServices.ping();
+            mailServices.ping();
+            connectExternalServices.ping();
             return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), mailUser),null, action,null);
 
         } catch (Exception e) {
@@ -261,8 +261,8 @@ public class ActionsOracleServices {
                     : detail;
 
             if (mailFlag.equals("Y")) {
-                String code = "123456";
-//                String code = helperService.generateCode();
+//                String code = "123456";
+                String code = helperService.generateCode();
                 chat.setChatCode(code);
                 chat.setChatAttempts(1);
                 chat.setChatDateCode(new Date());
@@ -271,7 +271,7 @@ public class ActionsOracleServices {
                 String subject = String.format(action.getActionRepOkMailSubject(),code);
 
 //                mailServices.sendMailChat(MAIL_TEST,contentMail,subject,chat.getPrincipalRequest());
-//                mailServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest());
+                mailServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest());
 
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action,null);
             }
