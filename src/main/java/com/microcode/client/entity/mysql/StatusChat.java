@@ -103,6 +103,10 @@ public class StatusChat implements Serializable, Cloneable {
                 new Option(50, "Enviame el código de verificación - Te pueden responder solo con el numero, o 'Es xxx código', y la action aca siempre es 50", null, null)
         );
 
+        List<Option> optionsText = List.of(
+                new Option(551, "Por favor, escríbeme un breve mensaje indicando lo que necesitas - Te pueden colocar cualquier cosa, siempre si o si responde bien con la accion 551, y detail el mensaje que coloquen", null, null)
+        );
+
         if (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty()) {
             List<Option> optionsTemporal = responseWrap.getOptions();
             for (int i = 0; i < optionsTemporal.size(); i++) {
@@ -117,6 +121,7 @@ public class StatusChat implements Serializable, Cloneable {
         List<Option> options = switch (responseWrap.getActionRequest()) {
             case "check"  -> optionsYesOrNot;
             case "number" -> optionsNumber;
+            case "text" -> optionsText;
             default       -> (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty())
                     ? responseWrap.getOptions()
                     : Collections.emptyList();
