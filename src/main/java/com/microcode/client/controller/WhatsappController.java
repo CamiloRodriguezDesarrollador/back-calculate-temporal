@@ -73,7 +73,7 @@ public class WhatsappController {
                 statusChatServices.create(status);
             }
 
-            if(action.getActionId() == 1000 || action.getActionId() == 225){
+            if(action.getActionId() == 1000 || action.getActionId() == 225 || responseWrap.getActionMessage().contains("Para utilizar esta opción debes estar autenticado")){
                 statusChatServices.delete(chatId);
                 chatSessionManager.deleteChatId(chatId);
             }
