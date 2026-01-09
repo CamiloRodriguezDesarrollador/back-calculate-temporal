@@ -552,6 +552,8 @@ public class ActionsOracleServices {
             if(chat.getTypeChat() == 1){
                 ContentResponse resp = this.validateInitial(chat);
                 if(resp != null) return resp;
+            }else{
+                chat.setChatDateAuthorized(new Date());
             }
             ContentResponse validateQuantity = validateQuantityOver(action, chat, "redirect",chat.getEmpNd().toString());
 
