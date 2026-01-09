@@ -83,7 +83,8 @@ public class StatusChat implements Serializable, Cloneable {
                                 "*Por favor elige una de las siguientes opciones:* 🙌\n\n" +
                                 "1. 👷 Trabajador / Extrabajador\n" +
                                 "2. 🏡 Cliente / Proveedor / Candidato\n\n"+
-                                "Al continuar das autorización para el tratamientos de datos personales de acuerdo con la Política de datos. " + urlData
+                                "Al continuar das autorización para el tratamientos de datos personales de acuerdo con la Política de datos. " + urlData + " ." + "\n\n"+
+                                "👉 Para salir del chat en cualquier momento y volver aquí, escribe *EXIT*"
                 )
                 .chatOptions(options.toString())
                 .audDate(new Date())
