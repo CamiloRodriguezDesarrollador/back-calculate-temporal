@@ -100,6 +100,9 @@ public class ActionsOracleServices {
             String chatId = inputs.get("chatId");
             String principalRequest = inputs.get("principalRequest");
 
+            if (document != null) document = document.replaceAll("[^a-zA-Z0-9]", "");
+            if (typeDocument != null) typeDocument = typeDocument.replaceAll("[^a-zA-Z0-9]", "");
+
             ObjectMapper objectMapper = new ObjectMapper();
             List<Long> idsPrincipal = objectMapper.readValue(principalRequest, new TypeReference<>() {});
 
@@ -111,11 +114,11 @@ public class ActionsOracleServices {
             chat.setTypeChat(2);
 
             chat.setChatStart(new Date());
-            if(name != null) chat.setNames(name);
-            if(document != null) chat.setDocument(document);
-            if(typeDocument != null) chat.setTypeDocument(typeDocument);
-            if(email != null) chat.setChatMail(email);
-            if(phone != null) chat.setChatPhone(phone);
+            if(name != null && !name.equals("null")) chat.setNames(name);
+            if(document != null && !document.equals("null")) chat.setDocument(document);
+            if(typeDocument != null && !typeDocument.equals("null")) chat.setTypeDocument(typeDocument);
+            if(email != null && !email.equals("null") ) chat.setChatMail(email);
+            if(phone != null && !phone.equals("null") ) chat.setChatPhone(phone);
 
             chat.setChatAuthenticated(false);
             chat.setPrincipalRequest(idsPrincipal);
@@ -137,8 +140,11 @@ public class ActionsOracleServices {
             boolean isFirstTime = missing.size() == 5;
 
             String message = isFirstTime
-                    ? "Por favor envíame los siguientes datos ✨:\n• " + String.join("\n• ", missing) + " 😊"
-                    : "Aún me hacen falta estos datos para continuar 📝:\n• " + String.join("\n• ", missing) + " 😊";
+                    ? helperService.defineChatType(2)
+                    : "Aún me hacen falta estos datos 📝:\n• " + String.join("\n• ", missing) + " 😊";
+
+            chat.setChatAuthenticated(true);
+            chat.setChatDateAuthorized(new Date());
 
             return ContentResponse.buildContentResponseOk(message,null, action,null);
         } catch (Exception e) {
@@ -159,14 +165,16 @@ public class ActionsOracleServices {
             List<Long> idsPrincipal = objectMapper.readValue(principalRequest, new TypeReference<>() {});
 
             Chat chat;
+            if (document != null) document = document.replaceAll("[^a-zA-Z0-9]", "");
+            if (typeDocument != null) typeDocument = typeDocument.replaceAll("[^a-zA-Z0-9]", "");
 
             chat = chatSessionManager.getChatById(chatId);
 
             log.info("Chat: {}" ,chat);
 
             if(chat == null) chat = initialChatIfNull(chatId);
-            if(document != null) chat.setDocument(document);
-            if(typeDocument != null) chat.setTypeDocument(typeDocument);
+            if(document != null && !document.equals("null")) chat.setDocument(document);
+            if(typeDocument != null && !typeDocument.equals("null")) chat.setTypeDocument(typeDocument);
             chat.setTypeChat(1);
 
             if (chat.getTypeDocument() == null || chat.getDocument()  == null)
@@ -178,8 +186,8 @@ public class ActionsOracleServices {
                 boolean isFirstTime = missing.size() == 2;
 
                 String message = isFirstTime
-                        ? "Por favor envíame estos datos ✨:\n• " + String.join("\n• ", missing) + " 😊"
-                        : "Aún me hacen falta estos datos para continuar 📝:\n• " + String.join("\n• ", missing) + " 😊";
+                        ? helperService.defineChatType(1)
+                        : "Aún me hacen falta estos datos 📝:\n• " + String.join("\n• ", missing) + " 😊";
 
                 return ContentResponse.buildContentResponseOk(message,null, action,null);
             }

@@ -140,4 +140,28 @@ public class HelperService {
         }
     }
 
+    public String defineChatType(Integer typeChat){
+        if(typeChat == 1){
+            return """
+                    A través de este chat podrás solicitar:
+                    ◾Documentos 📄
+                    ◾Estado de Liquidación 💰
+                    ◾Requisitos y Trámites Entidades 📰
+                    ◾Bienestar 👬
+                    
+                    Para continuar ✨ por favor envíame *Tipo* y *Numero de documento* para continuar ✨.
+                    """;
+        }else{
+            return """
+                    A través de este chat podrás solicitar:
+                    ◾Cotiza Servicios ✍️
+                    ◾Confirmar Referencias Laborales ✅
+                    ◾Ofertas Laborales 📰
+                    ◾Consultar Portal HV 💻
+                    
+                    Para continuar ✨ por favor envíame *Tipo de documento* , *Numero de documento*, *Nombres*, *Celular* y *Correo electrónico*.
+                    """;
+        }
+    }
+
 }
