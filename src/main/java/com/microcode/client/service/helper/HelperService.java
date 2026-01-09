@@ -149,7 +149,9 @@ public class HelperService {
                     ◾Requisitos y Trámites Entidades 📰
                     ◾Bienestar 👬
                     
-                    Para continuar ✨ por favor envíame *Tipo* y *Numero de documento*.
+                    Para continuar ✨ por favor envíame:
+                        ◽️ *Tipo*
+                        ◽ *Numero de documento*
                     """;
         }else{
             return """
@@ -159,7 +161,12 @@ public class HelperService {
                     ◾Ofertas Laborales 📰
                     ◾Consultar Portal HV 💻
                     
-                    Para continuar ✨ por favor envíame *Tipo de documento* , *Numero de documento*, *Nombres*, *Celular* y *Correo electrónico*.
+                    Para continuar ✨ por favor envíame
+                    ◽ *Tipo de documento*
+                    ◽ *Numero de documento*
+                    ◽ *Nombres*
+                    ◽ *Celular*
+                    ◽ *Correo electrónico*.
                     """;
         }
     }

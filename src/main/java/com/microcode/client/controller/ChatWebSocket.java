@@ -9,7 +9,6 @@ import com.microcode.client.service.helper.HelperService;
 import com.microcode.client.service.mysql.ActionServices;
 import com.microcode.client.service.mysql.RegisterChatServices;
 import com.microcode.client.service.mysql.Salt;
-import com.microcode.client.service.mysql.StatusChatServices;
 import com.microcode.client.service.oracle.ActionsOracleServices;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
