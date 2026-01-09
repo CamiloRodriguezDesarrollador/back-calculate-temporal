@@ -68,7 +68,7 @@ public class StatusChat implements Serializable, Cloneable {
 
         List<Option> options = List.of(
                 new Option(1,   "1. 👷 Trabajador / Extrabajador : Igualmente, te pueden enviar datos como Tipo de Documento, y Documento, solo extraelos y envia al action 1 ",        null, null),
-                new Option(200, "2. 🏡 Cliente / Proveedor / Candidato : Igualmente, te pueden enviar datos como Tipo de Documento, Documento, Celular, Nombres y Correo Electronico, solo extraelos y envia al action 1",  null, null)
+                new Option(200, "2. 🏡 Cliente / Proveedor / Candidato / Externo : Igualmente, te pueden enviar datos como Tipo de Documento, Documento, Celular, Nombres y Correo Electronico, solo extraelos y envia al action 1",  null, null)
         );
 
         String urlData = "https://bit.ly/4qDempL";
