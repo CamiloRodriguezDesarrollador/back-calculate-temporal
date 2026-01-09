@@ -149,7 +149,7 @@ public class HelperService {
                     ◾Requisitos y Trámites Entidades 📰
                     ◾Bienestar 👬
                     
-                    Para continuar ✨ por favor envíame *Tipo* y *Numero de documento* para continuar ✨.
+                    Para continuar ✨ por favor envíame *Tipo* y *Numero de documento*.
                     """;
         }else{
             return """
