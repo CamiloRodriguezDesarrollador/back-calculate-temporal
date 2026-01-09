@@ -141,7 +141,7 @@ public class ActionsOracleServices {
 
             String message = isFirstTime
                     ? helperService.defineChatType(2)
-                    : "Aún me hacen falta estos datos 📝:\n• " + String.join("\n◽ ", missing) + " 😊";
+                    : "Aún me hacen falta estos datos 📝:\n◽ " + String.join("\n◽ ", missing) + " 😊";
 
             chat.setChatAuthenticated(true);
             chat.setChatDateAuthorized(new Date());
@@ -187,7 +187,7 @@ public class ActionsOracleServices {
 
                 String message = isFirstTime
                         ? helperService.defineChatType(1)
-                        : "Aún me hacen falta estos datos 📝:\n• " + String.join("\n• ", missing) + " 😊";
+                        : "Aún me hacen falta estos datos 📝:\n◽ " + String.join("\n◽ ", missing) + " 😊";
 
                 return ContentResponse.buildContentResponseOk(message,null, action,null);
             }
@@ -548,13 +548,13 @@ public class ActionsOracleServices {
         try{
             String chatId = inputs.get("chatId");
             Chat chat = chatSessionManager.getChatById(chatId);
+            chat.setChatDateAuthorized(new Date());
 
             if(chat.getTypeChat() == 1){
                 ContentResponse resp = this.validateInitial(chat);
                 if(resp != null) return resp;
-            }else{
-                chat.setChatDateAuthorized(new Date());
             }
+
             ContentResponse validateQuantity = validateQuantityOver(action, chat, "redirect",chat.getEmpNd().toString());
 
             if (validateQuantity != null) return responseWithOptionsParam(validateQuantity, action);
@@ -586,6 +586,7 @@ public class ActionsOracleServices {
 
 
             Chat chat = chatSessionManager.getChatById(chatId);
+            chat.setChatDateAuthorized(new Date());
 
             if(!actionServices.verifiedRequirementContractActive(chat,action)) return withoutContract;
 
@@ -598,8 +599,6 @@ public class ActionsOracleServices {
             if(chat.getTypeChat() == 1){
                 ContentResponse resp = this.validateInitial(chat);
                 if (resp != null) return resp;
-            }else{
-                chat.setChatDateAuthorized(new Date());
             }
 
             if(action.getActionSigla() != null || action.getActionSiglaPrincipal() != null){

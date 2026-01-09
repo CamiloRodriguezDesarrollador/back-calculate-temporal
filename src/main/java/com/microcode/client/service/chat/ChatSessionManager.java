@@ -168,8 +168,7 @@ public class ChatSessionManager {
 
         Date endDate = new Date();
         LocalDate endLocalDate = endDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate startLocalDate = endLocalDate.minusDays(quantity);
-
+        LocalDate startLocalDate = endLocalDate.minusDays(quantity-1);
 
         Date startDate = Date.from(startLocalDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
         List<QuantityChat> quantityChats = quantityChatServices.findQuantityForDocumentAndAction(
