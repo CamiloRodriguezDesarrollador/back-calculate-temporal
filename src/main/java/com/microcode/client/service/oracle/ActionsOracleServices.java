@@ -141,7 +141,7 @@ public class ActionsOracleServices {
 
             String message = isFirstTime
                     ? helperService.defineChatType(2)
-                    : "Aún me hacen falta estos datos 📝:\n◽ " + String.join("\n◽ ", missing) + " 😊";
+                    : "Aún me hacen falta estos datos 📝:\n🔸 " + String.join("\n🔸 ", missing) + " 😊";
 
             chat.setChatAuthenticated(true);
             chat.setChatDateAuthorized(new Date());
@@ -187,7 +187,7 @@ public class ActionsOracleServices {
 
                 String message = isFirstTime
                         ? helperService.defineChatType(1)
-                        : "Aún me hacen falta estos datos 📝:\n◽ " + String.join("\n◽ ", missing) + " 😊";
+                        : "Aún me hacen falta estos datos 📝:\n🔸 " + String.join("\n🔸 ", missing) + " 😊";
 
                 return ContentResponse.buildContentResponseOk(message,null, action,null);
             }

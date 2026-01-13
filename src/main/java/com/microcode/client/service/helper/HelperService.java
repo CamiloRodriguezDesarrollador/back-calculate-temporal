@@ -144,29 +144,29 @@ public class HelperService {
         if(typeChat == 1){
             return """
                     A través de este chat podrás solicitar:
-                    ◾Documentos 📄
-                    ◾Estado de Liquidación 💰
-                    ◾Requisitos y Trámites Entidades 📰
-                    ◾Bienestar 👬
+                    🔹Documentos 📄
+                    🔹Estado de Liquidación 💰
+                    🔹Requisitos y Trámites Entidades 📰
+                    🔹Bienestar 👬
                     
                     Para continuar ✨ por favor envíame:
-                        ◽️ *Tipo*
-                        ◽ *Numero de documento*
+                        🔸 *Tipo*
+                        🔸 *Numero de documento*
                     """;
         }else{
             return """
                     A través de este chat podrás solicitar:
-                    ◾Cotiza Servicios ✍️
-                    ◾Confirmar Referencias Laborales ✅
-                    ◾Ofertas Laborales 📰
-                    ◾Consultar Portal HV 💻
+                    🔹Cotiza Servicios ✍️
+                    🔹Confirmar Referencias Laborales ✅
+                    🔹Ofertas Laborales 📰
+                    🔹Consultar Portal HV 💻
                     
                     Para continuar ✨ por favor envíame
-                    ◽ *Tipo de documento*
-                    ◽ *Numero de documento*
-                    ◽ *Nombres*
-                    ◽ *Celular*
-                    ◽ *Correo electrónico*.
+                    🔸 *Tipo de documento*
+                    🔸 *Numero de documento*
+                    🔸 *Nombres*
+                    🔸 *Celular*
+                    🔸 *Correo electrónico*.
                     """;
         }
     }
