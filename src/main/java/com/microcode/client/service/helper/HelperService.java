@@ -146,7 +146,7 @@ public class HelperService {
                     A través de este chat podrás solicitar:
                     🔹Documentos 📄
                     🔹Estado de Liquidación 💰
-                    🔹Requisitos y Trámites Entidades 📰
+                    🔹Trámites Entidades 📰
                     🔹Bienestar 👬
                     
                     Para continuar ✨ por favor envíame:
@@ -157,7 +157,7 @@ public class HelperService {
             return """
                     A través de este chat podrás solicitar:
                     🔹Cotiza Servicios ✍️
-                    🔹Confirmar Referencias Laborales ✅
+                    🔹Referencias Laborales ✅
                     🔹Ofertas Laborales 📰
                     🔹Consultar Portal HV 💻
                     

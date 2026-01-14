@@ -221,24 +221,21 @@ public class ActionsOracleServices {
             if (contract != null) {
                 chat.setEmpNd(contract.getEmpNd());
                 chat.setTdcTd(contract.getTdcTd());
-                chat.setEmpNdFil(contract.getEmpNdFil());
+                chat.setEmpNdFil(contract.getSucNombreFil().equals("PROYECTO ESPECIAL ALIADOS") ? 999999999 : contract.getEmpNdFil());
                 chat.setTdcTdFil(contract.getTdcTdFil());
                 chat.setCtoNumber(contract.getCtoNumero());
                 chat.setPerSigla(contract.getPerSigla());
                 chat.setContractActive(true);
-                chat.setEmpNdFil(contract.getEmpNdFil());
 
             }else{
                 Contract cont = contractServices.findContractForEpl(Long.valueOf(chat.getDocument()), chat.getTypeDocument(), chat.getPrincipalRequest());
                 chat.setEmpNd(cont.getEmpNd());
                 chat.setTdcTd(cont.getTdcTd());
-                chat.setEmpNdFil(cont.getEmpNdFil());
+                chat.setEmpNdFil(cont.getSucNombreFil().equals("PROYECTO ESPECIAL ALIADOS") ? 999999999 : cont.getEmpNdFil());
                 chat.setTdcTdFil(cont.getTdcTdFil());
                 chat.setCtoNumber(cont.getCtoNumero());
                 chat.setPerSigla(cont.getPerSigla());
                 chat.setContractActive(false);
-                chat.setEmpNdFil(cont.getEmpNdFil());
-
             }
 
             chatSessionManager.setChatById( chatId, chat );
