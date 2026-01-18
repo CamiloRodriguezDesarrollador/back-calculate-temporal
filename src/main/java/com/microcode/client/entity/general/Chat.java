@@ -35,6 +35,7 @@ public class Chat {
     private Boolean contractActive;
     private Integer typeChat;
     private boolean chatActive;
+    private String companyId;
 
 
     public Chat() {

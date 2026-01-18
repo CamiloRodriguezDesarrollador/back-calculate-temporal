@@ -99,6 +99,7 @@ public class ActionsOracleServices {
             String email = inputs.get("email");
             String chatId = inputs.get("chatId");
             String principalRequest = inputs.get("principalRequest");
+            String companyId = inputs.get("companyId");
 
             if (document != null) document = document.replaceAll("[^a-zA-Z0-9]", "");
             if (typeDocument != null) typeDocument = typeDocument.replaceAll("[^a-zA-Z0-9]", "");
@@ -110,7 +111,7 @@ public class ActionsOracleServices {
 
             chat = chatSessionManager.getChatById(chatId);
             if(chat == null) chat = initialChatIfNull(chatId);
-
+            chat.setCompanyId(companyId);
             chat.setTypeChat(2);
 
             chat.setChatStart(new Date());
@@ -160,6 +161,7 @@ public class ActionsOracleServices {
             String document = inputs.get("document");
             String chatId = inputs.get("chatId");
             String principalRequest = inputs.get("principalRequest");
+            String companyId = inputs.get("companyId");
 
             ObjectMapper objectMapper = new ObjectMapper();
             List<Long> idsPrincipal = objectMapper.readValue(principalRequest, new TypeReference<>() {});
@@ -175,7 +177,9 @@ public class ActionsOracleServices {
             if(chat == null) chat = initialChatIfNull(chatId);
             if(document != null && !document.equals("null")) chat.setDocument(document);
             if(typeDocument != null && !typeDocument.equals("null")) chat.setTypeDocument(typeDocument);
-            chat.setTypeChat(1);
+            chat.setCompanyId(companyId);
+            chat.setTypeChat(2);
+
 
             if (chat.getTypeDocument() == null || chat.getDocument()  == null)
             {

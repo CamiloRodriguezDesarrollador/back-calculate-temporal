@@ -63,6 +63,7 @@ public class WhatsappController {
             Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
             message.getChatMessage().put("chatId", chatId);
             message.getChatMessage().put("principalRequest", principalRequest.toString());
+            message.getChatMessage().put("companyId", companyId.toString());
             ContentResponse resp = (ContentResponse) methodAction.invoke(actionsOracleServices, message.getChatMessage(), action);
             registerChatServices.createForResponse(chatId,resp,"WP", companyId,typeChat);
             ContentResponse responseWrap = ContentResponse.cloneContentResponse(resp);

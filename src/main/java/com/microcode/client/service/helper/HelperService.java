@@ -91,7 +91,7 @@ public class HelperService {
     public List<Long> definePrincipalForCode(Integer companyId){
         if(companyId == 2) return List.of(800148972L);
         if(companyId == 3) return List.of(830057687L);
-        return List.of(860090915L);
+        return List.of(860090915L,800165661L);
     }
 
     public Long definePrincipalForCodeUnique(Integer companyId){
