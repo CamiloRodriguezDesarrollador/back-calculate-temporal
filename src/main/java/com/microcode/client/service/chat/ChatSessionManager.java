@@ -126,7 +126,7 @@ public class ChatSessionManager {
         Date lastModified = chat.getChatDateAuthorized();
         if (lastModified == null && validateTimeStart(chat)){
             activeChats.remove(chat.getChatId());
-            statusChatServices.delete(chat.getChatId());
+            statusChatServices.delete(chat.getChatId(), Integer.valueOf(chat.getCompanyId()));
             return true;
         }
         if (lastModified == null) return true;
@@ -136,7 +136,7 @@ public class ChatSessionManager {
         boolean validate = diffInMinutes > 5;
         if(validate){
             activeChats.remove(chat.getChatId());
-            statusChatServices.delete(chat.getChatId());
+            statusChatServices.delete(chat.getChatId(), Integer.valueOf(chat.getCompanyId()));
         }
         return validate;
     }
