@@ -47,7 +47,7 @@ public class WhatsappController {
             };
         }
 
-        statusChatServices.createPend(chatId);
+        statusChatServices.createPend(chatId, companyId);
 
         try{
 
@@ -70,13 +70,13 @@ public class WhatsappController {
 
             if(!responseWrap.getActionRequest().equals("error")){
                 Chat chat = chatSessionManager.getChatById(chatId);
-                StatusChat status = StatusChat.defineStatusStarted(chatId, chat, responseWrap, typeChat );
+                StatusChat status = StatusChat.defineStatusStarted(chatId, chat, responseWrap, typeChat, companyId );
                 statusChatServices.create(status);
             }
 
             if(action.getActionId() == 1000 || action.getActionId() == 225 || responseWrap.getActionMessage().contains("Para utilizar esta opción debes estar autenticado")){
-                statusChatServices.delete(chatId);
-                chatSessionManager.deleteChatId(chatId);
+                statusChatServices.delete(chatId, companyId);
+                chatSessionManager.deleteChatId(chatId, companyId);
             }
 
             return responseWrap;
@@ -98,7 +98,7 @@ public class WhatsappController {
             @RequestParam String chatId,
             @RequestParam Integer companyId
     ){
-        StatusChat currentStatus = statusChatServices.findChatById(chatId);
+        StatusChat currentStatus = statusChatServices.findChatById(chatId,companyId);
         if(currentStatus == null){
             StatusChat status = StatusChat.defineStatusInitial(chatId,companyId );
             ContentResponse contentResponse = new ContentResponse();
@@ -115,8 +115,8 @@ public class WhatsappController {
     public void inactive(
             @RequestBody ChatBody chatBody)
     {
-        statusChatServices.delete(chatBody.getChatId());
-        chatSessionManager.deleteChatId(chatBody.getChatId());
+        statusChatServices.delete(chatBody.getChatId(), chatBody.getCompanyId());
+        chatSessionManager.deleteChatId(chatBody.getChatId(), chatBody.getCompanyId());
     }
 
 

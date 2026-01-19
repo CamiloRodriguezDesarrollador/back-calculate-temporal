@@ -18,7 +18,7 @@ public class StatusChatServices implements StatusChatServicesI {
 
     @Override
     public void create(StatusChat statusChat) {
-        StatusChat existing = statusChatDao.findByChatId(statusChat.getChatId());
+        StatusChat existing = statusChatDao.findByChatIdAndCompanyId(statusChat.getChatId(), statusChat.getCompanyId() );
         if (existing != null) {
             if(statusChat.getChatType() != null) existing.setChatType(statusChat.getChatType());
             if(statusChat.getChatAction() != null) existing.setChatAction(statusChat.getChatAction());
@@ -35,7 +35,7 @@ public class StatusChatServices implements StatusChatServicesI {
     }
 
     @Override
-    public void createPend(String chatId) {
+    public void createPend(String chatId, Integer companyId) {
         StatusChat status = StatusChat.builder()
                 .chatId(chatId)
                 .chatStatus("P")
@@ -47,14 +47,14 @@ public class StatusChatServices implements StatusChatServicesI {
     }
 
     @Override
-    public void delete(String chatId) {
-        log.info("Entra a status chat {} " , chatId);
+    public void delete(String chatId, Integer companyId) {
+        log.info("Entra a status chat {} {} " , chatId, companyId);
         statusChatDao.deleteById(chatId);
     }
 
 
     @Override
-    public StatusChat findChatById(String chatId) {
-        return statusChatDao.findByChatId(chatId);
+    public StatusChat findChatById(String chatId,Integer companyId) {
+        return statusChatDao.findByChatIdAndCompanyId(chatId,companyId);
     }
 }

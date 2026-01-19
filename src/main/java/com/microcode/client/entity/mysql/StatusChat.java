@@ -46,6 +46,8 @@ public class StatusChat implements Serializable, Cloneable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date audDate;
 
+    @Column(name = "CHT_COMPANY")
+    private Integer companyId;
 
     @PrePersist
     public void prePersist() {
@@ -87,12 +89,13 @@ public class StatusChat implements Serializable, Cloneable {
                                 "👉 Para salir del chat en cualquier momento y volver aquí, escribe *EXIT*"
                 )
                 .chatOptions(options.toString())
+                .companyId(companyId)
                 .audDate(new Date())
                 .isHistory("N")
                 .build();
     }
 
-    public static StatusChat defineStatusStarted(String chatId, Chat chat, ContentResponse responseWrap, Integer typeChat) {
+    public static StatusChat defineStatusStarted(String chatId, Chat chat, ContentResponse responseWrap, Integer typeChat, Integer companyId) {
         boolean content = chat.getDocument() != null && chat.getTypeDocument() != null;
 
         List<Option> optionsYesOrNot = List.of(
@@ -135,6 +138,7 @@ public class StatusChat implements Serializable, Cloneable {
                 .chatAction(Objects.equals(typeChat, 1) ? 1 : 200)
                 .chatType(typeChat)
                 .audDate(new Date())
+                .companyId(companyId)
                 .chatStatus("C")
                 .isHistory("S")
                 .build();

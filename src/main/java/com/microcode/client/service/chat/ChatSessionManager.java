@@ -187,9 +187,22 @@ public class ChatSessionManager {
         return new QuantityResponse(dateLast,isOver);
     }
 
-    public void deleteChatId(String chatId){
-        activeChats.remove(chatId);
+    public void deleteChatId(String chatId, Integer idCompany) {
+        activeChats.entrySet().removeIf(entry -> {
+            Chat chat = entry.getValue();
+
+            if (idCompany == null) {
+                return chat.getChatId().equals(chatId);
+            }
+            String companyId = idCompany.toString();
+
+            return chat.getChatId().equals(chatId) &&
+                    companyId.equals(chat.getCompanyId());
+        });
     }
+
+
+
 
     @Scheduled(fixedRate = 600000) // 600000ms = 10 minutos
     public void validateInactiveChats(){
