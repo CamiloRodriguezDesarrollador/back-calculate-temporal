@@ -25,6 +25,7 @@ public class StatusChatServices implements StatusChatServicesI {
             if(statusChat.getChatMessage() != null) existing.setChatMessage(statusChat.getChatMessage());
             if(statusChat.getChatOptions() != null) existing.setChatOptions(statusChat.getChatOptions());
             if(statusChat.getIsHistory() != null) existing.setIsHistory(statusChat.getIsHistory());
+            if(statusChat.getCompanyId() != null) existing.setCompanyId(statusChat.getCompanyId());
             existing.setChatStatus(statusChat.getChatStatus());
             existing.setAudDate(new Date());
             statusChatDao.save(existing);
