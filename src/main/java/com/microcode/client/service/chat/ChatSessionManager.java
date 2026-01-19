@@ -125,8 +125,7 @@ public class ChatSessionManager {
         if(chat.getChatId().contains("whatsapp")) return false;
         Date lastModified = chat.getChatDateAuthorized();
         if (lastModified == null && validateTimeStart(chat)){
-            activeChats.remove(chat.getChatId());
-            statusChatServices.delete(chat.getChatId(), Integer.valueOf(chat.getCompanyId()));
+            this.deleteChatId(chat.getChatId(), Integer.valueOf(chat.getCompanyId()));
             return true;
         }
         if (lastModified == null) return true;
@@ -135,8 +134,7 @@ public class ChatSessionManager {
         long diffInMinutes = TimeUnit.MILLISECONDS.toMinutes(diffInMillis);
         boolean validate = diffInMinutes > 5;
         if(validate){
-            activeChats.remove(chat.getChatId());
-            statusChatServices.delete(chat.getChatId(), Integer.valueOf(chat.getCompanyId()));
+            this.deleteChatId(chat.getChatId(), Integer.valueOf(chat.getCompanyId()));
         }
         return validate;
     }
