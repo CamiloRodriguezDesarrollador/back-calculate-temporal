@@ -41,6 +41,7 @@ public class StatusChatServices implements StatusChatServicesI {
                 .chatId(chatId)
                 .chatStatus("P")
                 .audDate(new Date())
+                .companyId(companyId)
                 .isHistory("S")
                 .build();
 
