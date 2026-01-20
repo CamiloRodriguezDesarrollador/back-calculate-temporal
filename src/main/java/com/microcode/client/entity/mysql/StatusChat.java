@@ -12,6 +12,7 @@ import java.util.*;
 
 @Entity
 @Table(name="plcht_status_chat")
+@IdClass(StatusChatId.class)
 @Getter
 @Setter
 @ToString
@@ -46,6 +47,7 @@ public class StatusChat implements Serializable, Cloneable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date audDate;
 
+    @Id
     @Column(name = "CHT_COMPANY")
     private Integer companyId;
 
