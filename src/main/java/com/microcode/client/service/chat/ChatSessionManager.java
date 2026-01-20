@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
@@ -45,15 +46,20 @@ public class ChatSessionManager {
         }
     }
 
-    public Chat getChatById(String chatId) {
-        return activeChats.get(chatId);
+    public Chat getChatById(String chatId, String companyId) {
+        return activeChats.values()
+                .stream()
+                .filter(chat -> chat.getChatId().equals(chatId)
+                    && Objects.equals(chat.getCompanyId(), companyId))
+                .findFirst()
+                .orElse(null);
     }
 
-    public Chat getAuthorizedChatByDocumentAndType(String document, String typeDocument, String companyId) {
+
+    public Chat getAuthorizedChatByDocumentAndType(String document, String typeDocument) {
         return activeChats.values().stream()
                 .filter(chat -> document.equals(chat.getDocument()))
                 .filter(chat -> typeDocument.equals(chat.getTypeDocument()))
-                .filter(chat -> companyId.equals(chat.getCompanyId()))
                 .filter(Chat::getChatAuthenticated)
                 .findFirst()
                 .orElse(null);

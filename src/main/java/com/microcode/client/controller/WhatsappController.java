@@ -69,7 +69,7 @@ public class WhatsappController {
             ContentResponse responseWrap = ContentResponse.cloneContentResponse(resp);
 
             if(!responseWrap.getActionRequest().equals("error")){
-                Chat chat = chatSessionManager.getChatById(chatId);
+                Chat chat = chatSessionManager.getChatById(chatId,companyId.toString());
                 StatusChat status = StatusChat.defineStatusStarted(chatId, chat, responseWrap, typeChat, companyId );
                 statusChatServices.create(status);
             }
@@ -85,7 +85,7 @@ public class WhatsappController {
         catch (Exception e){
             log.error("Error con el chatId {} : {}" , chatId, e.getMessage());
             ContentResponse responseWrap;
-            Chat chat = chatSessionManager.getChatById(chatId);
+            Chat chat = chatSessionManager.getChatById(chatId,companyId.toString());
             if (chat == null) responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.unauthorized);
             else if(chat.getChatAuthenticated() == null || !chat.getChatAuthenticated()) responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.unauthorized);
             else responseWrap = ContentResponse.cloneContentResponse(actionsOracleServices.responseWithOptionsParam(notFound,action));

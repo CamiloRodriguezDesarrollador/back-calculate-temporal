@@ -32,7 +32,7 @@ public class RegisterChatServices implements RegisterChatServicesI {
 
     @Override
     public void createForMessage(String chatId, ContentMessage contentMessage, String ip, Integer companyId, Integer typeChat) {
-        Chat chat = chatSessionManager.getChatById(chatId);
+        Chat chat = chatSessionManager.getChatById(chatId,companyId.toString());
         String codePrincipal = helperService.definePrincipalForCode(companyId).toString();
 
         try{
@@ -60,7 +60,7 @@ public class RegisterChatServices implements RegisterChatServicesI {
 
     @Override
     public void createForResponse(String chatId, ContentResponse contentResponse, String ip, Integer companyId, Integer typeChat) {
-        Chat chat = chatSessionManager.getChatById(chatId);
+        Chat chat = chatSessionManager.getChatById(chatId,companyId.toString());
         String codePrincipal = helperService.definePrincipalForCode(companyId).toString();
 
         try {

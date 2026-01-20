@@ -2,7 +2,6 @@ package com.microcode.client.service.mysql;
 
 import com.microcode.client.dao.mysql.IStatusChatDao;
 import com.microcode.client.entity.mysql.StatusChat;
-import com.microcode.client.entity.mysql.StatusChatId;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -19,14 +18,14 @@ public class StatusChatServices implements StatusChatServicesI {
 
     @Override
     public void create(StatusChat statusChat) {
-        StatusChat existing = statusChatDao.findByChatIdAndCompanyId(statusChat.getChatId(), statusChat.getCompanyId() );
+        StatusChat existing = statusChatDao.findByChatIdAndCompanyId(statusChat.getChatId(), statusChat.getCompanyId());
         if (existing != null) {
             if(statusChat.getChatType() != null) existing.setChatType(statusChat.getChatType());
             if(statusChat.getChatAction() != null) existing.setChatAction(statusChat.getChatAction());
             if(statusChat.getChatMessage() != null) existing.setChatMessage(statusChat.getChatMessage());
             if(statusChat.getChatOptions() != null) existing.setChatOptions(statusChat.getChatOptions());
             if(statusChat.getIsHistory() != null) existing.setIsHistory(statusChat.getIsHistory());
-            if(statusChat.getCompanyId() != null) existing.setCompanyId(statusChat.getCompanyId());
+//            if(statusChat.getCompanyId() != null) existing.setCompanyId(statusChat.getCompanyId());
             existing.setChatStatus(statusChat.getChatStatus());
             existing.setAudDate(new Date());
             statusChatDao.save(existing);

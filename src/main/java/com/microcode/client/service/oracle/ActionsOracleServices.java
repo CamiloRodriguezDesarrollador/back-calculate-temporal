@@ -84,9 +84,9 @@ public class ActionsOracleServices {
 //    public final String MAIL_TEST = "cgonzalez@activos.com.co";
 //    public final String MAIL_TEST = "yriascos@activos.com.co";
 
-    public Chat initialChatIfNull(String chatId){
+    public Chat initialChatIfNull(String chatId, String companyId){
         chatSessionManager.updateChatActivity(chatId,null);
-        return chatSessionManager.getChatById(chatId);
+        return chatSessionManager.getChatById(chatId,companyId);
     }
 
     public ContentResponse getDataUserExternal(Map<String,String> inputs, Action action) throws JsonProcessingException {
@@ -109,8 +109,8 @@ public class ActionsOracleServices {
 
             Chat chat;
 
-            chat = chatSessionManager.getChatById(chatId);
-            if(chat == null) chat = initialChatIfNull(chatId);
+            chat = chatSessionManager.getChatById(chatId,companyId);
+            if(chat == null) chat = initialChatIfNull(chatId, companyId);
             chat.setCompanyId(companyId);
             chat.setTypeChat(2);
 
@@ -170,11 +170,11 @@ public class ActionsOracleServices {
             if (document != null) document = document.replaceAll("[^a-zA-Z0-9]", "");
             if (typeDocument != null) typeDocument = typeDocument.replaceAll("[^a-zA-Z0-9]", "");
 
-            chat = chatSessionManager.getChatById(chatId);
+            chat = chatSessionManager.getChatById(chatId,companyId);
 
             log.info("Chat: {}" ,chat);
 
-            if(chat == null) chat = initialChatIfNull(chatId);
+            if(chat == null) chat = initialChatIfNull(chatId,companyId);
             if(document != null && !document.equals("null")) chat.setDocument(document);
             if(typeDocument != null && !typeDocument.equals("null")) chat.setTypeDocument(typeDocument);
             chat.setCompanyId(companyId);
@@ -259,7 +259,9 @@ public class ActionsOracleServices {
     public ContentResponse verifiedMail(Map<String,String> inputs, Action action) {
         try {
             String chatId = inputs.get("chatId");
-            Chat chat = chatSessionManager.getChatById(chatId);
+            String companyId = inputs.get("companyId");
+
+            Chat chat = chatSessionManager.getChatById(chatId,companyId);
             chat.setChatStart(new Date());
 
             String isMailCorrect = inputs.get("isMailCorrect");
@@ -298,18 +300,19 @@ public class ActionsOracleServices {
             String code = inputs.get("codeVerification");
             String detail = inputs.get("detail");
             String chatId = inputs.get("chatId");
+            String companyId = inputs.get("companyId");
 
             String codeVerified = (code != null && !code.isBlank())
                     ? code
                     : detail;
 
-            Chat chat = chatSessionManager.getChatById(chatId);
+            Chat chat = chatSessionManager.getChatById(chatId,companyId);
             if(chatSessionManager.validateTimeCode(chat)) return timeOut;
 
             if(codeVerified.toLowerCase().equals(chat.getChatCode()) ){
 
                 try{
-                    Chat chatLast = chatSessionManager.getAuthorizedChatByDocumentAndType(chat.getDocument(),chat.getTypeDocument(), chat.getCompanyId());
+                    Chat chatLast = chatSessionManager.getAuthorizedChatByDocumentAndType(chat.getDocument(),chat.getTypeDocument());
                     if(chatLast != null) {
                         chatLast.setChatAuthenticated(false);
                         chatLast.setChatDateAuthorized(null);
@@ -340,7 +343,9 @@ public class ActionsOracleServices {
     public ContentResponse getCertifiedJob(Map<String,String> inputs, Action action) {
         try {
             String chatId = inputs.get("chatId");
-            Chat chat = chatSessionManager.getChatById(chatId);
+            String companyId = inputs.get("companyId");
+            Chat chat = chatSessionManager.getChatById(chatId,companyId);
+
             ContentResponse resp = this.validateInitial(chat);
             if(resp != null) return resp;
 
@@ -399,7 +404,8 @@ public class ActionsOracleServices {
     public ContentResponse getCertifiedPay(Map<String,String> inputs, Action action) {
         try {
             String chatId = inputs.get("chatId");
-            Chat chat = chatSessionManager.getChatById(chatId);
+            String companyId = inputs.get("companyId");
+            Chat chat = chatSessionManager.getChatById(chatId,companyId);
             ContentResponse resp = this.validateInitial(chat);
             if(resp != null) return resp;
 
@@ -419,7 +425,8 @@ public class ActionsOracleServices {
     public ContentResponse getCertifiedPlanilla(Map<String,String> inputs, Action action) {
         try {
             String chatId = inputs.get("chatId");
-            Chat chat = chatSessionManager.getChatById(chatId);
+            String companyId = inputs.get("companyId");
+            Chat chat = chatSessionManager.getChatById(chatId,companyId);
             ContentResponse resp = this.validateInitial(chat);
             if(resp != null) return resp;
             if(chat.getContractActive() == null ||  !chat.getContractActive()) return responseWithOptionsParam(withoutContract,action);
@@ -439,8 +446,9 @@ public class ActionsOracleServices {
         try {
             String chatId = inputs.get("chatId");
             String detail = inputs.get("detail");
+            String companyId = inputs.get("companyId");
 
-            Chat chat = chatSessionManager.getChatById(chatId);
+            Chat chat = chatSessionManager.getChatById(chatId,companyId);
             ContentResponse resp = this.validateInitial(chat);
             if(resp != null) return resp;
 
@@ -484,7 +492,8 @@ public class ActionsOracleServices {
     public ContentResponse inactiveChat(Map<String,String> inputs, Action action) {
         try{
             String chatId = inputs.get("chatId");
-            Chat chat = chatSessionManager.getChatById(chatId);
+            String companyId = inputs.get("companyId");
+            Chat chat = chatSessionManager.getChatById(chatId,companyId);
             chat.setChatAuthenticated(false);
             chatSessionManager.setChatById(chatId,chat);
             return timeOut;
@@ -496,7 +505,8 @@ public class ActionsOracleServices {
     public ContentResponse getInformationIncaStatus(Map<String,String> inputs, Action action) {
         try {
             String chatId = inputs.get("chatId");
-            Chat chat = chatSessionManager.getChatById(chatId);
+            String companyId = inputs.get("companyId");
+            Chat chat = chatSessionManager.getChatById(chatId,companyId);
             ContentResponse resp = this.validateInitial(chat);
             if(resp != null) return resp;
             if(chat.getContractActive() == null ||  !chat.getContractActive()) return responseWithOptionsParam(withoutContract,action);
@@ -548,7 +558,8 @@ public class ActionsOracleServices {
     public ContentResponse methodStandardRedirect(Map<String,String> inputs, Action action) {
         try{
             String chatId = inputs.get("chatId");
-            Chat chat = chatSessionManager.getChatById(chatId);
+            String companyId = inputs.get("companyId");
+            Chat chat = chatSessionManager.getChatById(chatId,companyId);
             chat.setChatDateAuthorized(new Date());
 
             if(chat.getTypeChat() == 1){
@@ -584,9 +595,9 @@ public class ActionsOracleServices {
             Action action = actionOriginal.clone();
             String detail = inputs.get("detail");
             String chatId = inputs.get("chatId");
+            String companyId = inputs.get("companyId");
 
-
-            Chat chat = chatSessionManager.getChatById(chatId);
+            Chat chat = chatSessionManager.getChatById(chatId,companyId);
             chat.setChatDateAuthorized(new Date());
 
             if(!actionServices.verifiedRequirementContractActive(chat,action)) return withoutContract;

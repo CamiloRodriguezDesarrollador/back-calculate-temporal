@@ -5,6 +5,6 @@ import org.springframework.data.repository.CrudRepository;
 
 public interface IStatusChatDao extends CrudRepository<StatusChat, String> {
 
-    StatusChat findByChatIdAndCompanyId(String chatId,Integer companyId);
+    StatusChat findByChatIdAndCompanyId(String chatId, Integer companyId);
 
 }

@@ -71,7 +71,7 @@ public class ChatWebSocket {
         catch (Exception e){
             log.error("Error con el chatId {} : {}" , chatId, e.getMessage());
             ContentResponse responseWrap;
-            Chat chat = chatSessionManager.getChatById(chatId);
+            Chat chat = chatSessionManager.getChatById(chatId,companyId.toString());
             if (chat == null) responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.unauthorized);
             else if(chat.getChatAuthenticated() == null || !chat.getChatAuthenticated()) responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.unauthorized);
             else responseWrap = ContentResponse.cloneContentResponse(actionsOracleServices.responseWithOptionsParam(notFound,action));
