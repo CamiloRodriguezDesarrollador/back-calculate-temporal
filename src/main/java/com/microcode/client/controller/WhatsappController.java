@@ -54,7 +54,7 @@ public class WhatsappController {
             log.info("ChatId: {}, TypeChat: {}, Message: {}" , chatId, typeChat, message);
             List<Long> principalRequest = helperService.definePrincipalForCode(companyId);
 
-            chatSessionManager.updateChatActivity(chatId, message);
+            chatSessionManager.updateChatActivity(chatId, companyId.toString(), message);
             registerChatServices.createForMessage(chatId,message,"WP", companyId,typeChat);
             if (message == null) throw new IllegalArgumentException("El mensaje no puede ser null");
 

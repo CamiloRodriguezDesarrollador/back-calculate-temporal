@@ -54,7 +54,7 @@ public class ChatWebSocket {
 
             if (message == null || message.getActionId() == null) return Salt.wrapContentResponde(actionsOracleServices.responseWithOptionsParam(error,action));
             ContentMessage messageUnwrapped = Salt.unwrapContentMessage(message);
-            chatSessionManager.updateChatActivity(chatId, messageUnwrapped);
+            chatSessionManager.updateChatActivity(chatId, companyId.toString(), messageUnwrapped);
             registerChatServices.createForMessage(chatId,messageUnwrapped,clientIp, companyId,typeChat);
             action =  actionServices.getActionForId(messageUnwrapped.getActionId());
             Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);

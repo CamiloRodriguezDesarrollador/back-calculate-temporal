@@ -39,9 +39,9 @@ public class ChatSessionManager {
     private final QuantityChatServices quantityChatServices;
     private final StatusChatServices statusChatServices;
 
-    public void updateChatActivity(String chatId, ContentMessage message) {
+    public void updateChatActivity(String chatId, String companyId, ContentMessage message) {
         try {
-            activeChats.putIfAbsent(chatId, new Chat(chatId));
+            activeChats.putIfAbsent(chatId, new Chat(chatId, companyId));
         } catch (Exception ignored) {
         }
     }

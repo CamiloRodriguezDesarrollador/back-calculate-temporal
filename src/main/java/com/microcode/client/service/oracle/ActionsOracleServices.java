@@ -85,7 +85,7 @@ public class ActionsOracleServices {
 //    public final String MAIL_TEST = "yriascos@activos.com.co";
 
     public Chat initialChatIfNull(String chatId, String companyId){
-        chatSessionManager.updateChatActivity(chatId,null);
+        chatSessionManager.updateChatActivity(chatId,companyId,null);
         return chatSessionManager.getChatById(chatId,companyId);
     }
 

@@ -40,8 +40,9 @@ public class Chat {
 
     public Chat() {
     }
-    public Chat(String chatId) {
+    public Chat(String chatId, String companyId) {
         this.chatId = chatId;
+        this.companyId = companyId;
     }
 
 }
