@@ -150,8 +150,6 @@ public class HelperService {
                     🔹Bienestar 👬
                     
                     Para continuar ✨ por favor envíame:
-                        🔸 *Tipo*
-                        🔸 *Numero de documento*
                     """;
         }else{
             return """
@@ -162,11 +160,6 @@ public class HelperService {
                     🔹Consultar Portal HV 💻
                     
                     Para continuar ✨ por favor envíame
-                    🔸 *Tipo de documento*
-                    🔸 *Numero de documento*
-                    🔸 *Nombres*
-                    🔸 *Celular*
-                    🔸 *Correo electrónico*.
                     """;
         }
     }

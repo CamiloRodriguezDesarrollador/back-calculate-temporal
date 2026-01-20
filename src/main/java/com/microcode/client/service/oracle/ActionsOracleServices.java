@@ -142,13 +142,14 @@ public class ActionsOracleServices {
 
             String message = isFirstTime
                     ? helperService.defineChatType(2)
-                    : "Aún me hacen falta estos datos 📝:\n🔸 " + String.join("\n🔸 ", missing) + " 😊";
+                    : "Aún me hacen falta estos datos 📝:";
 
             chat.setChatAuthenticated(true);
             chat.setChatDateAuthorized(new Date());
 
-            List<Option> optionsText = List.of(new Option(200, "Aún me hacen falta estos datos" + String.join("\n🔸 ", missing), null, null));
-
+            List<Option> optionsText = List.of(
+                    new Option(200, "\n🔸 *" + String.join("*\n🔸 *", missing) + "*", null, null)
+            );
             return ContentResponse.buildContentResponseOk(message,optionsText, action,null);
         } catch (Exception e) {
             log.error("Error {} " , e.getMessage());
@@ -194,9 +195,11 @@ public class ActionsOracleServices {
 
                 String message = isFirstTime
                         ? helperService.defineChatType(1)
-                        : "Aún me hacen falta estos datos 📝:\n🔸 " + String.join("\n🔸 ", missing) + " 😊";
+                        : "Aún me hacen falta estos datos 📝: ";
 
-                List<Option> optionsText = List.of(new Option(1, "Aún me hacen falta estos datos" + String.join("\n🔸 ", missing), null, null));
+                List<Option> optionsText = List.of(
+                        new Option(1, "\n🔸 *" + String.join("*\n🔸 *", missing) + "*", null, null)
+                );
 
                 return ContentResponse.buildContentResponseOk(message,optionsText, action,null);
             }
