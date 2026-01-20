@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -31,20 +32,26 @@ import java.util.concurrent.TimeUnit;
 @Setter
 @AllArgsConstructor
 @EnableScheduling
+@Slf4j
 public class ChatSessionManager {
 
-    private static final Logger log = LoggerFactory.getLogger(ChatSessionManager.class);
     private final ConcurrentMap<String, Chat> activeChats = new ConcurrentHashMap<>();
     private final HttpServletRequest request;
     private final QuantityChatServices quantityChatServices;
     private final StatusChatServices statusChatServices;
 
+    private String key(String chatId, String companyId) {
+        return chatId + "|" + companyId;
+    }
+
     public void updateChatActivity(String chatId, String companyId, ContentMessage message) {
         try {
-            activeChats.putIfAbsent(chatId, new Chat(chatId, companyId));
-        } catch (Exception ignored) {
+            activeChats.putIfAbsent(key(chatId, companyId), new Chat(chatId, companyId));
+        } catch (Exception e) {
+            log.error("Aca error: {}" , e.getMessage());
         }
     }
+
 
     public Chat getChatById(String chatId, String companyId) {
         return activeChats.values()

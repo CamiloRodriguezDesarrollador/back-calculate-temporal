@@ -177,6 +177,7 @@ public class ActionsOracleServices {
             if(chat == null) chat = initialChatIfNull(chatId,companyId);
             if(document != null && !document.equals("null")) chat.setDocument(document);
             if(typeDocument != null && !typeDocument.equals("null")) chat.setTypeDocument(typeDocument);
+
             chat.setCompanyId(companyId);
             chat.setTypeChat(2);
 
