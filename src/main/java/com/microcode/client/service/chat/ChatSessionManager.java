@@ -56,10 +56,11 @@ public class ChatSessionManager {
     }
 
 
-    public Chat getAuthorizedChatByDocumentAndType(String document, String typeDocument) {
+    public Chat getAuthorizedChatByDocumentAndType(String document, String typeDocument, String companyId) {
         return activeChats.values().stream()
                 .filter(chat -> document.equals(chat.getDocument()))
                 .filter(chat -> typeDocument.equals(chat.getTypeDocument()))
+                .filter(chat -> companyId.equals(chat.getCompanyId()))
                 .filter(Chat::getChatAuthenticated)
                 .findFirst()
                 .orElse(null);
@@ -70,7 +71,7 @@ public class ChatSessionManager {
         return activeChats.get(chatId).getChatAuthenticated();
     }
 
-    public void setChatById(String chatId, Chat partialChat) {
+    public void setChatById(String chatId, String companyId, Chat partialChat) {
         activeChats.computeIfPresent(chatId, (id, existingChat) -> {
             if (partialChat.getChatAuthenticated() != null)
                 existingChat.setChatAuthenticated(partialChat.getChatAuthenticated());

@@ -242,7 +242,7 @@ public class ActionsOracleServices {
                 chat.setContractActive(false);
             }
 
-            chatSessionManager.setChatById( chatId, chat );
+            chatSessionManager.setChatById( chatId , companyId, chat );
 
             String mailUser = helperService.generateMail(employee.getEmail().toLowerCase());
             mailServices.ping();
@@ -312,7 +312,7 @@ public class ActionsOracleServices {
             if(codeVerified.toLowerCase().equals(chat.getChatCode()) ){
 
                 try{
-                    Chat chatLast = chatSessionManager.getAuthorizedChatByDocumentAndType(chat.getDocument(),chat.getTypeDocument());
+                    Chat chatLast = chatSessionManager.getAuthorizedChatByDocumentAndType(chat.getDocument(),chat.getTypeDocument(), companyId);
                     if(chatLast != null) {
                         chatLast.setChatAuthenticated(false);
                         chatLast.setChatDateAuthorized(null);
@@ -323,7 +323,7 @@ public class ActionsOracleServices {
                 }
                 chat.setChatAuthenticated(true);
                 chat.setChatDateAuthorized(new Date());
-                chatSessionManager.setChatById( chatId, chat );
+                chatSessionManager.setChatById( chatId, companyId, chat );
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), chat.getNames()),OptionsManageService.optionsPrincipal, action,null);
 
             }
@@ -495,7 +495,7 @@ public class ActionsOracleServices {
             String companyId = inputs.get("companyId");
             Chat chat = chatSessionManager.getChatById(chatId,companyId);
             chat.setChatAuthenticated(false);
-            chatSessionManager.setChatById(chatId,chat);
+            chatSessionManager.setChatById(chatId, companyId,chat);
             return timeOut;
         } catch (Exception e) {
             return error;
