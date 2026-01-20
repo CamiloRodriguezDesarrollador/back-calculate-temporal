@@ -2,6 +2,7 @@ package com.microcode.client.service.mysql;
 
 import com.microcode.client.dao.mysql.IStatusChatDao;
 import com.microcode.client.entity.mysql.StatusChat;
+import com.microcode.client.entity.mysql.StatusChatId;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,8 @@ public class StatusChatServices implements StatusChatServicesI {
     @Override
     public void delete(String chatId, Integer companyId) {
         log.info("Entra a status chat {} {} " , chatId, companyId);
-        statusChatDao.deleteById(chatId);
+        StatusChat statusChat = findChatById(chatId, companyId);
+        statusChatDao.delete(statusChat);
     }
 
 
