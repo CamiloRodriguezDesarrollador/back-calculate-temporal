@@ -309,7 +309,7 @@ public class ActionsOracleServices {
             if(codeVerified.toLowerCase().equals(chat.getChatCode()) ){
 
                 try{
-                    Chat chatLast = chatSessionManager.getAuthorizedChatByDocumentAndType(chat.getDocument(),chat.getTypeDocument());
+                    Chat chatLast = chatSessionManager.getAuthorizedChatByDocumentAndType(chat.getDocument(),chat.getTypeDocument(), chat.getCompanyId());
                     if(chatLast != null) {
                         chatLast.setChatAuthenticated(false);
                         chatLast.setChatDateAuthorized(null);

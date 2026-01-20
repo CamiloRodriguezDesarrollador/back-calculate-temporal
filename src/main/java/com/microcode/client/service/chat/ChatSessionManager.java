@@ -49,10 +49,11 @@ public class ChatSessionManager {
         return activeChats.get(chatId);
     }
 
-    public Chat getAuthorizedChatByDocumentAndType(String document, String typeDocument) {
+    public Chat getAuthorizedChatByDocumentAndType(String document, String typeDocument, String companyId) {
         return activeChats.values().stream()
                 .filter(chat -> document.equals(chat.getDocument()))
                 .filter(chat -> typeDocument.equals(chat.getTypeDocument()))
+                .filter(chat -> companyId.equals(chat.getCompanyId()))
                 .filter(Chat::getChatAuthenticated)
                 .findFirst()
                 .orElse(null);
