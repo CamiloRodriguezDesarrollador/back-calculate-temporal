@@ -72,61 +72,65 @@ public class ChatSessionManager {
     }
 
     public void setChatById(String chatId, String companyId, Chat partialChat) {
-        activeChats.computeIfPresent(chatId, (id, existingChat) -> {
-            if (partialChat.getChatAuthenticated() != null)
-                existingChat.setChatAuthenticated(partialChat.getChatAuthenticated());
+        activeChats.values().stream()
+                .filter(chat -> chatId.equals(chat.getChatId())
+                        && Objects.equals(companyId, chat.getCompanyId()))
+                .findFirst()
+                .ifPresent(existingChat -> {
 
-            if (partialChat.getChatCode() != null)
-                existingChat.setChatCode(partialChat.getChatCode());
+                    if (partialChat.getChatAuthenticated() != null)
+                        existingChat.setChatAuthenticated(partialChat.getChatAuthenticated());
 
-            if (partialChat.getTypeDocument() != null)
-                existingChat.setTypeDocument(partialChat.getTypeDocument());
+                    if (partialChat.getChatCode() != null)
+                        existingChat.setChatCode(partialChat.getChatCode());
 
-            if (partialChat.getDocument() != null)
-                existingChat.setDocument(partialChat.getDocument());
+                    if (partialChat.getTypeDocument() != null)
+                        existingChat.setTypeDocument(partialChat.getTypeDocument());
 
-            if (partialChat.getChatMail() != null)
-                existingChat.setChatMail(partialChat.getChatMail());
+                    if (partialChat.getDocument() != null)
+                        existingChat.setDocument(partialChat.getDocument());
 
-            if (partialChat.getChatDateAuthorized() != null)
-                existingChat.setChatDateAuthorized(partialChat.getChatDateAuthorized());
+                    if (partialChat.getChatMail() != null)
+                        existingChat.setChatMail(partialChat.getChatMail());
 
-            if (partialChat.getChatStart() != null)
-                existingChat.setChatStart(partialChat.getChatStart());
+                    if (partialChat.getChatDateAuthorized() != null)
+                        existingChat.setChatDateAuthorized(partialChat.getChatDateAuthorized());
 
-            if (partialChat.getChatAttempts() != null)
-                existingChat.setChatAttempts(partialChat.getChatAttempts());
+                    if (partialChat.getChatStart() != null)
+                        existingChat.setChatStart(partialChat.getChatStart());
 
-            if (partialChat.getTdcTdFil() != null)
-                existingChat.setTdcTdFil(partialChat.getTdcTdFil());
+                    if (partialChat.getChatAttempts() != null)
+                        existingChat.setChatAttempts(partialChat.getChatAttempts());
 
-            if (partialChat.getEmpNdFil() != null)
-                existingChat.setEmpNdFil(partialChat.getEmpNdFil());
+                    if (partialChat.getTdcTdFil() != null)
+                        existingChat.setTdcTdFil(partialChat.getTdcTdFil());
 
-            if (partialChat.getCtoNumber() != null)
-                existingChat.setCtoNumber(partialChat.getCtoNumber());
+                    if (partialChat.getEmpNdFil() != null)
+                        existingChat.setEmpNdFil(partialChat.getEmpNdFil());
 
-            if (partialChat.getTdcTd() != null)
-                existingChat.setTdcTd(partialChat.getTdcTd());
+                    if (partialChat.getCtoNumber() != null)
+                        existingChat.setCtoNumber(partialChat.getCtoNumber());
 
-            if (partialChat.getEmpNd() != null)
-                existingChat.setEmpNd(partialChat.getEmpNd());
+                    if (partialChat.getTdcTd() != null)
+                        existingChat.setTdcTd(partialChat.getTdcTd());
 
-            if (partialChat.getPrincipalRequest() != null)
-                existingChat.setPrincipalRequest(partialChat.getPrincipalRequest());
+                    if (partialChat.getEmpNd() != null)
+                        existingChat.setEmpNd(partialChat.getEmpNd());
 
-            if (partialChat.getPerSigla() != null)
-                existingChat.setPerSigla(partialChat.getPerSigla());
+                    if (partialChat.getPrincipalRequest() != null)
+                        existingChat.setPrincipalRequest(partialChat.getPrincipalRequest());
 
-            if (partialChat.getPeriodPlanilla() != null)
-                existingChat.setPeriodPlanilla(partialChat.getPeriodPlanilla());
+                    if (partialChat.getPerSigla() != null)
+                        existingChat.setPerSigla(partialChat.getPerSigla());
 
-            if (partialChat.getContractActive() != null)
-                existingChat.setContractActive(partialChat.getContractActive());
+                    if (partialChat.getPeriodPlanilla() != null)
+                        existingChat.setPeriodPlanilla(partialChat.getPeriodPlanilla());
 
-            return existingChat;
-        });
+                    if (partialChat.getContractActive() != null)
+                        existingChat.setContractActive(partialChat.getContractActive());
+                });
     }
+
 
     public boolean validateTime(Chat chat) {
         log.info("Validando chat {}, Fecha inicio: {}, Fecha Authenticación: {}" , chat.getChatId(), chat.getChatStart(), chat.getChatDateAuthorized());
