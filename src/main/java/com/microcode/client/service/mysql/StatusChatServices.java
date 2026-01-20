@@ -51,9 +51,11 @@ public class StatusChatServices implements StatusChatServicesI {
 
     @Override
     public void delete(String chatId, Integer companyId) {
-        log.info("Entra a status chat {} {} " , chatId, companyId);
+        log.info("Entra a delete chat {} {} " , chatId, companyId);
         StatusChat statusChat = findChatById(chatId, companyId);
-        statusChatDao.delete(statusChat);
+        if (statusChat != null) {
+            statusChatDao.delete(statusChat);
+        }
     }
 
 
