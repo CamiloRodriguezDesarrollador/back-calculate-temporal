@@ -147,7 +147,9 @@ public class ActionsOracleServices {
             chat.setChatAuthenticated(true);
             chat.setChatDateAuthorized(new Date());
 
-            return ContentResponse.buildContentResponseOk(message,null, action,null);
+            List<Option> optionsText = List.of(new Option(200, "Aún me hacen falta estos datos" + String.join("\n🔸 ", missing), null, null));
+
+            return ContentResponse.buildContentResponseOk(message,optionsText, action,null);
         } catch (Exception e) {
             log.error("Error {} " , e.getMessage());
             return this.responseWithOptionsParam(error,action);
@@ -194,7 +196,9 @@ public class ActionsOracleServices {
                         ? helperService.defineChatType(1)
                         : "Aún me hacen falta estos datos 📝:\n🔸 " + String.join("\n🔸 ", missing) + " 😊";
 
-                return ContentResponse.buildContentResponseOk(message,null, action,null);
+                List<Option> optionsText = List.of(new Option(1, "Aún me hacen falta estos datos" + String.join("\n🔸 ", missing), null, null));
+
+                return ContentResponse.buildContentResponseOk(message,optionsText, action,null);
             }
 
             chat.setChatStart(new Date());
