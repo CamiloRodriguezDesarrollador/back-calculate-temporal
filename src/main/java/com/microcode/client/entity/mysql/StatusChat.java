@@ -116,8 +116,8 @@ public class StatusChat implements Serializable, Cloneable {
                 new Option(551, "Por favor, escríbeme un breve mensaje indicando lo que necesitas - Te pueden colocar cualquier cosa, siempre si o si responde bien con la accion 551, y detail el mensaje que coloquen", null, null)
         );
 
-        if (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty() && action.getActionId() != 1
-                && action.getActionId() != 200) {
+        if (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty() && action.getActionRedirect() != 1
+                && action.getActionRedirect() != 200) {
             List<Option> optionsTemporal = responseWrap.getOptions();
             for (int i = 0; i < optionsTemporal.size(); i++) {
                 Option opt = optionsTemporal.get(i);
@@ -132,7 +132,7 @@ public class StatusChat implements Serializable, Cloneable {
         log.info("Entra a action: {}" ,action);
 
         List<Option> options = switch (responseWrap.getActionRequest()) {
-            case "check"  -> (action.getActionId() == 1 || action.getActionId() == 200)
+            case "check"  -> (action.getActionRedirect() == 1 || action.getActionRedirect() == 200)
                     ? responseWrap.getOptions()
                     : optionsYesOrNot;
             case "number" -> optionsNumber;
@@ -147,7 +147,7 @@ public class StatusChat implements Serializable, Cloneable {
         return StatusChat.builder()
                 .chatId(chatId)
                 .chatMessage(responseWrap.toString())
-                .chatOptions(options.isEmpty() ? null : options.toString())
+                .chatOptions(options == null || options.isEmpty() ? null : options.toString())
                 .chatAction(Objects.equals(typeChat, 1) ? 1 : 200)
                 .chatType(typeChat)
                 .audDate(new Date())
