@@ -116,8 +116,13 @@ public class StatusChat implements Serializable, Cloneable {
                 new Option(551, "Por favor, escríbeme un breve mensaje indicando lo que necesitas - Te pueden colocar cualquier cosa, siempre si o si responde bien con la accion 551, y detail el mensaje que coloquen", null, null)
         );
 
-        if (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty() && action.getActionRedirect() != 1
-                && action.getActionRedirect() != 200) {
+        Integer redirect = action.getActionRedirect();
+
+        if (responseWrap.getOptions() != null
+                && !responseWrap.getOptions().isEmpty()
+                && !Integer.valueOf(1).equals(redirect)
+                && !Integer.valueOf(200).equals(redirect)) {
+
             List<Option> optionsTemporal = responseWrap.getOptions();
             for (int i = 0; i < optionsTemporal.size(); i++) {
                 Option opt = optionsTemporal.get(i);
@@ -131,16 +136,18 @@ public class StatusChat implements Serializable, Cloneable {
         log.info("Entra a response: {}" ,responseWrap);
         log.info("Entra a action: {}" ,action);
 
+
         List<Option> options = switch (responseWrap.getActionRequest()) {
-            case "check"  -> (action.getActionRedirect() == 1 || action.getActionRedirect() == 200)
-                    ? responseWrap.getOptions()
+            case "check" -> (Integer.valueOf(1).equals(redirect) || Integer.valueOf(200).equals(redirect))
+                    ? Optional.ofNullable(responseWrap.getOptions()).orElse(Collections.emptyList())
                     : optionsYesOrNot;
             case "number" -> optionsNumber;
             case "text"   -> optionsText;
-            default       -> Optional.ofNullable(responseWrap.getOptions())
+            default -> Optional.ofNullable(responseWrap.getOptions())
                     .filter(o -> !o.isEmpty())
                     .orElse(Collections.emptyList());
         };
+
 
         log.info("Sale options: {}" , options);
 
