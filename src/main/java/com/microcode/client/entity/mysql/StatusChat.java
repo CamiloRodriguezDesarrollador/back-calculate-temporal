@@ -5,6 +5,7 @@ import com.microcode.client.entity.general.ContentResponse;
 import com.microcode.client.entity.general.Option;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -19,6 +20,7 @@ import java.util.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
+@Slf4j
 public class StatusChat implements Serializable, Cloneable {
 
     @Id
@@ -97,7 +99,8 @@ public class StatusChat implements Serializable, Cloneable {
                 .build();
     }
 
-    public static StatusChat defineStatusStarted(String chatId, Chat chat, ContentResponse responseWrap, Integer typeChat, Integer companyId) {
+    public static StatusChat defineStatusStarted(String chatId, Chat chat, ContentResponse responseWrap, Integer typeChat,
+                                                 Integer companyId, Action action) {
         boolean content = chat.getDocument() != null && chat.getTypeDocument() != null;
 
         List<Option> optionsYesOrNot = List.of(
@@ -113,7 +116,8 @@ public class StatusChat implements Serializable, Cloneable {
                 new Option(551, "Por favor, escríbeme un breve mensaje indicando lo que necesitas - Te pueden colocar cualquier cosa, siempre si o si responde bien con la accion 551, y detail el mensaje que coloquen", null, null)
         );
 
-        if (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty()) {
+        if (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty() && action.getActionId() != 1
+                && action.getActionId() != 200) {
             List<Option> optionsTemporal = responseWrap.getOptions();
             for (int i = 0; i < optionsTemporal.size(); i++) {
                 Option opt = optionsTemporal.get(i);
@@ -124,14 +128,18 @@ public class StatusChat implements Serializable, Cloneable {
         }
 
 
+        log.info("Entra a response: {}" ,responseWrap);
+
         List<Option> options = switch (responseWrap.getActionRequest()) {
             case "check"  -> optionsYesOrNot;
             case "number" -> optionsNumber;
             case "text" -> optionsText;
-            default       -> (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty())
+            default   -> (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty())
                     ? responseWrap.getOptions()
                     : Collections.emptyList();
         };
+
+        log.info("Sale options: {}" , options);
 
         return StatusChat.builder()
                 .chatId(chatId)

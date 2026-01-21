@@ -148,8 +148,10 @@ public class ActionsOracleServices {
             chat.setChatDateAuthorized(new Date());
 
             List<Option> optionsText = List.of(
-                    new Option(200, "\n🔸 *" + String.join("*\n🔸 *", missing) + "*", null, null)
+                    new Option(200, "\n🔸 *" + String.join("*\n🔸 *", missing) + "*", "Te estan enviando el dato faltante", null)
             );
+
+
             return ContentResponse.buildContentResponseOk(message,optionsText, action,null);
         } catch (Exception e) {
             log.error("Error {} " , e.getMessage());
@@ -198,7 +200,7 @@ public class ActionsOracleServices {
                         : "Aún me hacen falta estos datos 📝: ";
 
                 List<Option> optionsText = List.of(
-                        new Option(1, "\n🔸 *" + String.join("*\n🔸 *", missing) + "*", null, null)
+                        new Option(1, "\n🔸 *" + String.join("*\n🔸 *", missing) + "*", "Te estan enviando el dato faltante", null)
                 );
 
                 return ContentResponse.buildContentResponseOk(message,optionsText, action,null);
