@@ -152,7 +152,8 @@ public class ActionsOracleServices {
             );
 
             Action act = action.clone();
-            act.setActionId(1);
+            act.setActionId(200);
+            act.setActionRespOkRequest("select");
 
             return ContentResponse.buildContentResponseOk(message,optionsText, act,null);
         } catch (Exception e) {
@@ -207,6 +208,7 @@ public class ActionsOracleServices {
 
                 Action act = action.clone();
                 act.setActionId(1);
+                act.setActionRespOkRequest("select");
 
                 return ContentResponse.buildContentResponseOk(message,optionsText, act,null);
             }

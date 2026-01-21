@@ -159,7 +159,7 @@ public class HelperService {
                     🔹Ofertas Laborales 📰
                     🔹Consultar Portal HV 💻
                     
-                    Para continuar ✨ por favor envíame
+                    Para continuar ✨ por favor envíame:
                     """;
         }
     }
