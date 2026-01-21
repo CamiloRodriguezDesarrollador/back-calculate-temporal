@@ -116,7 +116,7 @@ public class StatusChat implements Serializable, Cloneable {
                 new Option(551, "Por favor, escríbeme un breve mensaje indicando lo que necesitas - Te pueden colocar cualquier cosa, siempre si o si responde bien con la accion 551, y detail el mensaje que coloquen", null, null)
         );
 
-        Integer redirect = responseWrap.getActionId();
+        Integer redirect = responseWrap.getActionRedirect();
 
         if (responseWrap.getOptions() != null
                 && !responseWrap.getOptions().isEmpty()
