@@ -109,6 +109,7 @@ public class ActionServices implements ActionServicesI {
                         secondParam,
                         a.getActionRespOkRequest(),
                         a.getActionRespOkAction(),
+                        a.getActionRedirect(),
                         a.getActionType(),
                         null
                 ))
