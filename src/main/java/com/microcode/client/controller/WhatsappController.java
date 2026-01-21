@@ -70,7 +70,7 @@ public class WhatsappController {
 
             if(!responseWrap.getActionRequest().equals("error")){
                 Chat chat = chatSessionManager.getChatById(chatId,companyId.toString());
-                StatusChat status = StatusChat.defineStatusStarted(chatId, chat, responseWrap, typeChat, companyId, action );
+                StatusChat status = StatusChat.defineStatusStarted(chatId, chat, responseWrap, typeChat, companyId );
                 statusChatServices.create(status);
             }
 

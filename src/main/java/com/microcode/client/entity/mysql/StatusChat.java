@@ -100,7 +100,7 @@ public class StatusChat implements Serializable, Cloneable {
     }
 
     public static StatusChat defineStatusStarted(String chatId, Chat chat, ContentResponse responseWrap, Integer typeChat,
-                                                 Integer companyId, Action action) {
+                                                 Integer companyId) {
         boolean content = chat.getDocument() != null && chat.getTypeDocument() != null;
 
         List<Option> optionsYesOrNot = List.of(
@@ -116,7 +116,7 @@ public class StatusChat implements Serializable, Cloneable {
                 new Option(551, "Por favor, escríbeme un breve mensaje indicando lo que necesitas - Te pueden colocar cualquier cosa, siempre si o si responde bien con la accion 551, y detail el mensaje que coloquen", null, null)
         );
 
-        Integer redirect = action.getActionRedirect();
+        Integer redirect = responseWrap.getActionId();
 
         if (responseWrap.getOptions() != null
                 && !responseWrap.getOptions().isEmpty()
@@ -134,7 +134,6 @@ public class StatusChat implements Serializable, Cloneable {
 
 
         log.info("Entra a response: {}" ,responseWrap);
-        log.info("Entra a action: {}" ,action);
 
 
         List<Option> options = switch (responseWrap.getActionRequest()) {
@@ -154,7 +153,7 @@ public class StatusChat implements Serializable, Cloneable {
         return StatusChat.builder()
                 .chatId(chatId)
                 .chatMessage(responseWrap.toString())
-                .chatOptions(options == null || options.isEmpty() ? null : options.toString())
+                .chatOptions(options.isEmpty() ? null : options.toString())
                 .chatAction(Objects.equals(typeChat, 1) ? 1 : 200)
                 .chatType(typeChat)
                 .audDate(new Date())
