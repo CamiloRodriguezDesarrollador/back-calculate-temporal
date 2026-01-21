@@ -151,8 +151,10 @@ public class ActionsOracleServices {
                     new Option(200, "\n🔸 *" + String.join("*\n🔸 *", missing) + "*", "Te estan enviando el dato faltante", null)
             );
 
+            Action act = action.clone();
+            act.setActionId(1);
 
-            return ContentResponse.buildContentResponseOk(message,optionsText, action,null);
+            return ContentResponse.buildContentResponseOk(message,optionsText, act,null);
         } catch (Exception e) {
             log.error("Error {} " , e.getMessage());
             return this.responseWithOptionsParam(error,action);
@@ -203,7 +205,10 @@ public class ActionsOracleServices {
                         new Option(1, "\n🔸 *" + String.join("*\n🔸 *", missing) + "*", "Te estan enviando el dato faltante", null)
                 );
 
-                return ContentResponse.buildContentResponseOk(message,optionsText, action,null);
+                Action act = action.clone();
+                act.setActionId(1);
+
+                return ContentResponse.buildContentResponseOk(message,optionsText, act,null);
             }
 
             chat.setChatStart(new Date());

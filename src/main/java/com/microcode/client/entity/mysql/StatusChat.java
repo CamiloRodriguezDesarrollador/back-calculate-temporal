@@ -129,14 +129,17 @@ public class StatusChat implements Serializable, Cloneable {
 
 
         log.info("Entra a response: {}" ,responseWrap);
+        log.info("Entra a action: {}" ,action);
 
         List<Option> options = switch (responseWrap.getActionRequest()) {
-            case "check"  -> optionsYesOrNot;
-            case "number" -> optionsNumber;
-            case "text" -> optionsText;
-            default   -> (responseWrap.getOptions() != null && !responseWrap.getOptions().isEmpty())
+            case "check"  -> (action.getActionId() == 1 || action.getActionId() == 200)
                     ? responseWrap.getOptions()
-                    : Collections.emptyList();
+                    : optionsYesOrNot;
+            case "number" -> optionsNumber;
+            case "text"   -> optionsText;
+            default       -> Optional.ofNullable(responseWrap.getOptions())
+                    .filter(o -> !o.isEmpty())
+                    .orElse(Collections.emptyList());
         };
 
         log.info("Sale options: {}" , options);
