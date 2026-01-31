@@ -930,8 +930,8 @@ public class ActionsOracleServices {
                             "Documento", chat.getDocument(),
                             "Nombre", chat.getNames(),
                             "Correo", chat.getChatMail(),
-                            "Teléfonos", phones,
-                            "Estado Cto", chat.getContractActive() ? "Activo" : "Retirado",
+                            "Telefonos", phones,
+                            "Contrato", chat.getContractActive() ? "Activo" : "Retirado",
                             "Principal", helperService.defineUniquePrincipalForAuthorizedString(chat.getPrincipalRequest())
                     );
 
