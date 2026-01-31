@@ -29,6 +29,8 @@ import reactor.core.scheduler.Schedulers;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -918,8 +920,13 @@ public class ActionsOracleServices {
                         phones = null;
                     }
 
+                    LocalDateTime now = LocalDateTime.now();
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+                    String currentTime = now.format(formatter);
+
                     String text =
                             "📩 Nueva solicitud de contacto\n\n" +
+                                    "🕛 *Fecha*: " + currentTime + "\n" +
                                     "👤 *Nombre*: " + chat.getNames() + "\n" +
                                     "🪪 *Documento*: " + chat.getDocument() + "\n" +
                                     "✉️ *Correo*: " + chat.getChatMail() + "\n" +
