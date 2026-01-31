@@ -924,6 +924,17 @@ public class ActionsOracleServices {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
                     String currentTime = now.format(formatter);
 
+                    Map<String, Object> payload = Map.of(
+                            "Fecha", currentTime,
+                            "Mensaje", detail,
+                            "Documento", chat.getDocument(),
+                            "Nombre", chat.getNames(),
+                            "Correo", chat.getChatMail(),
+                            "Teléfonos", phones,
+                            "Estado Cto", chat.getContractActive() ? "Activo" : "Retirado",
+                            "Principal", helperService.defineUniquePrincipalForAuthorizedString(chat.getPrincipalRequest())
+                    );
+
                     String text =
                             "📩 Nueva solicitud de contacto\n\n" +
                                     "🕛 *Fecha*: " + currentTime + "\n" +
@@ -936,6 +947,7 @@ public class ActionsOracleServices {
                                     "💬 *Mensaje*: " + detail;
 
                     notifyServices.notifyChatApps(text);
+                    connectExternalServices.updateDataAppSheetsTeo(payload);
                     return null;
 
                 case 549 :

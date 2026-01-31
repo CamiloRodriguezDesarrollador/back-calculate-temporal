@@ -1,6 +1,7 @@
 package com.microcode.client.clients;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -79,6 +80,22 @@ public class ConnectExternalServices {
             return null;
         }
     }
+
+    public String updateDataAppSheetsTeo(Object payload) {
+        try {
+            return this.webClient.post()
+                    .uri(urlConnect + "/update-sheet")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .bodyValue(payload)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+        } catch (Exception e) {
+            System.out.println("Excepción en connectAppshest: " + e.getClass() + " - " + e.getMessage());
+            return null;
+        }
+    }
+
 
 //    public String getDataAppsheets() {
 //        String jsonBody = """
