@@ -919,6 +919,7 @@ public class ActionsOracleServices {
                     } catch (Exception e) {
                         phones = null;
                     }
+                    String phonesCsv = phones == null || phones.isEmpty() ? "" : String.join(", ", phones);
 
                     LocalDateTime now = LocalDateTime.now();
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
@@ -930,7 +931,7 @@ public class ActionsOracleServices {
                             "Documento", chat.getDocument(),
                             "Nombre", chat.getNames(),
                             "Correo", chat.getChatMail(),
-                            "Telefonos", phones,
+                            "Telefonos", phonesCsv,
                             "Contrato", chat.getContractActive() ? "Activo" : "Retirado",
                             "Principal", helperService.defineUniquePrincipalForAuthorizedString(chat.getPrincipalRequest())
                     );

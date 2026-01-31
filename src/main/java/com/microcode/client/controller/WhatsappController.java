@@ -119,6 +119,13 @@ public class WhatsappController {
         chatSessionManager.deleteChatId(chatBody.getChatId(), chatBody.getCompanyId());
     }
 
+    @PostMapping("/delete-session")
+    public void inactive()
+    {
+        statusChatServices.deleteAll();
+        chatSessionManager.deleteChats();
+    }
+
 
 
 }

@@ -229,6 +229,10 @@ public class ChatSessionManager {
         }
     }
 
+    public void deleteChats(){
+        activeChats.clear();
+    }
+
 
 
 }

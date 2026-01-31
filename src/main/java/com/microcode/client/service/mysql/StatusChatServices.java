@@ -58,6 +58,11 @@ public class StatusChatServices implements StatusChatServicesI {
         }
     }
 
+    @Override
+    public void deleteAll() {
+        statusChatDao.deleteAll();
+    }
+
 
     @Override
     public StatusChat findChatById(String chatId,Integer companyId) {
