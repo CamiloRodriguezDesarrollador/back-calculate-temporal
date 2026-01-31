@@ -81,19 +81,17 @@ public class ConnectExternalServices {
         }
     }
 
-    public String updateDataAppSheetsTeo(Object payload) {
-        try {
-            return this.webClient.post()
-                    .uri(urlConnect + "/update-sheet")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .bodyValue(payload)
-                    .retrieve()
-                    .bodyToMono(String.class)
-                    .block();
-        } catch (Exception e) {
-            System.out.println("Excepción en connectAppshest: " + e.getClass() + " - " + e.getMessage());
-            return null;
-        }
+    public void updateDataAppSheetsTeo(Object payload) {
+        this.webClient.post()
+                .uri(urlConnect + "/update-sheet")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(payload)
+                .retrieve()
+                .toBodilessEntity()
+                .subscribe(
+                        r -> {},
+                        e -> System.out.println("Excepción en connectAppshest: " + e.getClass() + " - " + e.getMessage())
+                );
     }
 
 
