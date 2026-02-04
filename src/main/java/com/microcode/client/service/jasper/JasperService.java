@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class JasperService {
+public class JasperService implements JasperServiceI {
 
     private final CertificatesService certificatesService;
     private final TypeNovServices typeNovServices;
@@ -50,7 +50,7 @@ public class JasperService {
         this.typeNovServices = typeNovServices;
     }
 
-
+    @Override
     public byte[] getCertificateJob(Long empNd, String tdcTd, Long ctoNumber, String prom) {
         try {
 
@@ -89,6 +89,7 @@ public class JasperService {
         }
     }
 
+    @Override
     public byte[] getCertificatePay(Long empNd, String tdcTd, Long ctoNumber, String period) {
         try{
             JasperReport cachedReportPay = certPayReportInitial;
@@ -163,6 +164,7 @@ public class JasperService {
 
     }
 
+    @Override
     public byte[] protectPdfWithPassword(byte[] pdfBytes, String password) throws IOException {
         try (PDDocument document = PDDocument.load(new ByteArrayInputStream(pdfBytes))) {
             AccessPermission ap = new AccessPermission();
@@ -180,8 +182,3 @@ public class JasperService {
         }
     }
 }
-
-//        String jrxmlPath = "src/main/resources/templates/CertificacionLaboral.jrxml";
-//        String jasperPath = "src/main/resources/templates/CertificacionLaboral.jasper";
-//        JasperCompileManager.compileReportToFile(jrxmlPath, jasperPath);
-//        System.out.println("Reporte compilado con éxito.");

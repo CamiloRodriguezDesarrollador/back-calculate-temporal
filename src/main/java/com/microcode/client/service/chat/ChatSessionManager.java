@@ -12,8 +12,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -33,17 +31,19 @@ import java.util.concurrent.TimeUnit;
 @AllArgsConstructor
 @EnableScheduling
 @Slf4j
-public class ChatSessionManager {
+public class ChatSessionManager implements ChatSessionManagerI {
 
     private final ConcurrentMap<String, Chat> activeChats = new ConcurrentHashMap<>();
     private final HttpServletRequest request;
     private final QuantityChatServices quantityChatServices;
     private final StatusChatServices statusChatServices;
 
-    private String key(String chatId, String companyId) {
+    @Override
+    public String key(String chatId, String companyId) {
         return chatId + "|" + companyId;
     }
 
+    @Override
     public void updateChatActivity(String chatId, String companyId, ContentMessage message) {
         try {
             activeChats.putIfAbsent(key(chatId, companyId), new Chat(chatId, companyId));
@@ -52,7 +52,7 @@ public class ChatSessionManager {
         }
     }
 
-
+    @Override
     public Chat getChatById(String chatId, String companyId) {
         return activeChats.values()
                 .stream()
@@ -62,7 +62,7 @@ public class ChatSessionManager {
                 .orElse(null);
     }
 
-
+    @Override
     public Chat getAuthorizedChatByDocumentAndType(String document, String typeDocument, String companyId) {
         return activeChats.values().stream()
                 .filter(chat -> document.equals(chat.getDocument()))
@@ -73,11 +73,12 @@ public class ChatSessionManager {
                 .orElse(null);
     }
 
-
+    @Override
     public boolean isAuthorized(String chatId){
         return activeChats.get(chatId).getChatAuthenticated();
     }
 
+    @Override
     public void setChatById(String chatId, String companyId, Chat partialChat) {
         activeChats.values().stream()
                 .filter(chat -> chatId.equals(chat.getChatId())
@@ -139,6 +140,7 @@ public class ChatSessionManager {
     }
 
 
+    @Override
     public boolean validateTime(Chat chat) {
         log.info("Validando chat {}, Fecha inicio: {}, Fecha Authenticación: {}" , chat.getChatId(), chat.getChatStart(), chat.getChatDateAuthorized());
         if(chat.getChatId().contains("whatsapp")) return false;
@@ -158,6 +160,7 @@ public class ChatSessionManager {
         return validate;
     }
 
+    @Override
     public boolean validateTimeCode(Chat chat) {
         Date generateCode = chat.getChatDateCode();
         Date now = new Date();
@@ -166,6 +169,7 @@ public class ChatSessionManager {
         return diffInMinutes > 5;
     }
 
+    @Override
     public boolean validateTimeStart(Chat chat) {
         Date generateStart = chat.getChatStart() == null ? new Date() : chat.getChatStart();
         Date now = new Date();
@@ -174,11 +178,13 @@ public class ChatSessionManager {
         return diffInMinutes > 5;
     }
 
+    @Override
     public boolean validateAttemptsCode(Chat chat) {
         return chat.getChatAttempts() >= 3;
     }
 
 
+    @Override
     public QuantityResponse validityQuantityRequest(Action action, Chat chat, String detail, String actionPrincipal ) {
         Integer quantity = action.getActionDaysQuantity();
         if(quantity == null) return new QuantityResponse(null,false);
@@ -204,6 +210,7 @@ public class ChatSessionManager {
         return new QuantityResponse(dateLast,isOver);
     }
 
+    @Override
     public void deleteChatId(String chatId, Integer idCompany) {
         activeChats.entrySet().removeIf(entry -> {
             Chat chat = entry.getValue();
@@ -219,7 +226,10 @@ public class ChatSessionManager {
     }
 
 
-
+    @Override
+    public void deleteChats(){
+        activeChats.clear();
+    }
 
     @Scheduled(fixedRate = 600000) // 600000ms = 10 minutos
     public void validateInactiveChats(){
@@ -227,10 +237,6 @@ public class ChatSessionManager {
         for(Chat chat : activeChats.values()) {
             this.validateTime(chat);
         }
-    }
-
-    public void deleteChats(){
-        activeChats.clear();
     }
 
 

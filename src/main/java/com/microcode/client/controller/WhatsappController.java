@@ -1,14 +1,14 @@
 package com.microcode.client.controller;
 
+import com.microcode.client.clients.ConnectExternalServices;
 import com.microcode.client.entity.general.*;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.entity.mysql.StatusChat;
-import com.microcode.client.service.chat.ChatSessionManager;
+import com.microcode.client.service.chat.ChatSessionManagerI;
 import com.microcode.client.service.helper.HelperService;
-import com.microcode.client.service.mysql.ActionServices;
-import com.microcode.client.service.mysql.RegisterChatServices;
-import com.microcode.client.service.mysql.StatusChatServices;
-import com.microcode.client.service.oracle.ActionsOracleServices;
+import com.microcode.client.service.mysql.*;
+import com.microcode.client.service.manage.ManageServices;
+import com.microcode.client.service.oracle.CertificatesServiceI;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.lang.reflect.Method;
 import java.util.*;
 
-import static com.microcode.client.service.oracle.ActionsOracleServices.notFound;
+import static com.microcode.client.service.manage.ManageServices.notFound;
 
 @Slf4j
 @RequestMapping("/api/chat/wp")
@@ -25,11 +25,13 @@ import static com.microcode.client.service.oracle.ActionsOracleServices.notFound
 public class WhatsappController {
 
     private final HelperService helperService;
-    private final ActionServices actionServices;
-    private final StatusChatServices statusChatServices;
-    private ChatSessionManager chatSessionManager;
-    private final RegisterChatServices registerChatServices;
-    private final ActionsOracleServices actionsOracleServices;
+    private final ActionServicesI actionServices;
+    private final StatusChatServicesI statusChatServices;
+    private final CertificatesServiceI certificatesService;
+    private final ConnectExternalServices connectExternalServices;
+    private ChatSessionManagerI chatSessionManager;
+    private final RegisterChatServicesI registerChatServices;
+    private final ManageServices manageServices;
 
     @PostMapping("/send-message")
     public ContentResponse greeting(@RequestBody ChatBody chatBody){
@@ -60,11 +62,11 @@ public class WhatsappController {
 
             action =  actionServices.getActionForId(message.getActionId());
             log.info("Action {}" ,action);
-            Method methodAction = actionsOracleServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
+            Method methodAction = manageServices.getClass().getMethod(  action.getActionNameFunction(), Map.class, Action.class);
             message.getChatMessage().put("chatId", chatId);
             message.getChatMessage().put("principalRequest", principalRequest.toString());
             message.getChatMessage().put("companyId", companyId.toString());
-            ContentResponse resp = (ContentResponse) methodAction.invoke(actionsOracleServices, message.getChatMessage(), action);
+            ContentResponse resp = (ContentResponse) methodAction.invoke(manageServices, message.getChatMessage(), action);
             registerChatServices.createForResponse(chatId,resp,"WP", companyId,typeChat);
             ContentResponse responseWrap = ContentResponse.cloneContentResponse(resp);
 
@@ -86,9 +88,9 @@ public class WhatsappController {
             log.error("Error con el chatId {} : {}" , chatId, e.getMessage());
             ContentResponse responseWrap;
             Chat chat = chatSessionManager.getChatById(chatId,companyId.toString());
-            if (chat == null) responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.unauthorized);
-            else if(chat.getChatAuthenticated() == null || !chat.getChatAuthenticated()) responseWrap = ContentResponse.cloneContentResponse(ActionsOracleServices.unauthorized);
-            else responseWrap = ContentResponse.cloneContentResponse(actionsOracleServices.responseWithOptionsParam(notFound,action));
+            if (chat == null) responseWrap = ContentResponse.cloneContentResponse(ManageServices.unauthorized);
+            else if(chat.getChatAuthenticated() == null || !chat.getChatAuthenticated()) responseWrap = ContentResponse.cloneContentResponse(ManageServices.unauthorized);
+            else responseWrap = ContentResponse.cloneContentResponse(manageServices.responseWithOptionsParam(notFound,action));
             return responseWrap;
         }
     }
@@ -125,6 +127,24 @@ public class WhatsappController {
         statusChatServices.deleteAll();
         chatSessionManager.deleteChats();
     }
+
+//    @PostMapping("/carnet-arl")
+//    public void generate()
+//    {
+//        String urlCarnet = certificatesService.getDataCarnetArl(
+//                "NI",
+//                860090915L,
+//                1286413L
+//        );
+//
+//        System.out.println(urlCarnet);
+//        if (urlCarnet == null) return;
+//
+//        byte[] carnet = connectExternalServices.connectUrl(urlCarnet);
+//        System.out.println(carnet.length);
+//
+//    }
+
 
 
 

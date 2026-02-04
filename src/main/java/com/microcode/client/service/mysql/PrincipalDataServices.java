@@ -33,11 +33,13 @@ public class PrincipalDataServices implements PrincipalDataServicesI {
         return principalDataDao.findPrincipalValue(principalSigla,empNd);
     }
 
+    @Override
     public void updateDataPrincipal(){
         List<PrincipalData> actions = principalDataDao.findPrincipalValueAll("A");
         OptionsManageService.updateDataActionsPrincipal(actions);
     }
 
+    @Override
     public String getForSiglaAndEmpNd(String sigla, Long empNd ){
         String result = OptionsManageService.dataActionsPrincipal.stream()
                 .filter(e -> Objects.equals(e.getPrincipalSigla(), sigla) && Objects.equals(e.getEmpNd(), empNd))

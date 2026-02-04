@@ -27,11 +27,8 @@ public class ChatRestController {
 
     @GetMapping("/active/chats-wp")
     public ConcurrentMap<String, Chat> getActiveChatsWp() {
-
         ConcurrentMap<String, Chat> chats = chatSessionManager.getActiveChats();
-
         chats.forEach((id, chat) -> chat.setChatActive(chatSessionManager.validateTime(chat)));
-
         return chats;
     }
 
@@ -42,20 +39,10 @@ public class ChatRestController {
                             @RequestParam String requestType,
                             @RequestParam String options) {
         ContentResponse contentResponse = new ContentResponse();
-//        contentResponse.setOptions(OptionsManageService.getOptionsByActionWithName(options));
         contentResponse.setActionMessage(message);
         contentResponse.setActionRequest(requestType);
         consumeChatService.sendMessageToChat(chatId, contentResponse);
         return "created";
     }
-
-//        String jrxmlPath = "src/main/resources/templates/ComprobanteDePago.jrxml";
-//        String jasperPath = "src/main/resources/templates/ComprobanteDePago.jasper";
-//        JasperCompileManager.compileReportToFile(jrxmlPath, jasperPath);
-//        System.out.println("Reporte compilado con éxito.");
-
-
-
-
 
 }

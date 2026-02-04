@@ -6,13 +6,12 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ConsumeChatService {
+public class ConsumeChatService implements ConsumeChatServiceI {
 
     private final SimpMessagingTemplate messagingTemplate;
-    public ConsumeChatService(SimpMessagingTemplate messagingTemplate) {
-        this.messagingTemplate = messagingTemplate;
-    }
+    public ConsumeChatService(SimpMessagingTemplate messagingTemplate) {this.messagingTemplate = messagingTemplate;}
 
+    @Override
     public void sendMessageToChat(String chatId, ContentResponse response) {
         try {
             ContentResponse contentResponseCopy = ContentResponse.cloneContentResponse(response);

@@ -57,6 +57,7 @@ public class QuantityChatServices implements QuantityChatServicesI {
         quantityChatDao.deleteById(quantityId);
     }
 
+    @Override
     public void createForAction(Integer actionId, String typeDocument,String document, String detail, String actionPrincipal){
         QuantityChat quantityChat = new QuantityChat();
         quantityChat.setTypeDocument(typeDocument);
@@ -67,6 +68,7 @@ public class QuantityChatServices implements QuantityChatServicesI {
         this.create(quantityChat);
     }
 
+    @Override
     public void createQuantityForAction(Action action, Chat chat, String detail,String actionPrincipal){
         if(action.getActionQuantity() != null && action.getActionDaysQuantity() != null){
             createForAction(

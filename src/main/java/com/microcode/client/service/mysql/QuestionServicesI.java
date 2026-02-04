@@ -7,5 +7,6 @@ import java.util.List;
 public interface QuestionServicesI {
 
     List<Question> getAllQuestions();
+    void updateQuestionCalification();
 
 }

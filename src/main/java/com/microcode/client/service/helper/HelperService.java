@@ -58,10 +58,6 @@ public class HelperService {
     }
 
 
-
-
-
-
     public Boolean getDateCertificateAvailable() {
         LocalDate now = LocalDate.now();
         return now.getMonthValue() >= 4;

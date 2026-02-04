@@ -38,7 +38,7 @@ import java.util.*;
 
 @Service
 @AllArgsConstructor
-public class CertificatesService {
+public class CertificatesService implements CertificatesServiceI {
 
     private final JdbcTemplate jdbcTemplate;
     private final HelperService helperService;
@@ -47,6 +47,7 @@ public class CertificatesService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Override
     public CertificateJob getDataCertificatedJob(Long nmcteCodigo, Long nmctoNumero, String vcpromediasueldo, String vcdestinatario) {
         try{
 
@@ -106,6 +107,7 @@ public class CertificatesService {
         }
     }
 
+    @Override
     public List<Long> getDataNumbersRads(Long nmctoNumero,Long nmcteCodigo, String vcfechapago ) {
         try{
 
@@ -138,6 +140,9 @@ public class CertificatesService {
         }
     }
 
+
+
+    @Override
     @SuppressWarnings("unchecked")
     public CertificatePay getDataCertificatedPay(Long codCertificadoEmpresa, Long numeroContrato,
                                                  String periodo, Long radicacion) throws SQLException {
@@ -233,6 +238,8 @@ public class CertificatesService {
 
     }
 
+
+    @Override
     public String getDataCertificatedDian(
             String tdcTd, Long empNd, String tdcTdEpl, Long eplNd, String fechaIncio, String fechaFin) {
         try{
@@ -268,7 +275,8 @@ public class CertificatesService {
     }
 
 
-    private static List<RegisterPay> getRegisterPays(Array arrPago) throws SQLException {
+    @Override
+    public List<RegisterPay> getRegisterPays(Array arrPago) throws SQLException {
         List<RegisterPay> pagos = new ArrayList<>();
         if (arrPago != null) {
             Object[] tablaPago = (Object[]) arrPago.getArray();
@@ -285,6 +293,7 @@ public class CertificatesService {
         return pagos;
     }
 
+    @Override
     public String getStatusLiq(String tdcTdEpl,Long eplNd ) {
         try{
 
@@ -311,6 +320,7 @@ public class CertificatesService {
         }
     }
 
+    @Override
     public Long getDataCertificatePlanilla(String tdcTd, Long empNd, String tdcTdFil, Long empNdFil, String tdcTdEpl, Long eplNd, String period,
                                            Long typeFormat) {
         try {
@@ -393,6 +403,38 @@ public class CertificatesService {
             return null;
         }
         catch(Exception e ){
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public String getDataCarnetArl(
+            String tdcTd,Long empNd, Long ctoNumero) {
+        try{
+
+            StoredProcedureQuery query = entityManager.createStoredProcedureQuery("RHU.QB_GX_APPLICATION_JRHU0050.PL_CARNET_ARL_SERVIDOR");
+
+            query.registerStoredProcedureParameter(1, String.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter(2, Long.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter(3, Long.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter(4, String.class, ParameterMode.OUT);
+            query.registerStoredProcedureParameter(5, String.class, ParameterMode.OUT);
+
+            query.setParameter(1, tdcTd);
+            query.setParameter(2, empNd);
+            query.setParameter(3, ctoNumero);
+
+            query.execute();
+
+            String response = (String) query.getOutputParameterValue(4);
+            String error = (String) query.getOutputParameterValue(5);
+
+            System.out.println("error carnet arl:" + error);
+
+            if(error != null) return null;
+            return response;
+        }catch (Exception e ){
             System.out.println(e.getMessage());
             return null;
         }

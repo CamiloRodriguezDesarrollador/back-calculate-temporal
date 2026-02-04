@@ -5,7 +5,7 @@
 //import com.microcode.client.entity.general.ContentResponse;
 //import com.microcode.client.entity.mysql.Action;
 //import com.microcode.client.service.mysql.ActionServices;
-//import com.microcode.client.service.oracle.ActionsOracleServices;
+//import com.microcode.client.service.manage.ManageServices;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.RepeatedTest;
 //import org.junit.jupiter.api.Test;
@@ -34,7 +34,7 @@
 //    private int port;
 //
 //    @Autowired
-//    private ActionsOracleServices actionsOracleServices;
+//    private ManageServices actionsOracleServices;
 //
 //    @Autowired
 //    private ActionServices actionServices;

@@ -70,9 +70,7 @@ public class OptionsManageService {
     public static void updateOptionsBienestar(List<Option> options) {
         optionsBienestar = options;
     }
-    public static void updateOptionsPension(List<Option> options) {
-        optionsPension = options;
-    }
+
     public static void updateOptionsInca(List<Option> options) {
         optionsInca = options;
     }

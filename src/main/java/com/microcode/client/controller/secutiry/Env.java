@@ -1,4 +1,4 @@
-package com.microcode.client.secutiry;
+package com.microcode.client.controller.secutiry;
 
 import lombok.Getter;
 import lombok.Setter;

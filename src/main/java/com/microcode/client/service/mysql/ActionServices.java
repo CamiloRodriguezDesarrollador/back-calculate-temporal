@@ -5,7 +5,7 @@ import com.microcode.client.entity.general.Chat;
 import com.microcode.client.entity.general.ContentResponse;
 import com.microcode.client.entity.general.Option;
 import com.microcode.client.entity.mysql.Action;
-import com.microcode.client.service.oracle.ActionsOracleServices;
+import com.microcode.client.service.manage.ManageServices;
 import com.microcode.client.service.oracle.OptionsManageService;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -59,6 +59,7 @@ public class ActionServices implements ActionServicesI {
         return actionDao.findByActionMessageAndActionStatus(actionMessage, status);
     }
 
+    @Override
     public void updateTypesChat(){
         List<Action> actions = actionDao.findByActionStatusOrderByActionId("A");
         OptionsManageService.updateActions(actions);
@@ -85,18 +86,19 @@ public class ActionServices implements ActionServicesI {
         optionsUnit.addAll(OptionsManageService.optionsPrincipal);
         optionsUnit.addAll(OptionsManageService.optionEndChat);
 
-        ActionsOracleServices.unauthorized = buildResponse("unauthorized", null);
-        ActionsOracleServices.notFound = buildResponse( "notFound", optionsUnit);
-        ActionsOracleServices.noAction = buildResponse( "noAction", optionsUnit);
-        ActionsOracleServices.timeOut = buildResponse( "timeOut", null);
-        ActionsOracleServices.error = buildResponse( "error", optionsUnit);
-        ActionsOracleServices.quantityMax = buildResponse( "quantityMax", optionsUnit);
-        ActionsOracleServices.maxAttempts = buildResponse( "maxAttempts", null);
-        ActionsOracleServices.withoutContract = buildResponse( "withoutContract", optionsUnit);
-        ActionsOracleServices.otherSessionActive = buildResponse( "otherSessionActive", null);
+        ManageServices.unauthorized = buildResponse("unauthorized", null);
+        ManageServices.notFound = buildResponse( "notFound", optionsUnit);
+        ManageServices.noAction = buildResponse( "noAction", optionsUnit);
+        ManageServices.timeOut = buildResponse( "timeOut", null);
+        ManageServices.error = buildResponse( "error", optionsUnit);
+        ManageServices.quantityMax = buildResponse( "quantityMax", optionsUnit);
+        ManageServices.maxAttempts = buildResponse( "maxAttempts", null);
+        ManageServices.withoutContract = buildResponse( "withoutContract", optionsUnit);
+        ManageServices.otherSessionActive = buildResponse( "otherSessionActive", null);
 
     }
 
+    @Override
     public ContentResponse buildResponse(String actionName, List<Option> secondParam) {
 
         List<Action> actions = actionDao.findByActionStatusOrderByActionId("A");
@@ -116,6 +118,7 @@ public class ActionServices implements ActionServicesI {
                 .orElse(null);
     }
 
+    @Override
     public List<Option> updateOptionsByType(String type, Consumer<List<Option>> updater) {
         List<Action> actions = actionDao.findByActionStatusOrderByActionId("A");
 
@@ -129,6 +132,7 @@ public class ActionServices implements ActionServicesI {
         return options;
     }
 
+    @Override
     public void updateOptionsById( Consumer<List<Option>> updater ) {
         List<Action> actions = actionDao.findByActionStatusOrderByActionId("A");
 
@@ -141,6 +145,7 @@ public class ActionServices implements ActionServicesI {
         updater.accept(options);
     }
 
+    @Override
     public Action getActionForId(Integer actionId ){
         return OptionsManageService.actionsPrincipal.stream()
                 .filter(e -> Objects.equals(e.getActionId(), actionId))
@@ -149,6 +154,7 @@ public class ActionServices implements ActionServicesI {
 
     }
 
+    @Override
     public boolean verifiedRequirementContractActive(Chat chat, Action action){
         if(action.getActionCtoActive() == null) return true;
         if(chat.getContractActive() != null  && chat.getContractActive()) return true;

@@ -1,5 +1,6 @@
 package com.microcode.client.service.mysql;
 
+import com.microcode.client.entity.general.Chat;
 import com.microcode.client.entity.mysql.Action;
 import com.microcode.client.entity.mysql.QuantityChat;
 
@@ -15,6 +16,11 @@ public interface QuantityChatServicesI {
     List<QuantityChat> findTableData(String text, Integer numberPage, Integer numberElementPage);
     Integer findTableQuantity(String text);
     void delete(Long quantityId);
+
+    void createForAction(Integer actionId, String typeDocument,String document, String detail, String actionPrincipal);
+
+    void createQuantityForAction(Action action, Chat chat, String detail, String actionPrincipal);
+
 
 
 }
