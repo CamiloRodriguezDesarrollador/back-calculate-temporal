@@ -127,7 +127,7 @@ public class ManageServices {
             }
 
             List<String> missing = new ArrayList<>();
-            if (chat.getTypeDocument() == null || chat.getTypeDocument().isBlank()) missing.add("Tipo de documento");
+            if (chat.getTypeDocument() == null || chat.getTypeDocument().isBlank()) missing.add("Tipo de documento (C.C., C.E., P.A. (o PAS), C.D., PPT, NIT)");
             if (chat.getDocument() == null || chat.getDocument().isBlank())         missing.add("Numero de documento");
             if (chat.getNames() == null || chat.getNames().isBlank())                 missing.add("Nombres");
             if (chat.getChatPhone() == null || chat.getChatPhone().isBlank())               missing.add("Celular");
@@ -188,7 +188,7 @@ public class ManageServices {
             if (chat.getTypeDocument() == null || chat.getDocument()  == null)
             {
                 List<String> missing = new ArrayList<>();
-                if (chat.getTypeDocument() == null || chat.getTypeDocument().isBlank()) missing.add("Tipo de documento");
+                if (chat.getTypeDocument() == null || chat.getTypeDocument().isBlank()) missing.add("Tipo de documento (C.C., C.E., P.A. (o PAS), C.D., PPT, NIT)");
                 if (chat.getDocument() == null || chat.getDocument().isBlank())         missing.add("Numero de documento");
 
                 boolean isFirstTime = missing.size() == 2;

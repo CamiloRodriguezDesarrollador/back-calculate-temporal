@@ -74,7 +74,7 @@ public class StatusChat implements Serializable, Cloneable {
 
         List<Option> options = List.of(
                 new Option(1,   "1. 👷 Trabajador / Extrabajador",        "Igualmente, te pueden enviar datos como Tipo de Documento, y Documento, solo extraelos y envia al action 1 ", null),
-                new Option(200, "2. 🏡 Cliente / Proveedor / Candidato / Externo",  "Igualmente, te pueden enviar datos como Tipo de Documento, Documento, Celular, Nombres y Correo Electronico, solo extraelos y envia al action 1", null)
+                new Option(200, "2. 🏡 Candidato / Cotizar / Proveedor / Validar Certificados",  "Igualmente, te pueden enviar datos como Tipo de Documento, Documento, Celular, Nombres y Correo Electronico, solo extraelos y envia al action 1", null)
         );
 
         String urlData = "https://bit.ly/4qDempL";
@@ -88,7 +88,7 @@ public class StatusChat implements Serializable, Cloneable {
                                 "¡Estoy aquí para ayudarte! 😊\n\n" +
                                 "*Por favor elige una de las siguientes opciones:* 🙌\n\n" +
                                 "1. 👷 Trabajador / Extrabajador\n" +
-                                "2. 🏡 Cliente / Proveedor / Candidato / Externo \n\n"+
+                                "2. 🏡 Candidato / Cotizar / Proveedor / Validar Certificados \n\n"+
                                 "Al continuar das autorización para el tratamientos de datos personales de acuerdo con la Política de datos. " + urlData + " ." + "\n\n"+
                                 "👉 Para salir del chat en cualquier momento y volver aquí, escribe *EXIT*"
                 )
