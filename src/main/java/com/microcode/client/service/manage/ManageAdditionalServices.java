@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Service
 @Slf4j
-public class manageAdditionalServices implements manageAdditionalServicesI {
+public class ManageAdditionalServices implements ManageAdditionalServicesI {
 
     public static ContentResponse error;
 

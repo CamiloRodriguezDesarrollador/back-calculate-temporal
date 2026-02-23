@@ -63,7 +63,7 @@ public class ManageServices {
     private final StatusChatServicesI statusChatServices;
     private final EmployeePhoneServicesI employeePhoneServices;
     private final CertificatesServiceI certificatesService;
-    private final manageAdditionalServicesI manageAdditionalServices;
+    private final ManageAdditionalServicesI manageAdditionalServices;
 
     private final MailServices mailServices;
     private final ConnectExternalServices connectExternalServices;
@@ -611,7 +611,7 @@ public class ManageServices {
             Chat chat = chatSessionManager.getChatById(chatId,companyId);
             chat.setChatDateAuthorized(new Date());
 
-            if(!actionServices.verifiedRequirementContractActive(chat,action)) return withoutContract;
+            if(!actionServices.verifiedRequirementContractActive(chat,action)) return responseWithOptionsParam(withoutContract,action);
 
             String messageOk = helperService.isPrincipal(chat.getEmpNdFil()) ? action.getActionRespOkMessagePrincipal() : action.getActionRespOkMessage();
 

@@ -5,7 +5,7 @@ import com.microcode.client.entity.mysql.Action;
 
 import java.io.IOException;
 
-public interface manageAdditionalServicesI {
+public interface ManageAdditionalServicesI {
 
     Object generateCertJob(String detail, Action action, Chat chat) throws IOException;
 
