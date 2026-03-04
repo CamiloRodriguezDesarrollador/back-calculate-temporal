@@ -79,7 +79,7 @@ public class StatusChat implements Serializable, Cloneable {
 
         String urlData = "https://bit.ly/4qDempL";
         if(companyId == 2 ) urlData = "https://bit.ly/4qbL55W";
-        if(companyId == 3 ) urlData = "https://bit.ly/4ssotj6";
+        if(companyId == 3 ) urlData = "https://bit.ly/3MPjoB9";
 
         return StatusChat.builder()
                 .chatId(chatId)
