@@ -335,7 +335,7 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
 
     @Override
     public Object generateBienestar(String detail, Action action, Chat chat) {
-        if(helperService.isPrincipal(chat.getEmpNdFil())) return String.format(action.getActionRespOkMessagePrincipal());
+        if(helperService.isPrincipal(chat.getEmpNdFil())) return action.getActionRespOkMessagePrincipal();
         String mailResp;
         Responsible responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
         if(responsible == null) {
@@ -347,7 +347,7 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
 
         mailResp = "<p>Para mayor información, comunícate al </p>" + mailResp;
 
-        return String.format(action.getActionRespOkMessage(),mailResp);
+        return action.getActionRespOkMessage() + mailResp;
     }
 
     @Override
