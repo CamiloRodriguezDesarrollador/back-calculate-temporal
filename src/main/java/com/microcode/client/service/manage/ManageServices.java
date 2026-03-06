@@ -732,9 +732,7 @@ public class ManageServices {
             }
 
         }
-        if(action.getActionId()==529) return messageOk;
-
-
+//        if(action.getActionId()==529) return messageOk;
 
         String[] siglas =
                 helperService.isPrincipal(chat.getEmpNdFil())
