@@ -342,10 +342,10 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
             mailResp = principalDataServices.getForSiglaAndEmpNd("whatsappBienestar", 0L);
         }
         else {
-            mailResp = responsible.getRinMail().toLowerCase();
+            mailResp =  "correo " + responsible.getRinMail().toLowerCase();
         };
 
-        mailResp = "<p>Para mayor información, comunícate al </p>" + mailResp;
+        mailResp = "<p>Para mayor información, comunícate al " + mailResp +"</p>"
 
         return action.getActionRespOkMessage() + mailResp;
     }
