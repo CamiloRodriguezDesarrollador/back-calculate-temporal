@@ -345,7 +345,7 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
             mailResp =  "correo " + responsible.getRinMail().toLowerCase();
         };
 
-        mailResp = "<p>Para mayor información, comunícate al " + mailResp +"</p>"
+        mailResp = "<p>Para mayor información, comunícate al " + mailResp +"</p>";
 
         return action.getActionRespOkMessage() + mailResp;
     }
