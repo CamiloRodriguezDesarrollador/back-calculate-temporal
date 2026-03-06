@@ -625,7 +625,7 @@ public class ManageServices {
             }
 
             if(action.getActionSigla() != null || action.getActionSiglaPrincipal() != null){
-                messageOk = assignPrincipalData(action,chat);
+                messageOk = manageAdditionalServices.assignPrincipalData(action,chat);
             }
 
             Object validationAdditional = methodStandardAdditional(detail, action,chat);
@@ -711,41 +711,6 @@ public class ManageServices {
         return responseClone;
     }
 
-    public String assignPrincipalData(Action action, Chat chat) {
-        String messageOk = helperService.isPrincipal(chat.getEmpNdFil())
-                ? action.getActionRespOkMessagePrincipal()
-                : action.getActionRespOkMessage();
-
-
-        if(action.getActionId()==524){
-            if( histConstantServices.findIfHaveConstant(chat.getEmpNdFil()) ){
-                action.setActionRespOkMessage(action.getActionRespOkMessagePrincipal());
-                String val = principalDataServices.getForSiglaAndEmpNd("urlSitioTrabajador", chat.getEmpNd());
-                return  String.format(action.getActionRespOkMessagePrincipal() ,  val);
-            }
-            else{
-                Responsible responsible;
-                responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
-                if(responsible != null)
-                    return  String.format(messageOk ,  List.of(responsible.getRinMail().toLowerCase()).toArray());
-
-            }
-
-        }
-//        if(action.getActionId()==529) return messageOk;
-
-        String[] siglas =
-                helperService.isPrincipal(chat.getEmpNdFil())
-                    ? action.getActionSiglaPrincipal().split("-")
-                        :action.getActionSigla().split("-");
-
-        List<String> values = new ArrayList<>();
-        for (String sigla : siglas) {
-            String val = principalDataServices.getForSiglaAndEmpNd(sigla, chat.getEmpNd());
-            values.add(val == null ? "sin asignar" : val);
-        }
-        return  String.format(messageOk ,  values.toArray());
-    }
 
     public ContentResponse responseWithOptionsParam(ContentResponse response, Action action){
         ContentResponse responseClone = ContentResponse.cloneContentResponse(response);

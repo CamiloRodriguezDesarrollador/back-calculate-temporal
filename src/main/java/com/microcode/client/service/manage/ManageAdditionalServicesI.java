@@ -25,5 +25,6 @@ public interface ManageAdditionalServicesI {
 
     Object generatePqr(String detail, Action action, Chat chat) ;
 
+    String assignPrincipalData(Action action, Chat chat);
 
 }

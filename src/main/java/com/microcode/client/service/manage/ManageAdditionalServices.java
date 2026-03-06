@@ -22,6 +22,8 @@ import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -49,6 +51,7 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
 
     private final OptionsManageService optionsManageService;
     private final HelperService helperService;
+    private final HistConstantServices histConstantServices;
 
     @Override
     public Object generateCertJob(String detail, Action action, Chat chat) throws IOException {
@@ -335,7 +338,8 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
 
     @Override
     public Object generateBienestar(String detail, Action action, Chat chat) {
-        if(helperService.isPrincipal(chat.getEmpNdFil())) return action.getActionRespOkMessagePrincipal();
+        String message = assignPrincipalData(action,chat);
+        if(helperService.isPrincipal(chat.getEmpNdFil())) return message;
         String mailResp;
         Responsible responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
         if(responsible == null) {
@@ -345,9 +349,9 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
             mailResp =  "correo " + responsible.getRinMail().toLowerCase();
         };
 
-        mailResp = "<p>Para mayor información, comunícate al " + mailResp +"</p>";
+        mailResp = "<p>Para mayor información, comunícate al <strong>" + mailResp +"</strong></p>";
 
-        return action.getActionRespOkMessage() + mailResp;
+        return message + mailResp;
     }
 
     @Override
@@ -388,5 +392,46 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
         return principalDataServices.getForSiglaAndEmpNd("pqr" + sig, chat.getEmpNd());
     }
 
+
+    @Override
+    public String assignPrincipalData(Action action, Chat chat) {
+        System.out.println("Llega a asignar variable:" + action.toString() + chat.toString());
+        String messageOk = helperService.isPrincipal(chat.getEmpNdFil())
+                ? action.getActionRespOkMessagePrincipal()
+                : action.getActionRespOkMessage();
+
+
+        if(action.getActionId()==524){
+            if( histConstantServices.findIfHaveConstant(chat.getEmpNdFil()) ){
+                action.setActionRespOkMessage(action.getActionRespOkMessagePrincipal());
+                String val = principalDataServices.getForSiglaAndEmpNd("urlSitioTrabajador", chat.getEmpNd());
+                return  String.format(action.getActionRespOkMessagePrincipal() ,  val);
+            }
+            else{
+                Responsible responsible;
+                responsible = responsibleServices.findByCompany(chat.getTdcTdFil(), chat.getEmpNdFil());
+                if(responsible != null)
+                    return  String.format(messageOk ,  List.of(responsible.getRinMail().toLowerCase()).toArray());
+
+            }
+
+        }
+        if(action.getActionId()==529 ) return messageOk;
+
+        String[] siglas =
+                helperService.isPrincipal(chat.getEmpNdFil())
+                        ? action.getActionSiglaPrincipal().split("-")
+                        :action.getActionSigla().split("-");
+
+        System.out.println("Siglas que llegan: " + Arrays.toString(siglas));
+
+        List<String> values = new ArrayList<>();
+        for (String sigla : siglas) {
+            String val = principalDataServices.getForSiglaAndEmpNd(sigla, chat.getEmpNd());
+            System.out.println("Valor encontrado: " + val);
+            values.add(val == null ? "sin asignar" : val);
+        }
+        return  String.format(messageOk ,  values.toArray());
+    }
 
 }

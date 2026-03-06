@@ -49,7 +49,7 @@ public class PrincipalDataServices implements PrincipalDataServicesI {
 
         if (result == null) {
             result = OptionsManageService.dataActionsPrincipal.stream()
-                    .filter(e -> Objects.equals(e.getPrincipalSigla(), sigla) && "y".equals(e.getPrincipalDefault()))
+                        .filter(e -> Objects.equals(e.getPrincipalSigla(), sigla) && "y".equals(e.getPrincipalDefault()))
                     .map(PrincipalData::getPrincipalValue)
                     .findFirst()
                     .orElse(null);
