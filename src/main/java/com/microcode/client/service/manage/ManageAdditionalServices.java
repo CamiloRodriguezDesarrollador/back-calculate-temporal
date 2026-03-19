@@ -220,6 +220,7 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
         Mono.delay(Duration.ofSeconds(10))
                 .flatMap(tick -> Mono.fromCallable(() -> {
                     String urlPlanilla = "https://apps.genialw.com/SitioTrabajador/ServletDownloadFileMiPlanilla?TPQ_CODE=" + codePlanilla;
+                    log.info("Url planilla: {}" , urlPlanilla);
                     byte[] certPlanilla = connectExternalServices.connectUrl(urlPlanilla);
 
                     String contentMailPlanilla = String.format(action.getActionRepOkMail(), "Planilla", chat.getNames());

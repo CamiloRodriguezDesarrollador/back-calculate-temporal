@@ -6,6 +6,7 @@ import com.microcode.client.entity.oracle.TypeNovCompany;
 import com.microcode.client.service.oracle.CertificatesService;
 import com.microcode.client.service.oracle.TypeNovServices;
 import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
@@ -21,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
 public class JasperService implements JasperServiceI {
 
@@ -58,6 +60,7 @@ public class JasperService implements JasperServiceI {
 
             TypeNovCompany typ = typeNovServices.findByIds(empNd, tdcTd, 10L);
             CertificateJob cert = certificatesService.getDataCertificatedJob(typ.getTneCodigo(), ctoNumber, prom, "QUIEN INTERESE");
+            log.info("Cert lab generate: {}", cert.toString());
             Map<String, Object> hm = new HashMap<>();
             hm.put("P_NOM_EMPRESA_PPAL", cert.getNombreEmpresaPrincipal());
             hm.put("P_ND_EMPRESA_PPAL", cert.getEmpresaNd());

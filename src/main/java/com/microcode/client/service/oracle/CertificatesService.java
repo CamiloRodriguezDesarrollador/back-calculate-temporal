@@ -385,10 +385,12 @@ public class CertificatesService implements CertificatesServiceI {
             String endpoint = (String) query.getOutputParameterValue("vcENDPOINT");
             Clob xmlInputClob = (Clob) query.getOutputParameterValue("vcXMLINPUT");
             String error = (String) query.getOutputParameterValue("vcerror");
+            String message = (String) query.getOutputParameterValue("vcmensaje");
             Long tpqCode = (Long) query.getOutputParameterValue("nmTpq_Code");
 
-            System.out.println(tpqCode);
-            System.out.println(error);
+            System.out.println("tpqCode: " +tpqCode);
+            System.out.println("error cert: " + tpqCode);
+            System.out.println("vcmensaje: " + message);
 
             if (tpqCode == null) return null;
 
