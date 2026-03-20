@@ -18,14 +18,12 @@ import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.io.IOException;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -433,6 +431,44 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
             values.add(val == null ? "sin asignar" : val);
         }
         return  String.format(messageOk ,  values.toArray());
+    }
+
+    @Override
+    public Object getDataFedac(String detail, Action action, Chat chat) {
+        System.out.println("Llega a consultar salario:" + chat.toString());
+        Long salary = contractServices.findSalary(chat.getTdcTd(),chat.getEmpNd(),chat.getCtoNumber(),chat.getPerSigla());
+        String payment = chat.getPerSigla().equals("M") ? "mensual" : "quincenal";
+        Integer percent = chat.getPerSigla().equals("M") ? 10 : 5;
+        Long valueMax = (salary * percent) / 100;
+        NumberFormat format = NumberFormat.getNumberInstance(new Locale("es", "CO"));
+        String valueAffiliation = "$13.000";
+
+
+        return String.format(action.getActionRespOkMessage(), payment, percent, format.format(valueMax),valueAffiliation);
+    }
+
+    @Override
+    public Object getDataFedacApproved(String detail, Action action, Chat chat) {
+
+
+        if(!chat.getContractActive())
+            return ContentResponse.buildContentResponseFail("<p>Para solicitar afiliación debes estar afiliado</p>",
+                    optionsManageService.getOptionsByActionWithOption(action.getActionOptionError()), action, null);
+
+
+//        Aca validación: 1. Que el valor no supere el 10%. Que este afiliado.
+        Long salary = contractServices.findSalary(chat.getTdcTd(),chat.getEmpNd(),chat.getCtoNumber(),chat.getPerSigla());
+        Float percent = chat.getPerSigla().equals("M") ? 10f : 5f;
+        long valueMax = (long) ((salary * percent) / 100);
+        long valueSend = Long.parseLong(detail);
+
+        NumberFormat format = NumberFormat.getNumberInstance(new Locale("es", "CO"));
+
+        if(valueSend>valueMax)
+            return ContentResponse.buildContentResponseFail("<p>El valor solicitado supera tu capacidad, el cual es de " + format.format(valueMax) + "</p>",
+                    optionsManageService.getOptionsByActionWithOption(action.getActionOptionError()), action, null);
+//      Insertar en la tabla.
+        return null;
     }
 
 }

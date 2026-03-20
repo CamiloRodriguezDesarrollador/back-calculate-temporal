@@ -127,7 +127,7 @@ public class ManageServices {
             }
 
             List<String> missing = new ArrayList<>();
-            if (chat.getTypeDocument() == null || chat.getTypeDocument().isBlank()) missing.add("Tipo de documento (C.C., C.E., P.A. (o PAS), C.D., PPT, NIT)");
+            if (chat.getTypeDocument() == null || chat.getTypeDocument().isBlank()) missing.add("Tipo de documento (C.C., C.E., P.A. (o PAS), C.D., PT, NIT)");
             if (chat.getDocument() == null || chat.getDocument().isBlank())         missing.add("Numero de documento");
             if (chat.getNames() == null || chat.getNames().isBlank())                 missing.add("Nombres");
             if (chat.getChatPhone() == null || chat.getChatPhone().isBlank())               missing.add("Celular");
@@ -188,7 +188,7 @@ public class ManageServices {
             if (chat.getTypeDocument() == null || chat.getDocument()  == null)
             {
                 List<String> missing = new ArrayList<>();
-                if (chat.getTypeDocument() == null || chat.getTypeDocument().isBlank()) missing.add("Tipo de documento (C.C., C.E., P.A. (o PAS), C.D., PPT, NIT)");
+                if (chat.getTypeDocument() == null || chat.getTypeDocument().isBlank()) missing.add("Tipo de documento (C.C., C.E., P.A. (o PAS), C.D., PT, NIT)");
                 if (chat.getDocument() == null || chat.getDocument().isBlank())         missing.add("Numero de documento");
 
                 boolean isFirstTime = missing.size() == 2;
@@ -284,8 +284,8 @@ public class ManageServices {
                     : detail;
 
             if (mailFlag.equals("Y")) {
-//                String code = "123456";
-                String code = helperService.generateCode();
+                String code = "123456";
+//                String code = helperService.generateCode();
                 chat.setChatCode(code);
                 chat.setChatAttempts(1);
                 chat.setChatDateCode(new Date());
@@ -294,7 +294,7 @@ public class ManageServices {
                 String subject = String.format(action.getActionRepOkMailSubject(),code);
 
 //                mailServices.sendMailChat(MAIL_TEST,contentMail,subject,chat.getPrincipalRequest());
-                mailServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest());
+//                mailServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest());
 
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action,null);
             }
@@ -630,6 +630,7 @@ public class ManageServices {
 
             Object validationAdditional = methodStandardAdditional(detail, action,chat);
 
+
             if(validationAdditional != null){
                 if(validationAdditional instanceof String){
                     messageOk = (String) validationAdditional;
@@ -639,7 +640,6 @@ public class ManageServices {
                     return (ContentResponse) validationAdditional;
                 }
             }
-
 
             quantityChatServices.createQuantityForAction(action,chat,detail,chat.getEmpNd().toString());
 
@@ -684,6 +684,8 @@ public class ManageServices {
                 case 551 -> manageAdditionalServices.generateCall(detail, action, chat);
                 case 549 -> manageAdditionalServices.generateBienestar(detail, action, chat);
                 case 2024 -> manageAdditionalServices.generateCarnet(detail, action, chat);
+                case 2012 -> manageAdditionalServices.getDataFedac(detail, action, chat);
+                case 2013 -> manageAdditionalServices.getDataFedacApproved(detail, action, chat);
                 default -> null;
             };
         }catch (Exception e){

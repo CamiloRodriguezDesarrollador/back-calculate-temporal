@@ -31,6 +31,7 @@ public class MailServices {
 
         MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
         params.add("emailTo", emailTo);
+//        params.add("emailTo", "cgonzalez@activos.com.co");
         params.add("contentMail", contentMail);
         params.add("subject", subject);
 

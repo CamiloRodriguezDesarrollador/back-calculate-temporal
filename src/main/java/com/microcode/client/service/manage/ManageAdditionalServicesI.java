@@ -27,4 +27,7 @@ public interface ManageAdditionalServicesI {
 
     String assignPrincipalData(Action action, Chat chat);
 
+    Object getDataFedac(String detail, Action action, Chat chat);
+    Object getDataFedacApproved(String detail, Action action, Chat chat);
+
 }

@@ -70,4 +70,9 @@ public interface IContractDao extends CrudRepository<Contract, Long> {
     """)
     Contract findByDate(Long empNd, String tdcTd,Long ctoNumber, Integer yearIng);
 
-}
+    @Query(value = """
+        SELECT FB_SUELDO(:tdcTd, :empNd, :ctoNumber, :perSigla, SYSDATE)
+        FROM dual
+    """, nativeQuery = true)
+        Long findSalary(String tdcTd, Long empNd, Long ctoNumber, String perSigla);
+    }
