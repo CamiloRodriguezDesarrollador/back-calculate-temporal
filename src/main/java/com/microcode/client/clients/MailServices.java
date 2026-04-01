@@ -78,6 +78,29 @@ public class MailServices {
                 .onErrorResume(RestClientException.class, ex -> Mono.empty());
     }
 
+    public void sendMailChatJust(String emailTo, String contentMail, String subject, List<Long>  authorized) {
+        WebClient webClient = Env.withCurrentHeaders(WebClient.builder()).build();
+
+        MultiValueMap<String, Object> params = new LinkedMultiValueMap<>();
+        params.add("emailTo", emailTo);
+//        params.add("toCC", "sac@fedac.co");
+        params.add("contentMail", contentMail);
+        params.add("subject", subject);
+
+        Long principalAuthorized = helperService.defineUniquePrincipalForAuthorized(authorized);
+        params.add("principalAuthorized", principalAuthorized);
+        try{
+            webClient.post()
+                    .uri(urlMail + "/sendMailChatJust")
+                    .bodyValue(params)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .onErrorResume(RestClientException.class, ex -> Mono.empty()).block();
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
 
     public void ping() {
         WebClient webClient = Env.withCurrentHeaders(WebClient.builder()).build();

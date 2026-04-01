@@ -442,6 +442,70 @@ public class CertificatesService implements CertificatesServiceI {
         }
     }
 
+    @Override
+    public String getPlanPayment(Long loanId) {
+        try {
+
+            StoredProcedureQuery query = entityManager
+                    .createStoredProcedureQuery("PRE.PB_PLAN_PAGOS");
+
+            query.registerStoredProcedureParameter(1, Long.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter(2, String.class, ParameterMode.INOUT);
+
+            query.setParameter(1, loanId);
+            query.setParameter(2, null);
+
+            query.execute();
+
+            String error = (String) query.getOutputParameterValue(2);
+
+            System.out.println("Error: " + error);
+
+            if (error != null) return null;
+
+            return "OK";
+
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public String getCalculatePaymentDetail(Long loanId, Long consecutive) {
+        try {
+
+            StoredProcedureQuery query = entityManager
+                    .createStoredProcedureQuery("PRE.PB_CALC_DETPRESTAMO");
+
+            query.registerStoredProcedureParameter(1, Long.class, ParameterMode.IN);
+            query.registerStoredProcedureParameter(2, Long.class, ParameterMode.IN);
+
+            query.registerStoredProcedureParameter(3, Double.class, ParameterMode.OUT);
+
+            query.registerStoredProcedureParameter(4, String.class, ParameterMode.INOUT);
+
+            query.setParameter(1, loanId);
+            query.setParameter(2, consecutive);
+            query.setParameter(4, null);
+
+            query.execute();
+
+            Double value = (Double) query.getOutputParameterValue(3);
+            String error = (String) query.getOutputParameterValue(4);
+
+            if (error != null && !error.trim().isEmpty()) {
+                System.out.println("SP Error: " + error);
+                return null;
+            }
+
+            return value != null ? value.toString() : "0";
+
+        } catch (Exception e) {
+            System.out.println("Exception: " + e.getMessage());
+            return null;
+        }
+    }
 
 
 

@@ -2,14 +2,12 @@ package com.microcode.client.dao.oracle;
 
 import com.microcode.client.entity.oracle.Contract;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.CrudRepository;
-import org.springframework.data.repository.query.Param;
 
-import java.util.Date;
 import java.util.List;
 
 public interface IContractDao extends CrudRepository<Contract, Long> {
+//    AND p.empNdFil NOT IN (860090915,800148972,830057687,800141699,800165661)
 
     @Query("""
             SELECT p FROM Contract p
@@ -72,7 +70,7 @@ public interface IContractDao extends CrudRepository<Contract, Long> {
 
     @Query(value = """
         SELECT FB_SUELDO(:tdcTd, :empNd, :ctoNumber, :perSigla, SYSDATE)
-        FROM dual
-    """, nativeQuery = true)
+        FROM dual """
+            , nativeQuery = true)
         Long findSalary(String tdcTd, Long empNd, Long ctoNumber, String perSigla);
     }

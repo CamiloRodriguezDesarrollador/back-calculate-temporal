@@ -25,6 +25,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.text.NumberFormat;
 import java.util.*;
 
 @Service
@@ -64,6 +65,7 @@ public class ManageServices {
     private final EmployeePhoneServicesI employeePhoneServices;
     private final CertificatesServiceI certificatesService;
     private final ManageAdditionalServicesI manageAdditionalServices;
+    private final LoanServicesI loanServicesI;
 
     private final MailServices mailServices;
     private final ConnectExternalServices connectExternalServices;
@@ -684,8 +686,8 @@ public class ManageServices {
                 case 551 -> manageAdditionalServices.generateCall(detail, action, chat);
                 case 549 -> manageAdditionalServices.generateBienestar(detail, action, chat);
                 case 2024 -> manageAdditionalServices.generateCarnet(detail, action, chat);
-                case 2012 -> manageAdditionalServices.getDataFedac(detail, action, chat);
-                case 2013 -> manageAdditionalServices.getDataFedacApproved(detail, action, chat);
+                case 2026 -> manageAdditionalServices.getDataFedac(detail, action, chat);
+                case 2027 -> manageAdditionalServices.getDataFedacApproved(detail, action, chat);
                 default -> null;
             };
         }catch (Exception e){
@@ -713,7 +715,6 @@ public class ManageServices {
         return responseClone;
     }
 
-
     public ContentResponse responseWithOptionsParam(ContentResponse response, Action action){
         ContentResponse responseClone = ContentResponse.cloneContentResponse(response);
         if(action == null || action.getActionOptionError() == null) {
@@ -730,6 +731,7 @@ public class ManageServices {
         if(dates == null || dates.isEmpty())
             return ContentResponse.buildContentResponseFail(String.format(action.getActionRespFailMessage()),
                     optionsError, action,null);
+
         List<Option> options = new ArrayList<>(List.of());
 
         for (String label : dates) {

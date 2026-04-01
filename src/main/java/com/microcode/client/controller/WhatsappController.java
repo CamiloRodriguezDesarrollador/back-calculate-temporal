@@ -128,24 +128,6 @@ public class WhatsappController {
         chatSessionManager.deleteChats();
     }
 
-//    @PostMapping("/carnet-arl")
-//    public void generate()
-//    {
-//        String urlCarnet = certificatesService.getDataCarnetArl(
-//                "NI",
-//                860090915L,
-//                1286413L
-//        );
-//
-//        System.out.println(urlCarnet);
-//        if (urlCarnet == null) return;
-//
-//        byte[] carnet = connectExternalServices.connectUrl(urlCarnet);
-//        System.out.println(carnet.length);
-//
-//    }
-
-
 
 
 }

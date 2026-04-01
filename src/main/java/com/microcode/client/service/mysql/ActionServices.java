@@ -125,8 +125,12 @@ public class ActionServices implements ActionServicesI {
         List<Option> options = actions.stream()
                 .filter(a -> type.equalsIgnoreCase(a.getActionType()))
                 .sorted(Comparator.comparing(Action::getActionOrder))
-                .map(a -> new Option(a.getActionId(), a.getActionMessage(), null, a.getActionId().toString()))
+                .map(a -> new Option(a.getActionId(), a.getActionMessage(),
+                        a.getActionId() == 2027 ? "Mensaje IA: Te van a enviar el valor de la afiliacion, siempre responde con esta acion, y en 'detail' solo pega ta cual lo que el usuario haya esccrito" : null
+                        , a.getActionId().toString()))
                 .collect(Collectors.toList());
+
+
 
         if(updater != null) updater.accept(options);
         return options;

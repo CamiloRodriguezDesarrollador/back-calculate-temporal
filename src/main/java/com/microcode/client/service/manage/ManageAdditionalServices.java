@@ -42,6 +42,7 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
     private final LibIngServicesI libIngServices;
     private final EmployeePhoneServicesI employeePhoneServices;
     private final CertificatesServiceI certificatesService;
+    private final LoanServicesI loanServicesI;
 
     private final MailServices mailServices;
     private final ConnectExternalServices connectExternalServices;
@@ -391,7 +392,6 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
         return principalDataServices.getForSiglaAndEmpNd("pqr" + sig, chat.getEmpNd());
     }
 
-
     @Override
     public String assignPrincipalData(Action action, Chat chat) {
         System.out.println("Llega a asignar variable:" + action.toString() + chat.toString());
@@ -435,39 +435,89 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
 
     @Override
     public Object getDataFedac(String detail, Action action, Chat chat) {
-        System.out.println("Llega a consultar salario:" + chat.toString());
+
+        List<Loan> loanHist = loanServicesI.getIsActive(
+                chat.getTdcTd(), chat.getEmpNd(), chat.getCtoNumber(), "AHORRO","A"
+        );
+
+        if(loanHist != null && !loanHist.isEmpty())
+            return ContentResponse.buildContentResponseFail("<p>Actualmente cuentas con un <strong>crédito activo</strong>, por lo que en este momento no es posible procesar tu solicitud de afiliación. </p>",
+                    optionsManageService.getOptionsByActionWithOption(action.getActionOptionError()), action, null);
+
+
         Long salary = contractServices.findSalary(chat.getTdcTd(),chat.getEmpNd(),chat.getCtoNumber(),chat.getPerSigla());
         String payment = chat.getPerSigla().equals("M") ? "mensual" : "quincenal";
         Integer percent = chat.getPerSigla().equals("M") ? 10 : 5;
         Long valueMax = (salary * percent) / 100;
         NumberFormat format = NumberFormat.getNumberInstance(new Locale("es", "CO"));
-        String valueAffiliation = "$13.000";
 
+        Long valueAffiliation = loanServicesI.getValueAffiliationFedac();
+        Long valueAffiliationQuoteMin = Long.parseLong(
+                principalDataServices.getForSiglaAndEmpNd("cuotaFedac" + chat.getPerSigla(), 0L)
+        );
 
-        return String.format(action.getActionRespOkMessage(), payment, percent, format.format(valueMax),valueAffiliation);
+        return String.format(action.getActionRespOkMessage(), payment, "$" + format.format(valueAffiliationQuoteMin) , format.format(valueMax), percent,"$" +format.format(valueAffiliation),"$" +format.format(valueAffiliation));
     }
 
     @Override
     public Object getDataFedacApproved(String detail, Action action, Chat chat) {
 
-
-        if(!chat.getContractActive())
-            return ContentResponse.buildContentResponseFail("<p>Para solicitar afiliación debes estar afiliado</p>",
+        if(detail == null)
+            return ContentResponse.buildContentResponseFail("<p>Por favor, debes ingresar un valor a ahorrar.</p>",
                     optionsManageService.getOptionsByActionWithOption(action.getActionOptionError()), action, null);
 
 
-//        Aca validación: 1. Que el valor no supere el 10%. Que este afiliado.
+        long valueSend = Long.parseLong(detail.replaceAll("[^0-9]", ""));
+
+        Long valueAffiliation = loanServicesI.getValueAffiliationFedac();
+        Long valueAffiliationQuoteMin = Long.parseLong(
+                principalDataServices.getForSiglaAndEmpNd("cuotaFedac" + chat.getPerSigla(), 0L)
+        );
         Long salary = contractServices.findSalary(chat.getTdcTd(),chat.getEmpNd(),chat.getCtoNumber(),chat.getPerSigla());
+
         Float percent = chat.getPerSigla().equals("M") ? 10f : 5f;
         long valueMax = (long) ((salary * percent) / 100);
-        long valueSend = Long.parseLong(detail);
 
         NumberFormat format = NumberFormat.getNumberInstance(new Locale("es", "CO"));
 
         if(valueSend>valueMax)
-            return ContentResponse.buildContentResponseFail("<p>El valor solicitado supera tu capacidad, el cual es de " + format.format(valueMax) + "</p>",
+            return ContentResponse.buildContentResponseFail("<p>El valor solicitado supera tu capacidad máxima de <strong> $" + format.format(valueMax) + "</strong>.</p> <p>Por favor, intenta nuevamente o selecciona otra opción.</p>",
                     optionsManageService.getOptionsByActionWithOption(action.getActionOptionError()), action, null);
-//      Insertar en la tabla.
+
+
+        if(valueSend<valueAffiliationQuoteMin)
+            return ContentResponse.buildContentResponseFail("<p>El valor solicitado tiene que ser igual o mayor a <strong> $" + format.format(valueAffiliationQuoteMin) + "</strong>.</p> <p>Por favor, intenta nuevamente o selecciona otra opción.</p>",
+                    optionsManageService.getOptionsByActionWithOption(action.getActionOptionError()), action, null);
+
+
+       loanServicesI.save(
+                chat.getCtoNumber(),
+                chat.getTdcTd(),
+                chat.getEmpNd(),
+                chat.getTypeDocument(),
+                Long.valueOf(chat.getDocument()),
+                valueSend,
+                valueAffiliation,
+                chat.getPerSigla(),
+                chat.getChatId()
+        );
+
+        Mono.fromRunnable(() -> {
+                    String valueFedacAuxOpt = principalDataServices.getForSiglaAndEmpNd("fedacAuxOpt", 0L);
+                    String valueFedacAuxEdu = principalDataServices.getForSiglaAndEmpNd("fedacAuxEdu" , 0L);
+                    String valueFedacAuxMed = principalDataServices.getForSiglaAndEmpNd("fedacAuxMed" , 0L);
+                    String valueFedacAuxCalMin = principalDataServices.getForSiglaAndEmpNd("fedacAuxCalMin" , 0L);
+                    String valueFedacAuxCalMax = principalDataServices.getForSiglaAndEmpNd("fedacAuxCalMax", 0L);
+
+                    String contentMailFedac = String.format(action.getActionRepOkMail(), chat.getNames(), "$" + format.format(valueAffiliation),
+                            "$" + format.format(valueSend), chat.getPerSigla().equals("M") ? "mensual" : "quincenal" , valueFedacAuxOpt, valueFedacAuxEdu, valueFedacAuxMed, valueFedacAuxCalMin, valueFedacAuxCalMax
+                    );
+                    String subjectFedac = String.format(action.getActionRepOkMailSubject(), chat.getChatId(), chat.getNames(), chat.getDocument());
+                    mailServices.sendMailChatJust(chat.getChatMail(), contentMailFedac, subjectFedac, chat.getPrincipalRequest());
+        })
+        .subscribeOn(Schedulers.boundedElastic())
+        .subscribe();
+
         return null;
     }
 

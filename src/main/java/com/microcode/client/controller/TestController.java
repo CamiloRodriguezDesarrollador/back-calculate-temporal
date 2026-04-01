@@ -18,25 +18,34 @@
 //
 //    private final ManageAdditionalServices manageAdditionalServices;
 //
+//
 //    @PostMapping("/aditional")
 //    public Object generate() throws IOException {
-//        String detail = "16-01-2026 - 31-01-2026";
+////        String detail = "16-01-2026 - 31-01-2026";
+//        String detail = "60000";
 //        Action action = new Action();
+//        action.setActionId(2013);
+//        action.setActionOptionError("fedac-detail");
+//
 //        Chat chat = Chat.builder()
 //                .tdcTd("NI")
-//                .empNd(800165661L)
-//                .ctoNumber(12393L)
+//                .empNd(860090915L)
+//                .ctoNumber(789882L)
+//                .typeDocument("CC")
+//                .document("1075539286")
+//                .contractActive(true)
+//                .chatId("3243242")
+//                .perSigla("Q")
 //                .build();
 //
-//
-//        Object result = manageAdditionalServices.generateCertPay(
+//        Object result = manageAdditionalServices.getDataFedacApproved(
 //                detail,
 //                action,
 //                chat
 //        );
 //
 //        System.out.println(result);
-//          return result;
+//        return result;
 //
 //    }
 //

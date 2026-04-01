@@ -27,5 +27,8 @@ public interface CertificatesServiceI {
 
     String getDataCarnetArl(String tdcTd,Long empNd, Long ctoNumero);
 
+    String getPlanPayment(Long loanId);
+
+    String getCalculatePaymentDetail(Long loanId, Long consecutive);
 
 }
