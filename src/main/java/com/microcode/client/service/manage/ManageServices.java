@@ -286,8 +286,8 @@ public class ManageServices {
                     : detail;
 
             if (mailFlag.equals("Y")) {
-//                String code = "123456";
-                String code = helperService.generateCode();
+                String code = "123456";
+//                String code = helperService.generateCode();
                 chat.setChatCode(code);
                 chat.setChatAttempts(1);
                 chat.setChatDateCode(new Date());
@@ -296,7 +296,7 @@ public class ManageServices {
                 String subject = String.format(action.getActionRepOkMailSubject(),code);
 
 //                mailServices.sendMailChat(MAIL_TEST,contentMail,subject,chat.getPrincipalRequest());
-                mailServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest());
+//                mailServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest());
 
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action,null);
             }
