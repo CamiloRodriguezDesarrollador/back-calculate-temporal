@@ -7,13 +7,13 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface IContractDao extends CrudRepository<Contract, Long> {
-//    AND p.empNdFil NOT IN (860090915,800148972,830057687,800141699,800165661)
 
     @Query("""
             SELECT p FROM Contract p
             WHERE p.eplNd = :eplNd AND p.tdcTdEpl = :tdcTd
             AND p.ectSigla IN ("ACT","RET","PRL")
             AND p.empNd IN (:principalRequest)
+            AND p.empNdFil NOT IN (860090915,800148972,830057687,800141699,800165661)
             ORDER BY p.ctoIng DESC
             FETCH FIRST 2 ROWS ONLY
     """)
@@ -25,6 +25,7 @@ public interface IContractDao extends CrudRepository<Contract, Long> {
             AND p.tdcTdEpl = :tdcTd
             AND p.ectSigla = 'ACT'
             AND p.empNd IN (:principalRequest)
+            AND p.empNdFil NOT IN (860090915,800148972,830057687,800141699,800165661)
             ORDER BY p.ctoIng DESC
             FETCH FIRST 1 ROWS ONLY
     """)
