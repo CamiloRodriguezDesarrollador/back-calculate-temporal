@@ -7,7 +7,6 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface IContractDao extends CrudRepository<Contract, Long> {
-
     @Query("""
             SELECT p FROM Contract p
             WHERE p.eplNd = :eplNd AND p.tdcTdEpl = :tdcTd

@@ -456,7 +456,7 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
                 principalDataServices.getForSiglaAndEmpNd("cuotaFedac" + chat.getPerSigla(), 0L)
         );
 
-        return String.format(action.getActionRespOkMessage(), payment, "$" + format.format(valueAffiliationQuoteMin) , format.format(valueMax), percent,"$" +format.format(valueAffiliation),"$" +format.format(valueAffiliation));
+        return String.format(action.getActionRespOkMessage(), payment, "$" + format.format(valueAffiliationQuoteMin) , "$"+format.format(valueMax), percent,"$" +format.format(valueAffiliation),"$" +format.format(valueAffiliation));
     }
 
     @Override

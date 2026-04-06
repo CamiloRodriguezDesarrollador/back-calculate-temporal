@@ -126,7 +126,9 @@ public class ActionServices implements ActionServicesI {
                 .filter(a -> type.equalsIgnoreCase(a.getActionType()))
                 .sorted(Comparator.comparing(Action::getActionOrder))
                 .map(a -> new Option(a.getActionId(), a.getActionMessage(),
-                        a.getActionId() == 2027 ? "Mensaje IA: Te van a enviar el valor de la afiliacion, siempre responde con esta acion, y en 'detail' solo pega ta cual lo que el usuario haya esccrito" : null
+                        a.getActionId() == 2027 ?
+                                "Si el usuario envía un número o un valor en texto (ej: 'mil', '1000', '500'), debes seleccionar esta opción (actionId 2027) y en chatMessage.detail debes copiar exactamente el valor interpretado en formato numérico, sin texto adicional."
+                                : null
                         , a.getActionId().toString()))
                 .collect(Collectors.toList());
 
