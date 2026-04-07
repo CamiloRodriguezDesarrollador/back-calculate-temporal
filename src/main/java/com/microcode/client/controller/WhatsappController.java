@@ -27,8 +27,6 @@ public class WhatsappController {
     private final HelperService helperService;
     private final ActionServicesI actionServices;
     private final StatusChatServicesI statusChatServices;
-    private final CertificatesServiceI certificatesService;
-    private final ConnectExternalServices connectExternalServices;
     private ChatSessionManagerI chatSessionManager;
     private final RegisterChatServicesI registerChatServices;
     private final ManageServices manageServices;

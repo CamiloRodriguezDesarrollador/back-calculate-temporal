@@ -88,9 +88,14 @@ public class StatusChat implements Serializable, Cloneable {
                                 "¡Estoy aquí para ayudarte! 😊\n\n" +
                                 "*Por favor elige una de las siguientes opciones:* 🙌\n\n" +
                                 "1. 👷 Trabajador / Extrabajador\n" +
-                                "2. 🏡 Candidato / Cotizar / Proveedor / Validar Certificados \n\n"+
-                                "Al continuar das autorización para el tratamientos de datos personales de acuerdo con la Política de datos. " + urlData + " ." + "\n\n"+
-                                "💼 ¿Quieres ver las vacantes disponibles? Haz clic aquí 👉 https://wa.me/12678002481" + "\n\n"+
+                                "2. 🏡 Candidato / Cotizar / Proveedor / Validar Certificados \n\n" +
+                                "Al continuar das autorización para el tratamientos de datos personales de acuerdo con la Política de datos. " + urlData + " .\n\n" +
+
+                                (companyId == 1
+                                        ? "💼 ¿Quieres ver las vacantes disponibles? Haz clic aquí 👉 https://wa.me/12678002481\n\n"
+                                        : ""
+                                ) +
+
                                 "👉 Para salir del chat en cualquier momento y volver aquí, escribe *EXIT*"
                 )
                 .chatOptions(options.toString())
