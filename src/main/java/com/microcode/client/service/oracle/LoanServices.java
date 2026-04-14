@@ -98,7 +98,7 @@ public class LoanServices implements LoanServicesI {
                 .employeeDocument(employeeDocument)
                 .build();
 
-        Loan loan = loanDao.save(loanEntity);
+        Loan loan = loanDao.saveAndFlush(loanEntity);
 
         System.out.println("Afiliacion generado: " + loan);
 
@@ -184,7 +184,7 @@ public class LoanServices implements LoanServicesI {
                 .employeeDocument(employeeDocument)
                 .build();
 
-        Loan loan = loanDao.save(loanEntity);
+        Loan loan = loanDao.saveAndFlush(loanEntity);
 
         System.out.println("Ahorro generado: " + loan);
 

@@ -19,12 +19,8 @@ public class Loan implements Serializable {
 
     @Id
     @Column(name = "PRE_CODIGO")
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "prestamo_seq")
-    @SequenceGenerator(
-            name = "prestamo_seq",
-            sequenceName = "PRE.SEQ_PRESTAMO",
-            allocationSize = 1
-    )    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "TDC_TD")
     private String principalTypeDocument;
