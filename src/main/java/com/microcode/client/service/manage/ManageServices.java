@@ -145,7 +145,7 @@ public class ManageServices {
             chat.setChatDateAuthorized(new Date());
 
             List<Option> optionsText = List.of(
-                    new Option(200, "\n🔸 *" + String.join("*\n🔸 *", missing) + "*", "Te estan enviando el dato faltante", null)
+                    new Option(200, "\n🔸 *" + String.join("*\n🔸 *", missing) + "*", "PROMPT IA: Te estan enviando los siguientes datos faltantes, interpreta lo que escriben y dejalo dentro de chatMessage name,phone,email,document,typeDocument,typeIdentity,identity", null)
             );
 
             Action act = action.clone();
@@ -200,7 +200,7 @@ public class ManageServices {
                         : "Aún me hacen falta estos datos 📝: ";
 
                 List<Option> optionsText = List.of(
-                        new Option(1, "\n🔸 *" + String.join("*\n🔸 *", missing) + "*", "Te estan enviando el dato faltante", null)
+                        new Option(1, "\n🔸 *" + String.join("*\n🔸 *", missing) + "*", "PROMPT IA: Te estan enviando los siguientes datos faltantes, interpreta lo que escriben y dejalo dentro de chatMessage name,phone,email,document,typeDocument,typeIdentity,identity", null)
                 );
 
                 Action act = action.clone();
