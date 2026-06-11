@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microcode.client.clients.ConnectExternalServices;
-import com.microcode.client.clients.MailServices;
 import com.microcode.client.clients.NotifyServices;
 import com.microcode.client.entity.general.QuantityResponse;
 import com.microcode.client.entity.mysql.Action;
@@ -25,7 +24,6 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.text.NumberFormat;
 import java.util.*;
 
 @Service
@@ -67,9 +65,8 @@ public class ManageServices {
     private final ManageAdditionalServicesI manageAdditionalServices;
     private final LoanServicesI loanServicesI;
 
-    private final MailServices mailServices;
-    private final ConnectExternalServices connectExternalServices;
     private final NotifyServices notifyServices;
+    private final ConnectExternalServices connectExternalServices;
 
     private final OptionsManageService optionsManageService;
     private final HelperService helperService;
@@ -259,7 +256,6 @@ public class ManageServices {
             chatSessionManager.setChatById( chatId , companyId, chat );
 
             String mailUser = helperService.generateMail(employee.getEmail().toLowerCase());
-            mailServices.ping();
             connectExternalServices.ping();
             return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage(), mailUser),null, action,null);
 
@@ -296,7 +292,7 @@ public class ManageServices {
                 String subject = String.format(action.getActionRepOkMailSubject(),code);
 
 //                mailServices.sendMailChat(MAIL_TEST,contentMail,subject,chat.getPrincipalRequest());
-                mailServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest());
+                notifyServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest()) ;
 //
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action,null);
             }

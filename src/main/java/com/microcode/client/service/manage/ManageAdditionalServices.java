@@ -1,7 +1,6 @@
 package com.microcode.client.service.manage;
 
 import com.microcode.client.clients.ConnectExternalServices;
-import com.microcode.client.clients.MailServices;
 import com.microcode.client.clients.NotifyServices;
 import com.microcode.client.entity.general.Chat;
 import com.microcode.client.entity.general.ContentResponse;
@@ -44,9 +43,8 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
     private final CertificatesServiceI certificatesService;
     private final LoanServicesI loanServicesI;
 
-    private final MailServices mailServices;
-    private final ConnectExternalServices connectExternalServices;
     private final NotifyServices notifyServices;
+    private final ConnectExternalServices connectExternalServices;
 
     private final OptionsManageService optionsManageService;
     private final HelperService helperService;
@@ -75,9 +73,9 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
         String contentMail = String.format(action.getActionRepOkMail(), "Laboral", chat.getNames());
         String subject = String.format(action.getActionRepOkMailSubject(), "Laboral", chat.getNames());
 
-        mailServices.sendMailCertificatesFile(
+        notifyServices.sendMailCertificatesFile(
                 contentMail, subject, chat.getChatMail(), file, "CertificadoLaboral.pdf", chat.getPrincipalRequest()
-        ).subscribe();
+        );
 
         return null;
 
@@ -100,9 +98,9 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
         String contentMailPay = String.format(action.getActionRepOkMail(), "de pago", chat.getNames());
         String subjectPay = String.format(action.getActionRepOkMailSubject(), "de pago", chat.getNames());
 
-        mailServices.sendMailCertificatesFile(
+        notifyServices.sendMailCertificatesFile(
                 contentMailPay, subjectPay, chat.getChatMail(), filePay, "CertificacionPago.pdf", chat.getPrincipalRequest()
-        ).subscribe();
+        );
         return null;
     }
 
@@ -140,9 +138,9 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
                     String subjectDian = String.format(action.getActionRepOkMailSubject(), "Ingresos y Retenciones", chat.getNames());
 
                     try {
-                        mailServices.sendMailCertificatesFile(
+                        notifyServices.sendMailCertificatesFile(
                                 contentMailDian, subjectDian, chat.getChatMail(), certDian, "IngresosRetenciones.pdf", chat.getPrincipalRequest()
-                        ).subscribe();
+                        );
                     } catch (IOException e) {
                         log.error("ERROR Generar carnet: {}", e.getMessage());
                     }
@@ -169,7 +167,7 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
         String contentMailCcf = String.format(action.getActionRepOkMail(), chat.getNames(), comp.getEmpNd(), nameCompany);
         String subjectCcf = String.format(action.getActionRepOkMailSubject(), chat.getNames());
 
-        mailServices.sendMailChat(chat.getChatMail(), contentMailCcf, subjectCcf, chat.getPrincipalRequest());
+        notifyServices.sendMailChat(chat.getChatMail(), contentMailCcf, subjectCcf, chat.getPrincipalRequest());
 
         String mailSend = principalDataServices.getForSiglaAndEmpNd("ccfProvider", comp.getEmpNd());
         return String.format(action.getActionRespOkMessage(), nameCompany, mailSend);
@@ -225,9 +223,9 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
                     String contentMailPlanilla = String.format(action.getActionRepOkMail(), "Planilla", chat.getNames());
                     String subjectPlanilla = String.format(action.getActionRepOkMailSubject(), "Planilla", chat.getNames());
 
-                    mailServices.sendMailCertificatesFile(
+                    notifyServices.sendMailCertificatesFile(
                             contentMailPlanilla, subjectPlanilla, chat.getChatMail(), certPlanilla, "Planilla.pdf", chat.getPrincipalRequest()
-                    ).subscribe();
+                    );
 
                     return true;
                 }).subscribeOn(Schedulers.boundedElastic()))
@@ -331,7 +329,7 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
                         "🏛️ *Principal*: " +  helperService.defineUniquePrincipalForAuthorizedString(chat.getPrincipalRequest()) + "\n" +
                         "💬 *Mensaje*: " + detail;
 
-        notifyServices.notifyChatApps(text);
+        notifyServices.sendNotifyChat(text);
         connectExternalServices.updateDataAppSheetsTeo(payload);
         return null;
     }
@@ -373,9 +371,9 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
                     String subjectCarnet = String.format(action.getActionRepOkMailSubject(), chat.getNames());
 
                     try {
-                        mailServices.sendMailCertificatesFile(
+                        notifyServices.sendMailCertificatesFile(
                                 contentMailCarnet, subjectCarnet, chat.getChatMail(), carnet, "CarnetArl.pdf", chat.getPrincipalRequest()
-                        ).subscribe();
+                        );
                     } catch (IOException e) {
                         log.error("ERROR Generar carnet: {}" , e.getMessage());
                     }
@@ -513,7 +511,7 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
                             "$" + format.format(valueSend), chat.getPerSigla().equals("M") ? "mensual" : "quincenal" , valueFedacAuxOpt, valueFedacAuxEdu, valueFedacAuxMed, valueFedacAuxCalMin, valueFedacAuxCalMax
                     );
                     String subjectFedac = String.format(action.getActionRepOkMailSubject(), chat.getChatId(), chat.getNames(), chat.getDocument());
-                    mailServices.sendMailChatJust(chat.getChatMail(), contentMailFedac, subjectFedac, chat.getPrincipalRequest());
+                    notifyServices.sendMailChatJust(chat.getChatMail(), contentMailFedac, subjectFedac, chat.getPrincipalRequest());
         })
         .subscribeOn(Schedulers.boundedElastic())
         .subscribe();

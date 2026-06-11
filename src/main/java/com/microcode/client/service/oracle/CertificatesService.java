@@ -1,7 +1,6 @@
 package com.microcode.client.service.oracle;
 
 import com.microcode.client.clients.ConnectExternalServices;
-import com.microcode.client.clients.MailServices;
 import com.microcode.client.entity.oracle.*;
 import com.microcode.client.service.helper.HelperService;
 import jakarta.persistence.EntityManager;
@@ -16,11 +15,6 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.sql.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
