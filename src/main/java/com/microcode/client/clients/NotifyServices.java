@@ -296,7 +296,7 @@ public class NotifyServices {
 
         body.add("channel", "CHAT");
         body.add("principal", 860090915);
-        body.add("to", "5BoLpCAAAAE");
+        body.add("to", "AAQA1c87pDg");
         body.add("message", text);
         body.add("process","15" );
 
