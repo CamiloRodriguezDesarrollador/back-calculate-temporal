@@ -74,7 +74,7 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
         String subject = String.format(action.getActionRepOkMailSubject(), "Laboral", chat.getNames());
 
         notifyServices.sendMailCertificatesFile(
-                contentMail, subject, chat.getChatMail(), file, "CertificadoLaboral.pdf", chat.getPrincipalRequest()
+                contentMail, subject, chat.getChatMail(), file, "CertificadoLaboral.pdf", chat.getPrincipalRequest(), chat.getEmpNdFil()
         );
 
         return null;
@@ -99,7 +99,7 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
         String subjectPay = String.format(action.getActionRepOkMailSubject(), "de pago", chat.getNames());
 
         notifyServices.sendMailCertificatesFile(
-                contentMailPay, subjectPay, chat.getChatMail(), filePay, "CertificacionPago.pdf", chat.getPrincipalRequest()
+                contentMailPay, subjectPay, chat.getChatMail(), filePay, "CertificacionPago.pdf", chat.getPrincipalRequest(), chat.getEmpNdFil()
         );
         return null;
     }
@@ -139,7 +139,7 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
 
                     try {
                         notifyServices.sendMailCertificatesFile(
-                                contentMailDian, subjectDian, chat.getChatMail(), certDian, "IngresosRetenciones.pdf", chat.getPrincipalRequest()
+                                contentMailDian, subjectDian, chat.getChatMail(), certDian, "IngresosRetenciones.pdf", chat.getPrincipalRequest(), chat.getEmpNdFil()
                         );
                     } catch (IOException e) {
                         log.error("ERROR Generar carnet: {}", e.getMessage());
@@ -167,7 +167,7 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
         String contentMailCcf = String.format(action.getActionRepOkMail(), chat.getNames(), comp.getEmpNd(), nameCompany);
         String subjectCcf = String.format(action.getActionRepOkMailSubject(), chat.getNames());
 
-        notifyServices.sendMailChat(chat.getChatMail(), contentMailCcf, subjectCcf, chat.getPrincipalRequest());
+        notifyServices.sendMailChat(chat.getChatMail(), contentMailCcf, subjectCcf, chat.getPrincipalRequest(), chat.getEmpNdFil());
 
         String mailSend = principalDataServices.getForSiglaAndEmpNd("ccfProvider", comp.getEmpNd());
         return String.format(action.getActionRespOkMessage(), nameCompany, mailSend);
@@ -224,7 +224,7 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
                     String subjectPlanilla = String.format(action.getActionRepOkMailSubject(), "Planilla", chat.getNames());
 
                     notifyServices.sendMailCertificatesFile(
-                            contentMailPlanilla, subjectPlanilla, chat.getChatMail(), certPlanilla, "Planilla.pdf", chat.getPrincipalRequest()
+                            contentMailPlanilla, subjectPlanilla, chat.getChatMail(), certPlanilla, "Planilla.pdf", chat.getPrincipalRequest(), chat.getEmpNdFil()
                     );
 
                     return true;
@@ -329,7 +329,7 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
                         "🏛️ *Principal*: " +  helperService.defineUniquePrincipalForAuthorizedString(chat.getPrincipalRequest()) + "\n" +
                         "💬 *Mensaje*: " + detail;
 
-        notifyServices.sendNotifyChat(text);
+        notifyServices.sendNotifyChat(text, chat.getEmpNdFil());
         connectExternalServices.updateDataAppSheetsTeo(payload);
         return null;
     }
@@ -372,7 +372,7 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
 
                     try {
                         notifyServices.sendMailCertificatesFile(
-                                contentMailCarnet, subjectCarnet, chat.getChatMail(), carnet, "CarnetArl.pdf", chat.getPrincipalRequest()
+                                contentMailCarnet, subjectCarnet, chat.getChatMail(), carnet, "CarnetArl.pdf", chat.getPrincipalRequest(), chat.getEmpNdFil()
                         );
                     } catch (IOException e) {
                         log.error("ERROR Generar carnet: {}" , e.getMessage());
@@ -511,7 +511,7 @@ public class ManageAdditionalServices implements ManageAdditionalServicesI {
                             "$" + format.format(valueSend), chat.getPerSigla().equals("M") ? "mensual" : "quincenal" , valueFedacAuxOpt, valueFedacAuxEdu, valueFedacAuxMed, valueFedacAuxCalMin, valueFedacAuxCalMax
                     );
                     String subjectFedac = String.format(action.getActionRepOkMailSubject(), chat.getChatId(), chat.getNames(), chat.getDocument());
-                    notifyServices.sendMailChatJust(chat.getChatMail(), contentMailFedac, subjectFedac, chat.getPrincipalRequest());
+                    notifyServices.sendMailChatJust(chat.getChatMail(), contentMailFedac, subjectFedac, chat.getPrincipalRequest(), chat.getEmpNdFil());
         })
         .subscribeOn(Schedulers.boundedElastic())
         .subscribe();

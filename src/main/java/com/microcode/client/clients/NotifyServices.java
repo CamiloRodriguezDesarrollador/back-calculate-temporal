@@ -34,7 +34,7 @@ public class NotifyServices {
         this.helperService = new HelperService();
     }
 
-    public void sendMailChat(String emailTo, String contentMail, String subject, List<Long>  authorized) {
+    public void sendMailChat(String emailTo, String contentMail, String subject, List<Long>  authorized, Long usuaria) {
         WebClient webClient = Env.withCurrentHeaders(WebClient.builder()).build();
 
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
@@ -42,6 +42,7 @@ public class NotifyServices {
 
         body.add("channel", "MAIL");
         body.add("principal", principalAuthorized);
+        body.add("usuaria", usuaria);
         body.add("to", emailTo);
         body.add("subject", subject);
         body.add("message", templateHtml(contentMail,subject,principalAuthorized));
@@ -63,7 +64,7 @@ public class NotifyServices {
     }
 
     public void sendMailCertificatesFile(String contentMail, String subject , String emailTo, byte[] fileBytes, String filename,
-                                                 List<Long> authorized) throws IOException {
+                                                 List<Long> authorized, Long usuaria) throws IOException {
         WebClient webClient = Env.withCurrentHeaders(WebClient.builder()).build();
 
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
@@ -72,6 +73,7 @@ public class NotifyServices {
 
         body.add("channel", "MAIL");
         body.add("principal", principalAuthorized);
+        body.add("usuaria", usuaria);
         body.add("to", emailTo);
         body.add("subject", subject);
         body.add("message", templateHtml(contentMail,subject,principalAuthorized));
@@ -104,7 +106,7 @@ public class NotifyServices {
                 ).subscribe();
     }
 
-    public void sendMailChatJust(String emailTo, String contentMail, String subject, List<Long>  authorized) {
+    public void sendMailChatJust(String emailTo, String contentMail, String subject, List<Long>  authorized, Long usuaria) {
         WebClient webClient = Env.withCurrentHeaders(WebClient.builder()).build();
 
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
@@ -112,6 +114,7 @@ public class NotifyServices {
 
         body.add("channel", "MAIL");
         body.add("principal", principalAuthorized);
+        body.add("usuaria", usuaria);
         body.add("to", emailTo);
         body.add("toCc", "sac@fedac.co");
         body.add("subject", subject);
@@ -289,13 +292,14 @@ public class NotifyServices {
     }
 
 
-    public void sendNotifyChat(String text) {
+    public void sendNotifyChat(String text, Long usuaria) {
         WebClient webClient = Env.withCurrentHeaders(WebClient.builder()).build();
 
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
 
         body.add("channel", "CHAT");
         body.add("principal", 860090915);
+        body.add("usuaria", usuaria);
         body.add("to", "AAQA1c87pDg");
         body.add("message", text);
         body.add("process","15" );
