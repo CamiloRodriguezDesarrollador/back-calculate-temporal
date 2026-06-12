@@ -292,7 +292,7 @@ public class ManageServices {
                 String subject = String.format(action.getActionRepOkMailSubject(),code);
 
 //                mailServices.sendMailChat(MAIL_TEST,contentMail,subject,chat.getPrincipalRequest());
-                notifyServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest()) ;
+                notifyServices.sendMailChat(chat.getChatMail(),contentMail,subject,chat.getPrincipalRequest(), chat.getEmpNdFil()) ;
 //
                 return ContentResponse.buildContentResponseOk(String.format(action.getActionRespOkMessage()), null, action,null);
             }
