@@ -41,7 +41,7 @@ public class NotifyServices {
         Long principalAuthorized = helperService.defineUniquePrincipalForAuthorized(authorized);
 
         body.add("channel", "MAIL");
-        body.add("principal", principalAuthorized);
+        body.add("principal", defineNitForAuthorized(Math.toIntExact(principalAuthorized)));
         body.add("usuaria", usuaria);
         body.add("to", emailTo);
         body.add("subject", subject);
@@ -72,7 +72,7 @@ public class NotifyServices {
 
 
         body.add("channel", "MAIL");
-        body.add("principal", principalAuthorized);
+        body.add("principal", defineNitForAuthorized(Math.toIntExact(principalAuthorized)));
         body.add("usuaria", usuaria);
         body.add("to", emailTo);
         body.add("subject", subject);
@@ -113,7 +113,7 @@ public class NotifyServices {
         Long principalAuthorized = helperService.defineUniquePrincipalForAuthorized(authorized);
 
         body.add("channel", "MAIL");
-        body.add("principal", principalAuthorized);
+        body.add("principal", defineNitForAuthorized(Math.toIntExact(principalAuthorized)));
         body.add("usuaria", usuaria);
         body.add("to", emailTo);
         body.add("toCc", "sac@fedac.co");
@@ -317,6 +317,14 @@ public class NotifyServices {
                 .doOnError(ex ->
                         log.error("ERROR: {}" , ex.getMessage())
                 ).subscribe();
+    }
+
+    public Long defineNitForAuthorized(Integer principalAuthorized) {
+        return switch (principalAuthorized) {
+            case 1 -> 860090915L;
+            case 2 -> 800148972L;
+            default -> 830057687L;
+        };
     }
 
 }
