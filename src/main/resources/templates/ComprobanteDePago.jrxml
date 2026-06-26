@@ -1,8 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Created with Jaspersoft Studio version 6.21.3.final using JasperReports Library version 6.21.3-4a3078d20785ebe464f18037d738d12fc98c13cf  -->
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" columnCount="2" pageWidth="612" pageHeight="792" columnWidth="306" leftMargin="0" rightMargin="0" topMargin="9" bottomMargin="0" uuid="49734aec-81a4-488a-b40d-db0ace08ee94">
-	<property name="ireport.zoom" value="1.4641000000000006"/>
-	<property name="ireport.x" value="0"/>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			  xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+			  name="report1"
+			  language="groovy"
+			  columnCount="2"
+			  pageWidth="612"
+			  pageHeight="600"
+			  columnWidth="306"
+			  leftMargin="0"
+			  rightMargin="0"
+			  topMargin="9"
+			  bottomMargin="0"
+			  isFloatColumnFooter="true"
+			  uuid="49734aec-81a4-488a-b40d-db0ace08ee94">	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<property name="net.sf.jasperreports.export.pdf.encrypted" value="true"/>
 	<property name="net.sf.jasperreports.export.pdf.128.bit.key" value="false"/>
@@ -87,10 +98,7 @@
 		</band>
 	</title>
 	<pageHeader>
-		<band splitType="Stretch"/>
-	</pageHeader>
-	<columnHeader>
-		<band height="56" splitType="Stretch">
+		<band height="44" splitType="Stretch">
 			<textField>
 				<reportElement x="24" y="0" width="296" height="13" uuid="4ae16655-8ed3-430a-9f1d-10a224e19cd1"/>
 				<textElement verticalAlignment="Middle">
@@ -207,36 +215,40 @@
 				</textElement>
 				<textFieldExpression><![CDATA[$P{P_MENSAJE_BASICO}]]></textFieldExpression>
 			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="14" splitType="Stretch">
 			<staticText>
-				<reportElement x="24" y="44" width="153" height="12" uuid="ccc594e5-4e1d-4b6c-9309-7e28081e2df4"/>
+				<reportElement x="24" y="0" width="153" height="12" uuid="ccc594e5-4e1d-4b6c-9309-7e28081e2df4"/>
 				<textElement>
 					<font fontName="SansSerif" size="8" isBold="true" isItalic="false" pdfFontName="Helvetica"/>
 				</textElement>
 				<text><![CDATA[CONCEPTO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="176" y="44" width="44" height="12" uuid="2b54e7a2-8555-4612-b747-12accbd08238"/>
+				<reportElement x="176" y="0" width="44" height="12" uuid="2b54e7a2-8555-4612-b747-12accbd08238"/>
 				<textElement textAlignment="Center">
 					<font fontName="SansSerif" size="8" isBold="true" isItalic="false" pdfFontName="Helvetica"/>
 				</textElement>
 				<text><![CDATA[CANT]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="220" y="44" width="73" height="12" uuid="faed7217-9d3a-47ad-a6f4-4360f57afccf"/>
+				<reportElement x="220" y="0" width="73" height="12" uuid="faed7217-9d3a-47ad-a6f4-4360f57afccf"/>
 				<textElement textAlignment="Right">
 					<font fontName="SansSerif" size="8" isBold="true" isItalic="false" pdfFontName="Helvetica"/>
 				</textElement>
 				<text><![CDATA[VALOR]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="320" y="44" width="155" height="12" uuid="cdacbf7d-2cfd-4896-b5a2-12556d4c3cbb"/>
+				<reportElement x="320" y="0" width="155" height="12" uuid="cdacbf7d-2cfd-4896-b5a2-12556d4c3cbb"/>
 				<textElement>
 					<font fontName="SansSerif" size="8" isBold="true" isItalic="false" pdfFontName="Helvetica"/>
 				</textElement>
 				<text><![CDATA[CONCEPTO]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="475" y="44" width="70" height="12" uuid="70e0992e-030e-4b42-bf1d-b65563567989"/>
+				<reportElement x="475" y="0" width="70" height="12" uuid="70e0992e-030e-4b42-bf1d-b65563567989"/>
 				<textElement textAlignment="Right">
 					<font fontName="SansSerif" size="8" isBold="true" isItalic="false" pdfFontName="Helvetica"/>
 				</textElement>
@@ -321,21 +333,21 @@
 				<textFieldExpression><![CDATA[$V{valor_neto}]]></textFieldExpression>
 			</textField>
 			<textField pattern="#,##0">
-				<reportElement x="220" y="0" width="73" height="11" uuid="a9eb7aaa-a57f-445e-9cf7-49b5f6dcb6b3"/>
+				<reportElement x="220" y="10" width="73" height="11" uuid="a9eb7aaa-a57f-445e-9cf7-49b5f6dcb6b3"/>
 				<textElement textAlignment="Right">
 					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{valor_p}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="177" y="0" width="43" height="11" uuid="3c61fb68-61fc-4605-9d4f-1fe9059d22cd"/>
+				<reportElement x="177" y="10" width="43" height="11" uuid="3c61fb68-61fc-4605-9d4f-1fe9059d22cd"/>
 				<textElement textAlignment="Center">
 					<font fontName="SansSerif" size="8"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{cantidad_1}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="24" y="0" width="153" height="11" uuid="b80c4254-c1ae-4051-8b70-4f508d8bbcee"/>
+				<reportElement x="24" y="10" width="153" height="11" uuid="b80c4254-c1ae-4051-8b70-4f508d8bbcee"/>
 				<textElement textAlignment="Right">
 					<font fontName="SansSerif" size="8" isBold="true" isItalic="false" pdfFontName="Helvetica-Bold"/>
 				</textElement>
@@ -356,14 +368,14 @@
 				<textFieldExpression><![CDATA[$P{P_MENSAJE}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement x="320" y="0" width="155" height="11" uuid="a0bf7cf7-b3b9-4587-94e8-98d50cc1e956"/>
+				<reportElement x="320" y="10" width="155" height="11" uuid="a0bf7cf7-b3b9-4587-94e8-98d50cc1e956"/>
 				<textElement textAlignment="Right">
 					<font fontName="SansSerif" size="8" isBold="true" isItalic="false" pdfFontName="Helvetica-Bold"/>
 				</textElement>
 				<text><![CDATA[Total Deducido:]]></text>
 			</staticText>
 			<textField pattern="#,##0">
-				<reportElement x="475" y="0" width="70" height="11" uuid="50712fcf-e955-49b2-88b7-2f2826e47197"/>
+				<reportElement x="475" y="10" width="70" height="11" uuid="50712fcf-e955-49b2-88b7-2f2826e47197"/>
 				<textElement textAlignment="Right">
 					<font fontName="SansSerif" size="8"/>
 				</textElement>
@@ -393,7 +405,7 @@
 		</band>
 	</columnFooter>
 	<pageFooter>
-		<band height="395">
+		<band height="100">
 			<subreport>
 				<reportElement x="0" y="10" width="312" height="35" uuid="e00ba64d-70ed-497d-bfc0-df00f1750959"/>
 				<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{P_PRESTAMOS})]]></dataSourceExpression>

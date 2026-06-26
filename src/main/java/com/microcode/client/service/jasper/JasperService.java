@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.sf.jasperreports.engine.*;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.util.JRLoader;
+import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
 import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
@@ -99,7 +101,7 @@ public class JasperService implements JasperServiceI {
 
             TypeNovCompany typ = typeNovServices.findByIds(empNd, tdcTd, 11L);
 
-            List<Long> rads =certificatesService.getDataNumbersRads(
+            List<Long> rads = certificatesService.getDataNumbersRads(
                     ctoNumber,typ.getTneCodigo(),period
             );
 
@@ -151,20 +153,34 @@ public class JasperService implements JasperServiceI {
 
             }
 
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            JasperExportManager.exportReportToPdfStream(jpF.get(0), byteArrayOutputStream);
-
-            for (int i = 1; i < jpF.size(); i++) {
-                JasperExportManager.exportReportToPdfStream(jpF.get(i), byteArrayOutputStream);
+            if (jpF.isEmpty()) {
+                return null;
             }
 
-            return byteArrayOutputStream.toByteArray();
+            // Si solo hay un reporte, lo exportamos normal sin necesidad de unificar
+            if (jpF.size() == 1) {
+                return JasperExportManager.exportReportToPdf(jpF.get(0));
+            }
+
+            PDFMergerUtility merger = new PDFMergerUtility();
+            ByteArrayOutputStream mergedOutputStream = new ByteArrayOutputStream();
+            merger.setDestinationStream(mergedOutputStream);
+
+            // Generamos el PDF individual de cada JasperPrint y lo agregamos al unificador
+            for (JasperPrint jp : jpF) {
+                byte[] individualPdfBytes = JasperExportManager.exportReportToPdf(jp);
+                merger.addSource(new ByteArrayInputStream(individualPdfBytes));
+            }
+
+            // Ejecutamos la fusión de todos los PDFs
+            merger.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
+
+            return mergedOutputStream.toByteArray();
 
         } catch (Exception e) {
             System.out.println(e.getMessage());
             return null;
         }
-
     }
 
     @Override

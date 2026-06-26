@@ -16,7 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Setter
 public class Handler implements HandlerInterceptor, WebMvcConfigurer {
 
-    private static final String TOKEN_VALIDO = "mc_9f3A2kL8QwR7XyP2ZJdM8saduf9dshf9sdbnhduasdosjaJIHsjhs";
+        private static final String TOKEN_VALIDO = "mc_9f3A2kL8QwR7XyP2ZJdM8saduf9dshf9sdbnhduasdosjaJIHsjhs";
 
     @Override
     public boolean preHandle(HttpServletRequest request,
