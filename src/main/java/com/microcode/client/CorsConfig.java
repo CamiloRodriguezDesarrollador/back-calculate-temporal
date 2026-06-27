@@ -15,7 +15,7 @@
 //                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
 //                .allowedOriginPatterns("*")
 //                .allowedHeaders("*")
-//                .allowedOrigins("http://localhost:5174")
+//                .allowedOrigins("http://localhost:3000")
 //                .allowCredentials(true)
 //                .maxAge(3600);
 //    }
