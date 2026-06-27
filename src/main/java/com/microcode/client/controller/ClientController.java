@@ -23,6 +23,7 @@ public class ClientController {
     public List<AppSheets> getPremisas() {
         return connectedServices.getDataAppsheets();
     }
+
     @PostMapping("")
     public Mono<String> setForm(@RequestBody Map<String, Object> formData) {
 
@@ -51,5 +52,8 @@ public class ClientController {
                 });
     }
 
-
+    @PostMapping("/ping")
+    public Boolean ping() {
+        return true;
+    }
 }
